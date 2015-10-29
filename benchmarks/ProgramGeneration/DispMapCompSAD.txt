@@ -1,0 +1,44 @@
+VARIABLE STREAM IN float in_ILeft [dataSize:nRows * nCols * sizeof(float), SHIFT:0, nRows:sizeof(float) * nCols, nCols:sizeof(float)]
+VARIABLE STREAM IN float in_IRight [dataSize:sizeof(float) * nRows * (nCols + SHIFT), SHIFT:sizeof(float), nRows:sizeof(float) * (nCols + SHIFT), nCols:sizeof(float)]
+VARIABLE STREAM OUT float out_SAD [dataSize, SHIFT, nRows, nCols]
+
+VARIABLE int dataSize
+VARIABLE int SHIFT
+VARIABLE int nRows
+VARIABLE int nCols
+VARIABLE int chunk1
+VARIABLE int chunk2
+VARIABLE int chunk3
+VARIABLE int chunk4
+
+TASK [0..dataSize:chunk1, 0..SHIFT:chunk2, 0..nRows:chunk3, 0..nCols:chunk4]
+SPM_WINDOWS 3
+
+DECLARE DispMapCompSAD sa []
+
+ASSERT dataSize > 0
+ASSERT SHIFT > 0
+ASSERT nRows > 0
+ASSERT nCols > 0
+ASSERT chunk1 > 0
+ASSERT chunk2 > 0
+ASSERT chunk3 > 0
+ASSERT chunk4 > 0
+ASSERT dataSize % chunk1 == 0
+ASSERT SHIFT % chunk2 == 0
+ASSERT nRows % chunk3 == 0
+ASSERT nCols % chunk4 == 0
+
+CREATE_SPM sa float in_ILeft [chunk1, chunk2, chunk3, chunk4]
+CREATE_SPM sa float in_IRight [chunk1, chunk2, chunk3, chunk4]
+CREATE_SPM sa float out_SAD [chunk1, chunk2, chunk3, chunk4]
+
+// MEM <-> SPM for sa
+in_ILeft[0..dataSize, 0..SHIFT, 0..nRows, 0..nCols] => sa.in_ILeft[0..chunk1, 0..chunk2, 0..chunk3, 0..chunk4]
+in_IRight[0..dataSize, 0..SHIFT, 0..nRows, 0..nCols] => sa.in_IRight[0..chunk1, 0..chunk2, 0..chunk3, 0..chunk4]
+sa.out_SAD[0..chunk1, 0..chunk2, 0..chunk3, 0..chunk4] => out_SAD[0..dataSize, 0..SHIFT, 0..nRows, 0..nCols]
+
+// Argument streams to the engine
+sa.in_ILeft[0..chunk1, 0..chunk2, 0..chunk3, 0..chunk4] => sa.in_ILeft
+sa.in_IRight[0..chunk1, 0..chunk2, 0..chunk3, 0..chunk4] => sa.in_IRight_mov
+sa.out_SAD => sa.out_SAD[0..chunk1, 0..chunk2, 0..chunk3, 0..chunk4]

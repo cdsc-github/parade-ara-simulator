@@ -1,0 +1,102 @@
+machine(gem5NetworkPortInterface, "gem5 port")
+ : Cycles gem5PortLatency := 1;
+
+  // NETWORK BUFFERS
+  MessageBuffer *messageOut, network="To", virtual_network="0", ordered="true", vnet_type="response";
+  MessageBuffer *messageIn, network="From", virtual_network="0", ordered="true", vnet_type="request";
+{
+
+  // STATES
+  state_declaration(State, desc="Port states") {
+    A, AccessPermission:Read_Write, desc="Active";
+    NA, AccessPermission:Invalid, desc="Not active";
+  }
+
+  // EVENTS
+  enumeration(Event, desc="Cache events") {
+    // From processor
+    MessageSend, desc="A message is sent from a module to the network through this port";
+    MessageRecv, desc="A message is sent from the network to a module through this port";
+  }
+
+  // Details
+
+  structure(gem5NetworkPort, external="yes") {
+    void HandleMessage(int);
+  }
+  structure(gem5PortMessage, external="yes") {
+    Address GetAddress();
+    int GetMsgHandle();
+  }
+
+  // STRUCTURES 
+
+  gem5NetworkPort port, constructor='m_version';
+
+  // FUNCTIONS
+
+  State getState(Address addr) {
+    return State:A;
+  }
+  void setState(Address addr, State state) {
+  }
+  AccessPermission getAccessPermission(Address addr) {
+    return AccessPermission:NotPresent;
+  }
+  void setAccessPermission(Address addr, State state) {
+  }
+  DataBlock getDataBlock(Address addr), return_by_ref="yes" {
+    error("NetworkPortInterface does not support get data block.");
+  }
+
+
+  // NETWORK PORTS
+
+  out_port(msgOut, gem5PortMessage, messageOut);
+  
+  in_port(msgIn, gem5PortMessage, messageIn) {
+    if (msgIn.isReady()) {
+      peek(msgIn, gem5PortMessage) {
+        port.HandleMessage(in_msg.GetMsgHandle());
+        trigger(Event:MessageRecv, in_msg.GetAddress());
+      }
+    }
+  }
+  //MessageBuffer mandatoryQueue, ordered="false", abstract_chip_ptr="true";
+  MessageBuffer mandatoryQueue, ordered="false";
+  in_port(mandatoryQueue_in, gem5PortMessage, mandatoryQueue, desc="...") {
+    if (mandatoryQueue_in.isReady()) {
+      peek(mandatoryQueue_in, gem5PortMessage) {
+	enqueue(msgOut, gem5PortMessage, gem5PortLatency) {
+          out_msg := in_msg;
+        }
+	trigger(Event:MessageSend, in_msg.GetAddress());
+      }
+    }
+  }
+
+  // ACTIONS
+
+  action(z_stall, "z", desc="nothing") { }
+
+  action(decIn, "a", desc="Dequeue an in message")
+  {
+    msgIn.dequeue();
+  }
+  action(decOut, "b", desc="Dequeue an out message")
+  {
+    mandatoryQueue_in.dequeue();
+  }
+
+  // TRANSITIONS
+  transition(A, MessageSend) {
+	decOut;
+  }
+  transition(A, MessageRecv) {
+	decIn;
+  }
+  transition(NA, {MessageSend, MessageRecv}) {
+        z_stall;
+  }
+}
+

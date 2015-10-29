@@ -1,0 +1,24 @@
+VARIABLE STREAM OUTPUT int#2 atlas [imageCount, outHeight, outWidth]
+VARIABLE STREAM OUTPUT float resultImage [imageCount, outHeight, outWidth]
+
+VARIABLE uint32_t#100 randSeed
+VARIABLE int inHeight
+VARIABLE int inWidth
+VARIABLE int outHeight
+VARIABLE int outWidth
+VARIABLE int imageCount
+VARIABLE intptr_t imageArrayStart
+VARIABLE int chunk
+
+TASK [0..imageCount:1, 0..outHeight:1, 0..outWidth:chunk]
+SPM_WINDOWS 3
+
+DECLARE TexSynth1 t [in_rand_seeds = randSeed, WIDTHin = inWidth, HEIGHTin = inHeight, WIDTHout = outWidth, HEIGHTout = outHeight, inputImage = imageArrayStart, outputResult = @t.output]
+
+CREATE_SPM t float output [1, 1, chunk]
+CREATE_SPM t int#2 outAtlas [1, 1, chunk]
+
+t.output[0..1, 0..1, 0..chunk] => resultImage[0..imageCount, 0..outHeight, 0..outWidth]
+t.outAtlas[0..1, 0..1, 0..chunk] => atlas[0..imageCount, 0..outHeight, 0..outWidth]
+
+t.out_atlas => t.outAtlas[0..1, 0..1, 0..chunk]

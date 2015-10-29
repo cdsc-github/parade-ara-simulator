@@ -1,0 +1,68 @@
+MODULE registration1Mega
+OPCODE 401
+POWER 1.0
+AREA 1.0
+DEPTH 1
+CYCLE 2
+II 2
+
+ARGUMENT INPUT float v1
+ARGUMENT INPUT float v2
+ARGUMENT INPUT float v3
+ARGUMENT OUTPUT float u1_result
+ARGUMENT OUTPUT float u2_result
+ARGUMENT OUTPUT float u3_result
+
+ARGUMENT INPUT float u1_Center
+ARGUMENT INPUT INFERRED float u1_Right @u1_Center + 1 * ArgSize(u1_Center)
+ARGUMENT INPUT INFERRED float u1_Left @u1_Center - 1 * ArgSize(u1_Center)
+ARGUMENT INPUT INFERRED float u1_Down @u1_Center + width * ArgSize(u1_Center)
+ARGUMENT INPUT INFERRED float u1_Up @u1_Center - width * ArgSize(u1_Center)
+ARGUMENT INPUT INFERRED float u1_In @u1_Center + width * height * ArgSize(u1_Center)
+ARGUMENT INPUT INFERRED float u1_Out @u1_Center - width * height * ArgSize(u1_Center)
+
+ARGUMENT INPUT float u2_Center
+ARGUMENT INPUT INFERRED float u2_Right @u2_Center + 1 * ArgSize(u2_Center)
+ARGUMENT INPUT INFERRED float u2_Left @u2_Center - 1 * ArgSize(u2_Center)
+ARGUMENT INPUT INFERRED float u2_Down @u2_Center + width * ArgSize(u2_Center)
+ARGUMENT INPUT INFERRED float u2_Up @u2_Center - width * ArgSize(u2_Center)
+ARGUMENT INPUT INFERRED float u2_In @u2_Center + width * height * ArgSize(u2_Center)
+ARGUMENT INPUT INFERRED float u2_Out @u2_Center - width * height * ArgSize(u2_Center)
+
+ARGUMENT INPUT float u3_Center
+ARGUMENT INPUT INFERRED float u3_Right @u3_Center + 1 * ArgSize(u3_Center)
+ARGUMENT INPUT INFERRED float u3_Left @u3_Center - 1 * ArgSize(u3_Center)
+ARGUMENT INPUT INFERRED float u3_Down @u3_Center + width * ArgSize(u3_Center)
+ARGUMENT INPUT INFERRED float u3_Up @u3_Center - width * ArgSize(u3_Center)
+ARGUMENT INPUT INFERRED float u3_In @u3_Center + width * height * ArgSize(u3_Center)
+ARGUMENT INPUT INFERRED float u3_Out @u3_Center - width * height * ArgSize(u3_Center)
+
+REGISTER int width
+REGISTER int height
+REGISTER int depth
+
+REGISTER float dt
+
+BODY
+
+float du1_dx = (u1_Right - u1_Left) *0.5f;
+float du2_dx = (u2_Right - u2_Left) *0.5f;
+float du3_dx = (u3_Right - u3_Left) *0.5f;
+
+float du1_dy = (u1_Up - u1_Down) *0.5f;
+float du2_dy = (u2_Up - u2_Down) *0.5f;
+float du3_dy = (u3_Up - u3_Down) *0.5f;
+
+float du1_dz = (u1_In - u1_Out) *0.5f;
+float du2_dz = (u1_In - u1_Out) *0.5f;
+float du3_dz = (u1_In - u1_Out) *0.5f;
+
+float r1 = v1 - v1 * du1_dx - v2 * du1_dy - v3 * du1_dz;
+float r2 = v2 - v1 * du2_dx - v2 * du2_dy - v3 * du2_dz;
+float r3 = v3 - v1 * du3_dx - v2 * du3_dy - v3 * du3_dz;
+
+u1_result = r1 * dt;
+u2_result = r2 * dt;
+u3_result = r3 * dt;
+
+END

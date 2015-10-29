@@ -1,0 +1,47 @@
+VARIABLE STREAM IN uint32_t assign [size]
+VARIABLE STREAM IN float#32 point [size]
+VARIABLE STREAM IN float weight [size]
+VARIABLE STREAM IN uint32_t switch_membership [size]
+VARIABLE STREAM IN float inCost [size]
+VARIABLE STREAM OUT float outCost [size]
+
+VARIABLE uint64_t center_table
+VARIABLE uint64_t gl_lower
+VARIABLE float#32 xPoint
+
+VARIABLE int size
+
+VARIABLE int chunk
+
+TASK [0..size:chunk]
+SPM_WINDOWS 3
+
+DECLARE streamCluster5 x [tableStart = center_table, spmStart1 = @table, lowerStart = gl_lower, spmStart2 = @lower]
+
+CREATE_SPM x uint32_t assign [chunk]
+CREATE_SPM x float#32 point [chunk]
+CREATE_SPM x float#32 xPoint [1]
+CREATE_SPM x float weight [chunk]
+CREATE_SPM x float inCost [chunk]
+CREATE_SPM x float outCost [chunk]
+CREATE_SPM x uint32_t membership [chunk]
+CREATE_SPM x uint32_t table [chunk]
+CREATE_SPM x float lower [chunk]
+
+assign[0..size] => x.assign[0..chunk]
+point[0..size] => x.point[0..chunk]
+!xPoint => x.xPoint[0..chunk]
+weight[0..size] => x.weight[0..chunk]
+inCost[0..size] => x.inCost[0..chunk]
+switch_membership[0..size] => x.membership[0..chunk]
+x.outCost[0..chunk] => outCost[0..size]
+
+x.assign[0..chunk] => x.assign
+x.point[0..chunk] => x.x
+x.xPoint[0..1] => x.y
+x.weight[0..chunk] => x.weight
+x.inCost[0..chunk] => x.inCost
+x.membership[0..chunk] => x.switchMembership
+x.table[0..chunk] => x.table
+x.lower[0..chunk] => x.lower
+x.outCost => x.outCost[0..chunk]

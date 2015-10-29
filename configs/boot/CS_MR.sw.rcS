@@ -1,0 +1,2 @@
+echo -e "SW_CS_MR 0 66" | ./benchmarks/bench.out /benchmarks/SW/
+m5 exit

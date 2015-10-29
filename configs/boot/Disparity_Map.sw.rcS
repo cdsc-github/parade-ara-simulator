@@ -1,0 +1,2 @@
+echo -e "SW_Disparity_Map 0 2" | ./benchmarks/bench.out /benchmarks/SW/
+m5 exit

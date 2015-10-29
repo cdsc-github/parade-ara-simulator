@@ -1,0 +1,30 @@
+MODULE swaptions2
+OPCODE 1302
+POWER 1.0
+AREA 1.0
+DEPTH 1
+CYCLE 2
+II 2
+
+ARGUMENT INPUT float input
+ARGUMENT OUTPUT float output
+
+BODY
+
+#define selectff(a, b, c, d) (((a) > (b)) ? (c) : (d))
+#define CumNormalInv(u, result) \
+{ \
+        float x = u - 0.5f; \
+        float r1a = x * x; \
+        float r1 = x * (((-25.44106049637f * r1a + 41.39119773534f) * r1a + -18.61500062529f) * r1a + 2.50662823884f) / ((((3.13082909833f * r1a + -21.06224101826f) * r1a + 23.08336743743f) * r1a + -8.47351093090f) * r1a + 1.0f); \
+        float r2a = logf(-1.0f * logf(u)); \
+        float r2 = 0.3374754822726147f + r2a * (0.9761690190917186f + r2a * (0.1607979714918209f + r2a * (0.0276438810333863f + r2a * (0.0038405729373609f + r2a * (0.0003951896511919f + r2a * (0.0000321767881768f + r2a * (0.0000002888167364f + r2a * 0.0000003960315187f))))))); \
+        result = selectff(x, 0.42f, selectff(-0.42f, x, r1, r2), r2); \
+}
+
+CumNormalInv(input, output);
+
+#undef CumNormalInv
+#undef selectff
+
+END

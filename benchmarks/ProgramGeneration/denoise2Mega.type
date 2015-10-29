@@ -1,0 +1,44 @@
+MODULE denoise2Mega
+OPCODE 104
+POWER 1.0
+AREA 1.0
+DEPTH 1
+CYCLE 2
+II 1
+
+ARGUMENT INPUT float u_Center
+ARGUMENT INPUT float g_Center
+ARGUMENT INPUT float f_Center
+
+ARGUMENT INPUT INFERRED float u_Right @u_Center + 1 * ArgSize(u_Center)
+ARGUMENT INPUT INFERRED float u_Left @u_Center - 1 * ArgSize(u_Center)
+ARGUMENT INPUT INFERRED float u_Down @u_Center + (width + 2) * ArgSize(u_Center)
+ARGUMENT INPUT INFERRED float u_Up @u_Center - (width + 2) * ArgSize(u_Center)
+ARGUMENT INPUT INFERRED float u_In @u_Center + (width + 2) * (height + 2) * ArgSize(u_Center)
+ARGUMENT INPUT INFERRED float u_Out @u_Center - (width + 2) * (height + 2) * ArgSize(u_Center)
+
+ARGUMENT INPUT INFERRED float g_Right @g_Center + 1 * ArgSize(g_Center)
+ARGUMENT INPUT INFERRED float g_Left @g_Center - 1 * ArgSize(g_Center)
+ARGUMENT INPUT INFERRED float g_Down @g_Center + (width + 2) * ArgSize(g_Center)
+ARGUMENT INPUT INFERRED float g_Up @g_Center - (width + 2) * ArgSize(g_Center)
+ARGUMENT INPUT INFERRED float g_In @g_Center + (width + 2) * (height + 2) * ArgSize(g_Center)
+ARGUMENT INPUT INFERRED float g_Out @g_Center - (width + 2) * (height + 2) * ArgSize(g_Center)
+
+ARGUMENT OUTPUT float u_Result
+
+REGISTER int width
+REGISTER int height
+REGISTER int depth
+REGISTER float dt
+REGISTER float gamma
+REGISTER float sigma
+
+BODY
+
+float r = u_Center * f_Center / sigma;
+
+r = (r * (2.38944f + r * (0.950037f + r))) / (4.65314f + r * (2.57541f + r * (1.48937f + r)));
+
+u_Result = (u_Center + dt * (u_Right * g_Right + u_Left * g_Left + u_Down * g_Down + u_Up * g_Up + u_Out * g_Out + u_In * g_In + gamma * f_Center * r) ) / (1.0f + dt * (g_Right + g_Left + g_Down + g_Up + g_Out + g_In + gamma));
+
+END

@@ -1,0 +1,132 @@
+10
+
+dir
+281
+svn://jc2.cs.ucla.edu/parade-beta-release/ext/ply/example
+svn://jc2.cs.ucla.edu
+
+
+
+2014-12-01T19:12:59.793583Z
+103
+zhenman
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+b38080b9-cee1-4d9d-8f9b-c26397eb1d49
+
+closurecalc
+dir
+
+cleanup.sh
+file
+
+
+
+
+2015-10-28T00:19:43.021322Z
+e8e34dd364cfb210a83b1e00a073f4a9
+2014-12-01T19:12:59.793583Z
+103
+zhenman
+has-props
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+66
+
+BASIC
+dir
+
+GardenSnake
+dir
+
+calc
+dir
+
+newclasscalc
+dir
+
+optcalc
+dir
+
+classcalc
+dir
+
+calcdebug
+dir
+
+ansic
+dir
+
+hedit
+dir
+
+yply
+dir
+
+README
+file
+
+
+
+
+2015-10-28T00:19:43.031439Z
+22401f4680a1079220dabf863d8ce8ec
+2014-12-01T19:12:59.793583Z
+103
+zhenman
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+315
+
+unicalc
+dir
+

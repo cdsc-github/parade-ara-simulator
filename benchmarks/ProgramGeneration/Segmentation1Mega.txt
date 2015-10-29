@@ -1,0 +1,50 @@
+VARIABLE STREAM IN float phi [sizeX, sizeY, sizeZ]
+VARIABLE STREAM IN float u0 [sizeX, sizeY, sizeZ]
+VARIABLE STREAM OUT float result [sizeX, sizeY, sizeZ]
+
+VARIABLE int sizeX
+VARIABLE int sizeY
+VARIABLE int sizeZ
+
+VARIABLE int chunkX
+VARIABLE int chunkY
+VARIABLE int chunkZ
+
+VARIABLE float dx
+VARIABLE float dy
+VARIABLE float dz
+VARIABLE float lambda1
+VARIABLE float lambda2
+VARIABLE float mu
+VARIABLE float c1
+VARIABLE float c2
+
+TASK [1..sizeX - 1:chunkX, 1..sizeY - 1:chunkY, 1..sizeZ - 1:chunkZ]
+SPM_WINDOWS 3
+
+DECLARE segmentation1Mega s [width = chunkX, height = chunkY, depth = chunkZ, dx = dx, dy = dy, dz = dz, lambda1 = lambda1, lambda2 = lambda2, mu = mu, c1 = c1, c2 = c2]
+
+ASSERT chunkX > 0
+ASSERT chunkY > 0
+ASSERT chunkZ > 0
+
+ASSERT (sizeX - 2) > 0
+ASSERT (sizeY - 2) > 0
+ASSERT (sizeZ - 2) > 0
+ASSERT (sizeX - 2) % chunkX == 0
+ASSERT (sizeY - 2) % chunkY == 0
+ASSERT (sizeZ - 2) % chunkZ == 0
+ASSERT phi != result
+ASSERT u0 != result
+
+CREATE_SPM s float phi_in [chunkX + 2, chunkY + 2, chunkZ + 2]
+CREATE_SPM s float u0_in [chunkX, chunkY, chunkZ]
+CREATE_SPM s float res [chunkX, chunkY, chunkZ]
+
+phi[0..sizeX, 0..sizeY, 0..sizeZ] => s.phi_in[0..chunkX + 2, 0..chunkY + 2, 0..chunkZ + 2]
+u0[1..sizeX - 1, 1..sizeY - 1, 1..sizeZ - 1] => s.u0_in[0..chunkY, 0..chunkY, 0..chunkZ]
+s.res[0..chunkX, 0..chunkY, 0..chunkZ] => result[1..sizeX - 1, 1..sizeY - 1, 1..sizeZ - 1]
+
+s.phi_in[1..chunkX + 1, 1..chunkY + 1, 1..chunkZ + 1] => s.phi_Center
+s.u0_in[0..chunkX, 0..chunkY, 0..chunkZ] => s.u0
+s.result=> s.res[0..chunkX, 0..chunkY, 0..chunkZ]

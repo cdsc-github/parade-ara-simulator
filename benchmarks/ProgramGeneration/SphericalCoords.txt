@@ -1,0 +1,33 @@
+VARIABLE STREAM IN float#7 cpose [totalSize]
+VARIABLE STREAM IN float#3 point [totalSize]
+VARIABLE STREAM OUT float#9 outPoint [totalSize]
+VARIABLE STREAM OUT float#21 outPose [totalSize]
+
+VARIABLE int totalSize
+
+VARIABLE int chunk
+
+TASK [0..totalSize:chunk]
+SPM_WINDOWS 3
+
+DECLARE SphericalCoords sc
+
+ASSERT chunk > 0
+ASSERT totalSize > 0
+ASSERT (totalSize) % chunk == 0
+
+CREATE_SPM sc float#7 cposeStream [chunk]
+CREATE_SPM sc float#3 pointStream [chunk]
+CREATE_SPM sc float#9 dpointStream [chunk]
+CREATE_SPM sc float#21 dposeStream [chunk]
+
+cpose[0..totalSize] => sc.cposeStream[0..chunk]
+point[0..totalSize] => sc.pointStream[0..chunk]
+sc.dpointStream[0..chunk] => outPoint[0..totalSize]
+sc.dposeStream[0..chunk] => outPose[0..totalSize]
+
+sc.cposeStream[0..chunk] => sc.input_cpose
+sc.pointStream[0..chunk] => sc.input_point
+sc.output_dryp_dpoint => sc.dpointStream[0..chunk]
+sc.output_dryp_dpose => sc.dposeStream[0..chunk]
+

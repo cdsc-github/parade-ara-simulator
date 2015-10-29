@@ -1,0 +1,34 @@
+MODULE streamCluster6
+OPCODE 1206
+POWER 1.0
+AREA 1.0
+DEPTH 1
+CYCLE 1
+II 1
+
+ARGUMENT INPUT uint32_t inIsCenter
+ARGUMENT INPUT uint32_t table
+ARGUMENT INPUT float lower
+
+ARGUMENT OUTPUT float outIsCenter
+
+REGISTER uint64_t lowerAddr
+REGISTER uint64_t spmTarget
+
+BODY
+
+if(inIsCenter)
+{
+	AddRead(lowerAddr + table * sizeof(float), spmTarget + iteration * sizeof(float), sizeof(float));
+}
+
+END
+
+MEMORY_RESPONSE
+
+if(lower > 0)
+{
+	outIsCenter = false;
+} 
+
+END

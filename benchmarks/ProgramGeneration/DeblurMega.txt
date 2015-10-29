@@ -1,0 +1,5 @@
+Declare DeblurMega d
+
+input:u => d:input_u
+input:f => d:input_f
+d:output_nu => output:nu

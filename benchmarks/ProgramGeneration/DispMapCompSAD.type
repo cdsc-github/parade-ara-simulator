@@ -1,0 +1,18 @@
+MODULE DispMapCompSAD
+OPCODE 830
+POWER 1.0
+AREA 1.0
+DEPTH 33
+CYCLE 1
+II 1
+
+ARGUMENT INPUT float in_ILeft
+ARGUMENT INPUT float in_IRight_mov
+ARGUMENT OUTPUT float out_SAD
+
+BODY
+
+	out_SAD = in_ILeft * in_ILeft - 2 * in_ILeft * in_IRight_mov + in_IRight_mov * in_IRight_mov;
+
+END
+

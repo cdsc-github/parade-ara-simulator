@@ -1,0 +1,28 @@
+VARIABLE STREAM IN uint32_t inIsCenter [size]
+VARIABLE STREAM IN uint32_t table [size]
+VARIABLE STREAM OUT uint32_t outIsCenter [size]
+
+VARIABLE uint64_t lower
+
+VARIABLE int size
+
+VARIABLE int chunk
+
+TASK [0..size:chunk]
+SPM_WINDOWS 3
+
+DECLARE streamCluster6 x [lowerAddr = lower, spmTarget = @lowerSPM]
+
+CREATE_SPM x uint32_t lowerSPM [chunk]
+CREATE_SPM x uint32_t inIsCenter [chunk]
+CREATE_SPM x uint32_t outIsCenter [chunk]
+CREATE_SPM x uint32_t table [chunk]
+
+inIsCenter[0..size] => x.inIsCenter[0..chunk]
+table[0..size] => x.table[0..chunk]
+x.outIsCenter[0..chunk] => outIsCenter[0..size]
+
+x.lowerSPM[0..chunk] => x.lower
+x.inIsCenter[0..chunk] => x.inIsCenter
+x.table[0..chunk] => x.table
+x.outIsCenter => x.outIsCenter[0..chunk]

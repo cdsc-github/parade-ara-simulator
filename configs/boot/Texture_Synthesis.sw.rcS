@@ -1,0 +1,2 @@
+echo -e "SW_Texture_Synthesis 0 16" | ./benchmarks/bench.out /benchmarks/SW/
+m5 exit

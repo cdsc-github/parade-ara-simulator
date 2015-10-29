@@ -1,0 +1,73 @@
+MODULE TexSynth5
+OPCODE 914
+POWER 1.0
+AREA 1.0
+DEPTH 1
+CYCLE 2
+II 1
+
+ARGUMENT INPUT float in_diff0
+ARGUMENT INPUT float in_diff1
+ARGUMENT INPUT float in_diff2
+ARGUMENT INPUT float in_diff3
+ARGUMENT INPUT float in_pixel0
+ARGUMENT INPUT float in_pixel1
+ARGUMENT INPUT float in_pixel2
+ARGUMENT INPUT float in_pixel3
+
+ARGUMENT OUTPUT float out_pixel
+
+BODY
+
+if(in_diff0 > in_diff1)
+{
+	if(in_diff0 > in_diff2)
+	{
+		if(in_diff0 > in_diff3)
+		{//0 is greatest
+			out_pixel = in_pixel0;
+		}
+		else
+		{//3 is greatest
+			out_pixel = in_pixel3;
+		}
+	}
+	else
+	{
+		if(in_diff2 > in_diff3)
+		{//2 is greatest
+			out_pixel = in_pixel2;
+		}
+		else
+		{//3 is greatest
+			out_pixel = in_pixel3;
+		}
+	}
+}
+else
+{
+	if(in_diff1 > in_diff2)
+	{
+		if(in_diff1 > in_diff3)
+		{//1 is greatest
+			out_pixel = in_pixel1;
+		}
+		else
+		{//3 is greatest
+			out_pixel = in_pixel3;
+		}
+	}
+	else
+	{
+		if(in_diff2 > in_diff3)
+		{//2 is greatest
+			out_pixel = in_pixel2;
+		}
+		else
+		{//3 is greatest
+			out_pixel = in_pixel3;
+		}
+	}
+}
+
+END

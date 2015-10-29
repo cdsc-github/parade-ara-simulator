@@ -1,0 +1,21 @@
+VARIABLE STREAM IN float randResult [size, iFactors, iN]
+VARIABLE STREAM IN float pdZ [size, iFactors, iN]
+
+VARIABLE int size
+VARIABLE int iFactors
+VARIABLE int iN
+
+VARIABLE int chunk
+
+TASK [0..size:chunk, 0..iFactors:iFactors, 0..iN:iN]
+SPM_WINDOWS 3
+
+DECLARE swaptions2 x []
+CREATE_SPM x float in_val [chunk, iFactors, iN]
+CREATE_SPM x float out_val [chunk, iFactors, iN]
+
+randResult[0..size, 0..iFactors, 0..iN] => x.in_val[0..chunk, 0..iFactors, 0..iN]
+x.out_val[0..chunk, 0..iFactors, 0..iN] => pdZ[0..size, 0..iFactors, 0..iN]
+
+x.in_val[0..chunk, 0..iFactors, 0..iN] => x.input
+x.output => x.out_val[0..chunk, 0..iFactors, 0..iN]

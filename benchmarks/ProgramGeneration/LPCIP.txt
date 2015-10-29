@@ -1,0 +1,36 @@
+VARIABLE STREAM IN uint64_t imgStart [totalSize]
+VARIABLE STREAM IN float x [totalSize]
+VARIABLE STREAM IN float y [totalSize]
+VARIABLE STREAM IN float rho [totalSize]
+VARIABLE STREAM OUT uint8_t#100 sample [totalSize]
+
+VARIABLE int totalSize
+
+VARIABLE int chunk
+
+TASK [0..totalSize:chunk]
+SPM_WINDOWS 3
+
+DECLARE LPCIP lpcip [LPCIP_IMGH = 480, LPCIP_IMGW = 640, LPCIP_PATCH_H = 10, LPCIP_PATCH_W = 10, spmSampleTarget = @lpcip.imageTile]
+
+ASSERT chunk > 0
+ASSERT (totalSize) > 0
+ASSERT (totalSize) % chunk == 0
+
+CREATE_SPM lpcip uint64_t imgStartPtr [chunk]
+CREATE_SPM lpcip float xStream [chunk]
+CREATE_SPM lpcip float yStream [chunk]
+CREATE_SPM lpcip float rhoStream [chunk]
+CREATE_SPM lpcip uint8_t#100 imageTile [chunk]
+
+imgStart[0..totalSize] => lpcip.imgStartPtr[0..chunk]
+x[0..totalSize] => lpcip.xStream[0..chunk]
+y[0..totalSize] => lpcip.yStream[0..chunk]
+rho[0..totalSize] => lpcip.rhoStream[0..chunk]
+lpcip.imageTile[0..chunk] => sample[0..totalSize]
+
+lpcip.imgStartPtr[0..chunk] => lpcip.input_img_Start
+lpcip.xStream[0..chunk] => lpcip.input_center_x
+lpcip.yStream[0..chunk] => lpcip.input_center_y
+lpcip.rhoStream[0..chunk] => lpcip.input_rho
+

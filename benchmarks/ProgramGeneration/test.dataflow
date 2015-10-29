@@ -1,0 +1,9 @@
+Declare poly16 p0
+
+argument INPUT float[2] a1
+argument OUTPUT float[2] a2
+
+input:a1[0] => p0:input_1
+input:a1[1] => p0:input_2
+p0:output_1 => output:a2[0]
+p0:output_2 => output:a2[1]

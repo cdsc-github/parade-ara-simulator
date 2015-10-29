@@ -1,0 +1,166 @@
+read-configuration /curr/ghodrat/lc-acc/multiprocessor/checkpoints/abisko-rcS-p2-1set-g++.cp
+magic-break-enable
+load-module MsgLogger
+load-module VariableBank
+load-module Synchronize
+Synchronize.SetBarrierWidth 1
+MsgLogger.SetFileName "./AllResults/sc.msgLog"
+VariableBank.AddVariable "power stats filename" "./AllResults/sc.powerResults"
+VariableBank.AddVariable "opal kill-switch tolerance" "1"
+instruction-fetch-mode instruction-fetch-trace
+istc-disable
+dstc-disable
+cpu-switch-time 1
+con0.input "cp /host/curr/ghodrat/TD-BiN/cdsc-simulation-platform/trunk/benchmarks/bench.out .\n"
+script-branch {
+	con0.wait-for-string "#"
+	con0.input "nice --20 ./bench.out /host/curr/ghodrat/TD-BiN/cdsc-simulation-platform/trunk/benchmarks/\n"
+}
+
+script-branch {
+	con0.wait-for-string "TASK_DESC_0"
+	con0.input "SW_StreamCluster 1 1024\n"
+}
+script-branch {
+	con0.wait-for-string "TASK_DESC_1"
+	con0.input "null\n"
+}
+
+continue
+continue 2
+load-module ruby
+load-module opal
+load-module NetworkInterrupt
+load-module LCAcc
+load-module TaskDistributor
+load-module scratch-pad
+load-module linked-prefetch-tile
+load-module MeteredMemory
+ruby0.setparam g_NUM_PROCESSORS 32
+ruby0.setparam g_PROCS_PER_CHIP 32
+ruby0.setparam g_NUM_MEMORIES 4
+ruby0.setparam g_NUM_SIMICS_NET_PORTS 32
+ruby0.setparam g_MEMORY_SIZE_BYTES 4294967296
+ruby0.setparam L2_CACHE_NUM_SETS_BITS 16
+ruby0.setparam L2_CACHE_ASSOC 8
+ruby0.setparam g_REPLACEMENT_POLICY LRU
+ruby0.init
+opal0.init
+@SIM_create_object("NetworkInterrupt", "ni0", [])
+ni0.SetNetPort 1 1
+ni0.SetProcessor 1
+ni0.Initialize
+
+@SIM_create_object("LCAcc", "lcacc0", [])
+lcacc0.SetNetPort 2 2
+lcacc0.AddOperatingMode "mux_abb"
+lcacc0.Initialize
+lcacc0.SetTiming 1 1 1
+@SIM_create_object("LCAcc", "lcacc1", [])
+lcacc1.SetNetPort 3 3
+lcacc1.AddOperatingMode "sum_abb"
+lcacc1.Initialize
+lcacc1.SetTiming 1 1 1
+@SIM_create_object("LCAcc", "lcacc2", [])
+lcacc2.SetNetPort 4 4
+lcacc2.AddOperatingMode "poly16"
+lcacc2.Initialize
+lcacc2.SetTiming 1 1 1
+@SIM_create_object("LCAcc", "lcacc3", [])
+lcacc3.SetNetPort 5 5
+lcacc3.AddOperatingMode "mux_abb"
+lcacc3.Initialize
+lcacc3.SetTiming 1 1 1
+@SIM_create_object("LCAcc", "lcacc4", [])
+lcacc4.SetNetPort 6 6
+lcacc4.AddOperatingMode "sum_abb"
+lcacc4.Initialize
+lcacc4.SetTiming 1 1 1
+@SIM_create_object("LCAcc", "lcacc5", [])
+lcacc5.SetNetPort 7 7
+lcacc5.AddOperatingMode "poly16"
+lcacc5.Initialize
+lcacc5.SetTiming 1 1 1
+@SIM_create_object("LCAcc", "lcacc6", [])
+lcacc6.SetNetPort 8 8
+lcacc6.AddOperatingMode "cond_abb"
+lcacc6.Initialize
+lcacc6.SetTiming 1 1 1
+@SIM_create_object("LCAcc", "lcacc7", [])
+lcacc7.SetNetPort 9 9
+lcacc7.AddOperatingMode "poly16"
+lcacc7.Initialize
+lcacc7.SetTiming 1 1 1
+@SIM_create_object("LCAcc", "lcacc8", [])
+lcacc8.SetNetPort 10 10
+lcacc8.AddOperatingMode "mux_abb"
+lcacc8.Initialize
+lcacc8.SetTiming 1 1 1
+@SIM_create_object("LCAcc", "lcacc9", [])
+lcacc9.SetNetPort 11 11
+lcacc9.AddOperatingMode "blockRead"
+lcacc9.Initialize
+lcacc9.SetTiming 1 1 1
+@SIM_create_object("LCAcc", "lcacc10", [])
+lcacc10.SetNetPort 12 12
+lcacc10.AddOperatingMode "blockRead"
+lcacc10.Initialize
+lcacc10.SetTiming 1 1 1
+@SIM_create_object("LCAcc", "lcacc11", [])
+lcacc11.SetNetPort 13 13
+lcacc11.AddOperatingMode "blockWrite"
+lcacc11.Initialize
+lcacc11.SetTiming 1 1 1
+@SIM_create_object("LCAcc", "lcacc12", [])
+lcacc12.SetNetPort 14 14
+lcacc12.AddOperatingMode "blockWrite"
+lcacc12.Initialize
+lcacc12.SetTiming 1 1 1
+
+
+@SIM_create_object("TaskDistributor", "td0", [])
+td0.SetNetPort 20 0
+td0.SetSelector SmoothMemory
+td0.SetTaskGrain 8
+td0.AddCFU 2 2 "mux_abb"
+td0.AddCFU 3 3 "sum_abb"
+td0.AddCFU 4 4 "poly16"
+td0.AddCFU 5 5 "mux_abb"
+td0.AddCFU 6 6 "sum_abb"
+td0.AddCFU 7 7 "poly16"
+td0.AddCFU 8 8 "cond_abb"
+td0.AddCFU 9 9 "poly16"
+td0.AddCFU 10 10 "mux_abb"
+td0.AddCFU 11 11 "blockRead"
+td0.AddCFU 12 12 "blockRead"
+td0.AddCFU 13 13 "blockWrite"
+td0.AddCFU 14 14 "blockWrite"
+td0.Initialize
+
+
+@SIM_create_object("MeteredMemory", "mm0", [])
+mm0.AttachToObject ruby0 0
+mm0.SetClock 1000
+mm0.SetBytesPerSec 10000
+mm0.SetLatency 280
+@SIM_create_object("MeteredMemory", "mm1", [])
+mm1.AttachToObject ruby0 1
+mm1.SetClock 1000
+mm1.SetBytesPerSec 10000
+mm1.SetLatency 280
+@SIM_create_object("MeteredMemory", "mm2", [])
+mm2.AttachToObject ruby0 2
+mm2.SetClock 1000
+mm2.SetBytesPerSec 10000
+mm2.SetLatency 280
+@SIM_create_object("MeteredMemory", "mm3", [])
+mm3.AttachToObject ruby0 3
+mm3.SetClock 1000
+mm3.SetBytesPerSec 10000
+mm3.SetLatency 280
+opal0.sim-start "./AllResults//sc-sw-1024.opalResults"
+opal0.sim-step 10000000000
+opal0.stats
+ruby0.dump-stats "./AllResults//sc.rubyResults"
+MsgLogger.SetFileState Close
+quit

@@ -1,0 +1,20 @@
+MODULE DispMapIntegSum
+OPCODE 831
+POWER 1.0
+AREA 1.0
+DEPTH 10
+CYCLE 1
+II 1
+
+ARGUMENT INPUT float in_val_array
+ARGUMENT OUTPUT float out_sum_array
+
+REGISTER float internal_sum
+
+BODY
+
+	out_sum_array = internal_sum + in_val_array;
+	internal_sum = out_sum_array;
+
+END
+

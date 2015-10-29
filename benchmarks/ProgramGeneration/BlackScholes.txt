@@ -1,0 +1,46 @@
+VARIABLE STREAM IN float sptprice [dataSize]
+VARIABLE STREAM IN float strike [dataSize]
+VARIABLE STREAM IN float rate [dataSize]
+VARIABLE STREAM IN float volatility [dataSize]
+VARIABLE STREAM IN float time [dataSize]
+VARIABLE STREAM IN int otype [dataSize]
+
+VARIABLE STREAM OUT float output [dataSize]
+
+VARIABLE int dataSize
+
+VARIABLE int chunk
+
+TASK [0..dataSize:chunk]
+SPM_WINDOWS 3
+
+DECLARE blackScholes s []
+
+ASSERT chunk > 0
+ASSERT (dataSize) > 0
+ASSERT (dataSize) % chunk == 0
+
+CREATE_SPM s float sptprice [chunk]
+CREATE_SPM s float strike [chunk]
+CREATE_SPM s float rate [chunk]
+CREATE_SPM s float volatility [chunk]
+CREATE_SPM s float time [chunk]
+CREATE_SPM s int otype [chunk]
+CREATE_SPM s float output [chunk]
+
+sptprice[0..dataSize] => s.sptprice[0..chunk]
+strike[0..dataSize] => s.strike[0..chunk]
+rate[0..dataSize] => s.rate[0..chunk]
+volatility[0..dataSize] => s.volatility[0..chunk]
+time[0..dataSize] => s.time[0..chunk]
+otype[0..dataSize] => s.otype[0..chunk]
+s.output[0..chunk] => output[0..dataSize]
+
+s.sptprice[0..chunk] => s.sptprice
+s.strike[0..chunk] => s.strike
+s.rate[0..chunk] => s.rate
+s.volatility[0..chunk] => s.volatility
+s.time[0..chunk] => s.time
+s.otype[0..chunk] => s.otype
+s.output => s.output[0..chunk]
+

@@ -1,0 +1,37 @@
+VARIABLE STREAM IN float u [sizeX, sizeY, sizeZ]
+VARIABLE STREAM OUT float g [sizeX, sizeY, sizeZ]
+
+VARIABLE int sizeX
+VARIABLE int sizeY
+VARIABLE int sizeZ
+
+VARIABLE int chunkX
+VARIABLE int chunkY
+VARIABLE int chunkZ
+
+TASK [1..sizeX - 1:chunkX, 1..sizeY - 1:chunkY, 1..sizeZ - 1:chunkZ]
+SPM_WINDOWS 3
+
+DECLARE denoise1Mega d [width = chunkX, height = chunkY, depth = chunkZ]
+
+ASSERT chunkX > 0
+ASSERT chunkY > 0
+ASSERT chunkZ > 0
+
+ASSERT (sizeX - 2) > 0
+ASSERT (sizeY - 2) > 0
+ASSERT (sizeZ - 2) > 0
+ASSERT (sizeX - 2) % chunkX == 0
+ASSERT (sizeY - 2) % chunkY == 0
+ASSERT (sizeZ - 2) % chunkZ == 0
+ASSERT u != g
+
+CREATE_SPM d float input [chunkX + 2, chunkY + 2, chunkZ + 2]
+CREATE_SPM d float output [chunkX, chunkY, chunkZ]
+
+u[0..sizeX, 0..sizeY, 0..sizeZ] => d.input[0..chunkX + 2, 0..chunkY + 2, 0..chunkZ + 2]
+d.output[0..chunkX, 0..chunkY, 0..chunkZ] => g[1..size - 1, 1..size - 1, 1..size - 1]
+
+d.input[1..chunkX + 1, 1..chunkY + 1, 1..chunkZ + 1] => d.a_Center
+d.input[1..chunkX + 1, 1..chunkY + 1, 1..chunkZ + 1] => d.b_Center
+d.g => d.output[0..chunkX, 0..chunkY, 0..chunkZ]

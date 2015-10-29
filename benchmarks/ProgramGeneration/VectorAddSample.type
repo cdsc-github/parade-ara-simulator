@@ -1,0 +1,18 @@
+MODULE VectorAddSample
+OPCODE 14001
+POWER 1.0
+AREA 1.0
+DEPTH 1
+CYCLE 2
+II 1
+
+ARGUMENT INPUT float input_a
+ARGUMENT INPUT float input_b
+
+ARGUMENT OUTPUT float output
+
+BODY
+
+output = input_a + input_b;
+
+END

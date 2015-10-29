@@ -1,0 +1,50 @@
+VARIABLE STREAM IN float in_imgIntegral [dataSize, SHIFT, nRows + WIN, nCols + WIN]
+VARIABLE STREAM OUT float out_Disp [dataSize, SHIFT, nRows, nCols]
+
+VARIABLE int dataSize
+VARIABLE int nRows
+VARIABLE int nCols
+VARIABLE int SHIFT
+VARIABLE int WIN
+VARIABLE int chunk1
+VARIABLE int chunk2
+VARIABLE int chunk3
+VARIABLE int chunk4
+
+TASK [0..dataSize:chunk1, 0..SHIFT:chunk2, 0..nRows:chunk3, 0..nCols:chunk4]
+SPM_WINDOWS 3
+
+DECLARE DispMapFindDisp sa [internal_min = 0, internal_index = 0]
+
+ASSERT dataSize > 0
+ASSERT nRows > 0
+ASSERT nCols > 0
+ASSERT SHIFT > 0
+ASSERT chunk1 > 0
+ASSERT chunk2 > 0
+ASSERT chunk3 > 0
+ASSERT chunk4 > 0
+ASSERT dataSize % chunk1 == 0
+ASSERT SHIFT % chunk2 == 0
+ASSERT nRows % chunk3 == 0
+ASSERT nCols % chunk4 == 0
+
+CREATE_SPM sa float in_IImg1 [chunk1, chunk2, chunk3, chunk4]
+CREATE_SPM sa float in_IImg2 [chunk1, chunk2, chunk3, chunk4]
+CREATE_SPM sa float in_IImg3 [chunk1, chunk2, chunk3, chunk4]
+CREATE_SPM sa float in_IImg4 [chunk1, chunk2, chunk3, chunk4]
+CREATE_SPM sa float out_Disp [chunk1, chunk2, chunk3, chunk4]
+
+// MEM <-> SPM for sa
+in_imgIntegral[0..dataSize, 0..SHIFT, WIN..nRows + WIN, WIN..nCols + WIN] => sa.in_IImg1[0..chunk1, 0..chunk2, 0..chunk3, 0..chunk4]
+in_imgIntegral[0..dataSize, 0..SHIFT, 0..nRows, 0..nCols] => sa.in_IImg2[0..chunk1, 0..chunk2, 0..chunk3, 0..chunk4]
+in_imgIntegral[0..dataSize, 0..SHIFT, 0..nRows, WIN..nCols + WIN] => sa.in_IImg3[0..chunk1, 0..chunk2, 0..chunk3, 0..chunk4]
+in_imgIntegral[0..dataSize, 0..SHIFT, WIN..nRows + WIN, 0..nCols] => sa.in_IImg4[0..chunk1, 0..chunk2, 0..chunk3, 0..chunk4]
+sa.out_Disp[0..chunk1, 0..chunk2, 0..chunk3, 0..chunk4] => out_Disp[0..dataSize, 0..SHIFT, 0..nRows, 0..nCols]
+
+// Argument streams to the engine
+sa.in_IImg1[0..chunk1, 0..chunk2, 0..chunk3, 0..chunk4] => sa.in_IImg1
+sa.in_IImg2[0..chunk1, 0..chunk2, 0..chunk3, 0..chunk4] => sa.in_IImg2
+sa.in_IImg3[0..chunk1, 0..chunk2, 0..chunk3, 0..chunk4] => sa.in_IImg3
+sa.in_IImg4[0..chunk1, 0..chunk2, 0..chunk3, 0..chunk4] => sa.in_IImg4
+sa.out_Disp => sa.out_Disp[0..chunk1, 0..chunk2, 0..chunk3, 0..chunk4]

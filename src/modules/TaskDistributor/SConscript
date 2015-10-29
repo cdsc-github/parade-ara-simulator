@@ -1,0 +1,23 @@
+# -*- mode:python -*-
+
+import os
+import sys
+
+from os.path import basename, isdir, join as joinpath
+
+import SCons
+
+Import('*')
+
+Source('gem5Interface.cc')
+Source('TD.cc')
+Source('NetworkInterface.cc')
+Source('SPMInterface.cc')
+Source('TDManager.cc')
+Source('DMAController.cc')
+Source('GreedySelector.cc')
+Source('DumbSelector.cc')
+Source('SoftSelector.cc')
+Source('ExclusiveDumbSelector.cc')
+Source('SmoothMemorySelector.cc')
+Source('MinChainSelector.cc')

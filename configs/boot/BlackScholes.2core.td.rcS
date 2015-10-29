@@ -1,0 +1,2 @@
+echo -e "TDLCA_BlackScholes 0 64\n TDLCA_BlackScholes 1 64" | ./benchmarks/bench.out /benchmarks/TDLCA/
+m5 exit

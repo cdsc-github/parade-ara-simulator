@@ -1,0 +1,82 @@
+MODULE TexSynth3
+OPCODE 912
+POWER 1.0
+AREA 1.0
+DEPTH 12
+CYCLE 1
+II 1
+
+ARGUMENT INPUT int32_t#2 in_atlas
+
+REGISTER int xBias
+REGISTER int yBias
+
+REGISTER intptr_t sourceImageAddr
+REGISTER uint32_t sourceImageWidth
+REGISTER uint32_t sourceImageHeight
+REGISTER uint32_t dstImageWidth
+REGISTER uint32_t dstImageHeight
+
+REGISTER int candidateXBias0
+REGISTER int candidateYBias0
+REGISTER int candidateXBias1
+REGISTER int candidateYBias1
+REGISTER int candidateXBias2
+REGISTER int candidateYBias2
+REGISTER int candidateXBias3
+REGISTER int candidateYBias3
+REGISTER int candidateXBias4
+REGISTER int candidateYBias4
+REGISTER int candidateXBias5
+REGISTER int candidateYBias5
+REGISTER int candidateXBias6
+REGISTER int candidateYBias6
+REGISTER int candidateXBias7
+REGISTER int candidateYBias7
+REGISTER int candidateXBias8
+REGISTER int candidateYBias8
+
+REGISTER uint32_t targetSPMLocation0
+REGISTER uint32_t targetSPMLocation1
+REGISTER uint32_t targetSPMLocation2
+REGISTER uint32_t targetSPMLocation3
+REGISTER uint32_t targetSPMLocation4
+REGISTER uint32_t targetSPMLocation5
+REGISTER uint32_t targetSPMLocation6
+REGISTER uint32_t targetSPMLocation7
+REGISTER uint32_t targetSPMLocation8
+
+BODY
+
+#define pixelCalc(val, bound) (((val) + (bound)) % (bound))
+#define pixelX(index) pixelCalc(candidateX + candidateXBias##index, sourceImageWidth)
+#define pixelY(index) pixelCalc(candidateY + candidateYBias##index, sourceImageHeight)
+#define pixelRead(index) AddRead( \
+		sourceImageAddr + imagePitch + elemSize * (pixelX(index) + pixelY(index) * sourceImageWidth), \
+		targetSPMLocation##index + spmDstBias, \
+		elemSize)
+
+	int32_t candidateX = in_atlas[0] + xBias;
+	int32_t candidateY = in_atlas[1] + yBias;
+	size_t elemSize = sizeof(float);
+	size_t spmDstBias = elemSize * iteration;
+	size_t index = iteration + maxIteration * taskID;
+	size_t imageIndex = index / (dstImageWidth * dstImageHeight);
+	size_t imagePitch = dstImageWidth * dstImageHeight * sizeof(float) * imageIndex;
+	
+	pixelRead(0);
+	pixelRead(1);
+	pixelRead(2);
+	pixelRead(3);
+	pixelRead(4);
+	pixelRead(5);
+	pixelRead(6);
+	pixelRead(7);
+	pixelRead(8);
+	
+#undef pixelCalc
+#undef pixelX
+#undef pixelY
+#undef pixelRead
+
+END

@@ -1,0 +1,40 @@
+VARIABLE STREAM IN float in_val_array [dataSize, SHIFT, n1, n2]
+VARIABLE STREAM OUT float out_sum_array [dataSize, SHIFT, n1, n2]
+
+VARIABLE int dataSize
+VARIABLE int SHIFT
+VARIABLE int n1
+VARIABLE int n2
+VARIABLE int chunk1
+VARIABLE int chunk2
+VARIABLE int chunk3
+VARIABLE int chunk4
+
+TASK [0..dataSize:chunk1, 0..SHIFT:chunk2, 0..n1:chunk3, 0..n2:chunk4]
+SPM_WINDOWS 3
+
+DECLARE DispMapIntegSum sa [internal_sum = 0]
+
+ASSERT dataSize > 0
+ASSERT SHIFT > 0
+ASSERT n1 > 0
+ASSERT n2 > 0
+ASSERT chunk1 > 0
+ASSERT chunk2 > 0
+ASSERT chunk3 > 0
+ASSERT chunk4 > 0
+ASSERT dataSize % chunk1 == 0
+ASSERT SHIFT % chunk2 == 0
+ASSERT n1 % chunk3 == 0
+ASSERT n2 % chunk4 == 0
+
+CREATE_SPM sa float in_val_array   [chunk1, chunk2, chunk3, chunk4]
+CREATE_SPM sa float out_sum_array  [chunk1, chunk2, chunk3, chunk4]
+
+// MEM <-> SPM for sa
+in_val_array[0..dataSize, 0..SHIFT, 0..n1, 0..n2] => sa.in_val_array[0..chunk1, 0..chunk2, 0..chunk3, 0..chunk4]
+sa.out_sum_array[0..chunk1, 0..chunk2, 0..chunk3, 0..chunk4] => out_sum_array[0..dataSize, 0..SHIFT, 0..n1, 0..n2]
+
+// Argument streams to the engine
+sa.in_val_array[0..chunk1, 0..chunk2, 0..chunk3, 0..chunk4] => sa.in_val_array
+sa.out_sum_array => sa.out_sum_array[0..chunk1, 0..chunk2, 0..chunk3, 0..chunk4]

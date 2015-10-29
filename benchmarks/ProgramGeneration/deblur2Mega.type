@@ -1,0 +1,39 @@
+MODULE deblur2Mega
+OPCODE 202
+POWER 1.0
+AREA 1.0
+DEPTH 1
+CYCLE 2
+II 1
+
+ARGUMENT INPUT float u_Center
+ARGUMENT INPUT float g_Center
+ARGUMENT INPUT float conv
+
+ARGUMENT INPUT INFERRED float u_Right @u_Center + 1 * ArgSize(u_Center)
+ARGUMENT INPUT INFERRED float u_Left @u_Center - 1 * ArgSize(u_Center)
+ARGUMENT INPUT INFERRED float u_Down @u_Center + width * ArgSize(u_Center)
+ARGUMENT INPUT INFERRED float u_Up @u_Center - width * ArgSize(u_Center)
+ARGUMENT INPUT INFERRED float u_In @u_Center + width * height * ArgSize(u_Center)
+ARGUMENT INPUT INFERRED float u_Out @u_Center - width * height * ArgSize(u_Center)
+
+ARGUMENT INPUT INFERRED float g_Right @g_Center + 1 * ArgSize(g_Center)
+ARGUMENT INPUT INFERRED float g_Left @g_Center - 1 * ArgSize(g_Center)
+ARGUMENT INPUT INFERRED float g_Down @g_Center + width * ArgSize(g_Center)
+ARGUMENT INPUT INFERRED float g_Up @g_Center - width * ArgSize(g_Center)
+ARGUMENT INPUT INFERRED float g_In @g_Center + width * height * ArgSize(g_Center)
+ARGUMENT INPUT INFERRED float g_Out @g_Center - width * height * ArgSize(g_Center)
+
+ARGUMENT OUTPUT float u_Result
+
+REGISTER int width
+REGISTER int height
+REGISTER int depth
+REGISTER float dt
+REGISTER float gamma
+
+BODY
+
+u_Result = (u_Center + dt * (u_Right * g_Right + u_Left * g_Left + u_Down * g_Down + u_Up * g_Up + u_Out * g_Out + u_In * g_In + gamma * conv) ) / (1.0f + dt * (g_Right + g_Left + g_Down + g_Up + g_Out + g_In + gamma));
+
+END

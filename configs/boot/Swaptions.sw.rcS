@@ -1,0 +1,2 @@
+echo -e "SW_Swaptions 0 8192" | ./benchmarks/bench.out /benchmarks/SW/
+m5 exit

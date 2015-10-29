@@ -1,0 +1,48 @@
+These instructions require mounting multiple disks, and being able to access root-protected files on these disks.  Thus, you will need to do this in an emulator, or have a machine where you have superuser access.
+
+These instructions assume you have the gem5 simulator, or at least the gem5img.py pythong script somewhere accessible.
+
+
+First, download and unpack the original disk image provided for gem5 from the gem5 website:
+http://www.gem5.org/Download
+Under Full System -> X86, you will find the actual download link, currently
+http://www.m5sim.org/dist/current/x86/x86-system.tar.bz2
+
+Next, create the blank disk image using the provided script: gem5/util/gem5img.py.  You need sudo permission in order to use this script.  Use the command
+gem5/util/gem5img.py init [options] file mb
+where file = resulting image name
+      mb = Size of file in MB.
+      
+So, to make a 2GB disk image called large_x86.img, use
+gem5/util/gem5img.py init large_x86.img 2048
+
+
+This utility will create the disk image and partition it, placing a blank file system at an offset of 32256 bytes.
+
+
+Next, mount both disk images.  For instance, if /dev/loop0 and /dev/loop1 are free, then
+
+mkdir old_disk
+mkdir new_disk
+sudo losetup -o 32256 /dev/loop0 x86_root.img
+sudo mount /dev/loop0 old_disk
+sudo losetup -o 32256 /dev/loop1 large_x86.img
+sudo mount /dev/loop1 new_disk
+
+Copy all the files from the old disk image to the new one.  Although there are instructions for creating your own system using a gentoo stage 3 tarball, they don't seem to quite work, and there are a lot of problems involved.  It is far simpler to copy the already modified files from the old disk to the new disk.
+
+sudo rsync -a old_image/ new_image/
+
+You can, of course, use cp instead.
+
+
+At this point, it is simple to add a few files or remove others, such as adding benchmark programs.  Note that the linux kernel is not stored on the disk image - gem5 loads this separately - thus, the boot directory is empty.
+
+Your disk image is now ready.  Unmount the disks and loopback devices, and you now have a disk image of the size you want:
+
+sudo umount old_disk
+sudo umount new_disk
+sudo losetup -d /dev/loop0
+sudo losetup -d /dev/loop1
+
+

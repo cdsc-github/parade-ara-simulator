@@ -1,0 +1,51 @@
+MODULE TexSynth1
+OPCODE 910
+POWER 1.0
+AREA 1.0
+DEPTH 15
+CYCLE 1
+II 1
+
+ARGUMENT OUTPUT int#2 out_atlas
+
+REGISTER int WIDTHin
+REGISTER int HEIGHTin
+REGISTER int WIDTHout
+REGISTER int HEIGHTout
+REGISTER intptr_t inputImage
+REGISTER uint32_t outputResult
+REGISTER uint32_t#100 in_rand_seeds
+
+BODY
+
+#define RAND(seed_z_uint, seed_w_uint, ret) { \
+    seed_z_uint = 36969 * (seed_z_uint & 65535) + (seed_z_uint >> 16); \
+    seed_w_uint = 18000 * (seed_w_uint & 65535) + (seed_w_uint >> 16); \
+    ret = (seed_z_uint << 16) + seed_w_uint; \
+}
+
+	int x = (iteration + maxIteration * taskID) % (WIDTHout * HEIGHTout);
+	int imageIndex = (iteration + maxIteration * taskID) / (WIDTHout * HEIGHTout);
+	int in_i = x / WIDTHout;
+	int in_j = x % WIDTHout;
+	int tmpx, tmpy;
+	int rand_val1, rand_val2;
+	int seed_z, seed_w;
+	
+	seed_z = in_rand_seeds[in_j % 100];
+	seed_w = in_rand_seeds[in_i % 100];
+	RAND(seed_z, seed_w, rand_val1);
+	RAND(seed_z, seed_w, rand_val2);
+	tmpx = 1 + rand_val1 % (WIDTHin - 2);
+	tmpy = 1 + rand_val2 % (HEIGHTin - 2);
+	out_atlas[0] = tmpx;
+	out_atlas[1] = tmpy;
+	AddRead(inputImage + //src
+		imageIndex * HEIGHTin * WIDTHin * 4 + 
+		(tmpx + WIDTHin * tmpy) * 4, 
+		outputResult + (iteration) * 4, //dst
+		4);//size
+
+#undef RAND
+
+END

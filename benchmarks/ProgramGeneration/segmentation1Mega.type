@@ -1,0 +1,62 @@
+MODULE segmentation1Mega
+OPCODE 301
+POWER 1.0
+AREA 1.0
+DEPTH 1
+CYCLE 2
+II 1
+
+ARGUMENT INPUT float phi_Center
+ARGUMENT INPUT INFERRED float phi_Left @phi_Center - 1 * ArgSize(phi_Center)
+ARGUMENT INPUT INFERRED float phi_Right @phi_Center + 1 * ArgSize(phi_Center)
+ARGUMENT INPUT INFERRED float phi_Up @phi_Center - width * ArgSize(phi_Center)
+ARGUMENT INPUT INFERRED float phi_Down @phi_Center + width * ArgSize(phi_Center)
+ARGUMENT INPUT INFERRED float phi_In @phi_Center + width * height * ArgSize(phi_Center)
+ARGUMENT INPUT INFERRED float phi_Out @phi_Center - width * height * ArgSize(phi_Center)
+
+ARGUMENT INPUT INFERRED float phi_LeftUp @phi_Center - 1 * ArgSize(phi_Center) - width * ArgSize(phi_Center)
+ARGUMENT INPUT INFERRED float phi_LeftDown @phi_Center - 1 * ArgSize(phi_Center) + width * ArgSize(phi_Center)
+ARGUMENT INPUT INFERRED float phi_LeftIn @phi_Center - 1 * ArgSize(phi_Center) + width * height * ArgSize(phi_Center)
+ARGUMENT INPUT INFERRED float phi_LeftOut @phi_Center - 1 * ArgSize(phi_Center) - width * height * ArgSize(phi_Center)
+ARGUMENT INPUT INFERRED float phi_RightUp @phi_Center + 1 * ArgSize(phi_Center) - width * ArgSize(phi_Center)
+ARGUMENT INPUT INFERRED float phi_RightDown @phi_Center + 1 * ArgSize(phi_Center) + width * ArgSize(phi_Center)
+ARGUMENT INPUT INFERRED float phi_RightIn @phi_Center + 1 * ArgSize(phi_Center) + width * height * ArgSize(phi_Center)
+ARGUMENT INPUT INFERRED float phi_RightOut @phi_Center + 1 * ArgSize(phi_Center) - width * height * ArgSize(phi_Center)
+ARGUMENT INPUT INFERRED float phi_UpIn @phi_Center - width * ArgSize(phi_Center) + width * height * ArgSize(phi_Center)
+ARGUMENT INPUT INFERRED float phi_UpOut @phi_Center - width * ArgSize(phi_Center) - width * height * ArgSize(phi_Center)
+ARGUMENT INPUT INFERRED float phi_DownIn @phi_Center + width * ArgSize(phi_Center) + width * height * ArgSize(phi_Center)
+ARGUMENT INPUT INFERRED float phi_DownOut @phi_Center + width * ArgSize(phi_Center) - width * height * ArgSize(phi_Center)
+
+ARGUMENT INPUT float u0
+
+ARGUMENT OUTPUT float result
+
+REGISTER int width
+REGISTER int height
+REGISTER int depth
+REGISTER float dx
+REGISTER float dy
+REGISTER float dz
+REGISTER float lambda1
+REGISTER float lambda2
+REGISTER float mu
+REGISTER float c1
+REGISTER float c2
+
+BODY
+
+float Dx_0 = (phi_Right - phi_Left)/(dx * 2.0f);
+float Dy_0 = (phi_Down - phi_Up)/(dy * 2.0f);
+float Dz_0 = (phi_In - phi_Out)/(dz * 2.0f);
+float Dxx = (phi_Right + phi_Left - 2.0f * phi_Center) / (dx * dx);
+float Dyy = (phi_Up + phi_Down - 2.0f * phi_Center) / (dy * dy);
+float Dzz = (phi_In + phi_Out + 2.0f * phi_Center) / (dz * dz);
+float Dxy = (phi_RightDown - phi_RightUp - phi_LeftDown + phi_LeftUp) / (4*dx*dy);
+float Dxz = (phi_RightIn - phi_RightOut - phi_LeftIn + phi_LeftOut) / (4*dx*dz);
+float Dyz = (phi_DownIn - phi_DownOut - phi_UpIn + phi_UpOut) / (4*dy*dz);
+float K  = (  Dx_0*Dx_0*Dyy - 2.0f*Dx_0*Dy_0*Dxy + Dy_0*Dy_0*Dxx + Dx_0*Dx_0*Dzz - 2.0f*Dx_0*Dz_0*Dxz + Dz_0*Dz_0*Dxx + Dy_0*Dy_0*Dzz - 2.0f*Dy_0*Dz_0*Dyz + Dz_0*Dz_0*Dyy ) / ( pow(Dx_0*Dx_0 + Dy_0*Dy_0 + Dz_0*Dz_0, 1.5f) + 0.00005f );
+float Grad = sqrt(Dx_0*Dx_0 + Dy_0*Dy_0 + Dz_0*Dz_0);
+result = Grad * (mu * K + lambda1 * (u0 - c1) * (u0 - c1) - lambda2 * (u0 - c2) * (u0 - c2));
+
+END
+

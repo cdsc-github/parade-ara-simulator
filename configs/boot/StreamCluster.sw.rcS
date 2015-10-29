@@ -1,0 +1,2 @@
+echo -e "SW_StreamCluster 0 65536" | ./benchmarks/bench.out /benchmarks/SW/
+m5 exit

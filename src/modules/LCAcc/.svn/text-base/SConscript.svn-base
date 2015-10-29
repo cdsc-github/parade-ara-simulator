@@ -1,0 +1,23 @@
+# -*- mode:python -*-
+
+import os
+import sys
+
+from os.path import basename, isdir, join as joinpath
+
+import SCons
+
+Import('*')
+
+SimObject('MemoryInterface.py')
+
+Source('memInterface.cc')
+Source('gem5Interface.cc')
+Source('LCAccDevice.cc')
+Source('LCAccManager.cc')
+Source('LCAccOperatingMode.cc')
+Source('NetworkInterface.cc')
+Source('DMAController.cc')
+Source('SPMInterface.cc')
+
+DebugFlag('Accelerator')

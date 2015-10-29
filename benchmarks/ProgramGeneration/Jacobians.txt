@@ -1,0 +1,34 @@
+VARIABLE STREAM IN float#7 x [totalSize]
+VARIABLE STREAM IN float#7 u [totalSize]
+VARIABLE STREAM OUT float#28 dFdX [totalSize]
+VARIABLE STREAM OUT float#7 xu [totalSize]
+
+VARIABLE int totalSize
+
+VARIABLE int chunk
+
+TASK [0..totalSize:chunk]
+SPM_WINDOWS 3
+
+DECLARE Jacobians j
+
+ASSERT chunk > 0
+ASSERT (totalSize) > 0
+ASSERT (totalSize) % chunk == 0
+
+CREATE_SPM j float#7 xStream [chunk]
+CREATE_SPM j float#7 uStream [chunk]
+CREATE_SPM j float#28 dFdXStream [chunk]
+CREATE_SPM j float#7 xuStream [chunk]
+
+
+x[0..totalSize] => j.xStream[0..chunk]
+u[0..totalSize] => j.uStream[0..chunk]
+j.dFdXStream[0..chunk] => dFdX[0..totalSize]
+j.xuStream[0..chunk] => xu[0..totalSize]
+
+j.xStream[0..chunk] => j.input_X
+j.uStream[0..chunk] => j.input_U
+j.df_dx => j.dFdXStream[0..chunk]
+j.X_oplus_U => j.xuStream[0..chunk]
+

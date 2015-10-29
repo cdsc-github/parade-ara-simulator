@@ -1,0 +1,20 @@
+VARIABLE STREAM IN float seed [size]
+VARIABLE STREAM OUT float#3#11 result [size]
+
+VARIABLE int size
+
+VARIABLE int chunk
+
+TASK [0..size:chunk]
+SPM_WINDOWS 3
+
+DECLARE swaptions1 x []
+CREATE_SPM x float in_seed [chunk]
+CREATE_SPM x float#3#11 out_result [chunk]
+
+seed[0..size] => x.in_seed[0..chunk]
+x.out_result[0..chunk] => result[0..size]
+
+x.in_seed[0..chunk] => x.randSeed
+x.randResult => x.out_result[0..chunk]
+

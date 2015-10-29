@@ -1,0 +1,2 @@
+echo -e "TDLCA_StreamCluster 0 65536" | ./benchmarks/bench.out /benchmarks/TDLCA/
+m5 exit

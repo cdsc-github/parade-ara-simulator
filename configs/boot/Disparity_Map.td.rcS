@@ -1,0 +1,2 @@
+echo -e "TDLCA_Disparity_Map 0 2" | ./benchmarks/bench.out /benchmarks/TDLCA/
+m5 exit

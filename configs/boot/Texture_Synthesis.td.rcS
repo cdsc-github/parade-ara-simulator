@@ -1,0 +1,2 @@
+echo -e "TDLCA_Texture_Synthesis 0 16" | ./benchmarks/bench.out /benchmarks/TDLCA/
+m5 exit

@@ -1,0 +1,51 @@
+MODULE TexSynth4
+OPCODE 913
+POWER 1.0
+AREA 1.0
+DEPTH 89
+CYCLE 1
+II 2
+
+ARGUMENT INPUT float in_image0
+ARGUMENT INPUT float in_image1
+ARGUMENT INPUT float in_image2
+ARGUMENT INPUT float in_image3
+ARGUMENT INPUT float in_image4
+ARGUMENT INPUT float in_image5
+ARGUMENT INPUT float in_image6
+ARGUMENT INPUT float in_image7
+ARGUMENT INPUT float in_target0
+ARGUMENT INPUT float in_target1
+ARGUMENT INPUT float in_target2
+ARGUMENT INPUT float in_target3
+ARGUMENT INPUT float in_result0
+ARGUMENT INPUT float in_result1
+ARGUMENT INPUT float in_result2
+ARGUMENT INPUT float in_result3
+
+ARGUMENT OUTPUT float out_diff
+
+BODY
+
+#define sqr(x) ((x) * (x))
+#define upperPixel(x) diff += sqr(in_image##x - in_result##x)
+#define lowerPixel(initial, target) if(in_target##target < 1.0f) diff += sqr(in_image##initial - in_target##target)
+
+float diff = 0.0f;
+
+upperPixel(0);
+upperPixel(1);
+upperPixel(2);
+upperPixel(3);
+lowerPixel(4, 0);
+lowerPixel(5, 1);
+lowerPixel(6, 2);
+lowerPixel(7, 3);
+
+out_diff = diff;
+
+#undef sqr
+#undef upperPixel
+#undef lowerPixel
+
+END

@@ -1,0 +1,2 @@
+echo -e "TDLCA_Swaptions 0 8192" | ./benchmarks/bench.out /benchmarks/TDLCA/
+m5 exit

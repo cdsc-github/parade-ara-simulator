@@ -1,0 +1,39 @@
+VARIABLE STREAM IN float in [channelCount:sizeof(float) * sizeX * sizeY * sizeZ, sizeX:sizeof(float) * sizeY * sizeZ, sizeY:sizeof(float), sizeZ:sizeof(float) * sizeY]
+VARIABLE STREAM OUT float out [channelCount:sizeof(float) * sizeX * sizeY * sizeZ, sizeX:sizeof(float) * sizeY * sizeZ, sizeY:sizeof(float), sizeZ:sizeof(float) * sizeY]
+
+VARIABLE int channelCount
+VARIABLE int sizeX
+VARIABLE int sizeY
+VARIABLE int sizeZ
+VARIABLE float nu
+
+VARIABLE int chunkX
+VARIABLE int chunkY
+VARIABLE int chunkZ
+
+TASK [0..channelCount:1, 0..sizeX:chunkX, 0..sizeY:chunkY, 1..sizeZ:(chunkZ - 1)]
+SPM_WINDOWS 3
+
+DECLARE blur1Mega b [carry = 0.0f, nu = nu, resetLength = chunkZ - 1]
+
+ASSERT chunkX > 0
+ASSERT chunkY > 0
+ASSERT chunkZ > 0
+ASSERT sizeX > 0
+ASSERT sizeY > 0
+ASSERT sizeZ > 1
+ASSERT channelCount > 0
+ASSERT sizeX % chunkX == 0
+ASSERT sizeY % chunkY == 0
+ASSERT (sizeZ - 1) % (chunkZ - 1) == 0
+
+CREATE_SPM b float input[1, chunkX, chunkY, chunkZ]
+CREATE_SPM b float output[1, chunkX, chunkY, chunkZ - 1]
+
+in[0..channelCount, 0..sizeX, 0..sizeY, 0..sizeZ] => b.input[0..1, 0..chunkX, 0..chunkY, 0..chunkZ]
+b.output[0..1, 0..chunkX, 0..chunkY, 0..chunkZ - 1] => out[0..channelCount, 0..sizeX, 0..sizeY, 1..sizeZ]
+
+b.input[0..1, 0..chunkX, 0..chunkY, 0..chunkZ - 1] => b.val
+v.out=> b.output[0..1, 0..chunkX, 0..chunkY, 0..chunkZ - 1]
+
+

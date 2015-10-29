@@ -1,0 +1,20 @@
+VARIABLE STREAM IN uint32_t isCenter [size]
+VARIABLE STREAM OUT uint32_t table [size]
+VARIABLE int size
+
+VARIABLE int chunk
+
+TASK [0..size:chunk]
+SPM_WINDOWS 3
+TASK_GRAIN size / chunk
+
+DECLARE streamCluster1 x [counter = 0]
+
+CREATE_SPM x uint32_t input [chunk]
+CREATE_SPM x uint32_t output [chunk]
+
+isCenter[0..size] => x.input[0..chunk]
+x.output[0..chunk] => table[0..size]
+
+x.input[0..chunk] => x.predicate
+x.count => x.output[0..chunk]

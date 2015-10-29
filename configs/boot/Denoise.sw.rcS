@@ -1,0 +1,3 @@
+echo -e "SW_Denoise 0 130" | ./benchmarks/bench.out /benchmarks/SW/
+m5 dumpstats
+m5 exit

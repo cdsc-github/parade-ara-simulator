@@ -1,0 +1,53 @@
+VARIABLE STREAM IN float#3 in_ran1 [dataSize, N_VAL]
+VARIABLE STREAM IN float#3 in_ran2 [dataSize, N_VAL]
+VARIABLE STREAM IN float#4 in_quat [dataSize, N_VAL]
+VARIABLE STREAM IN float#3 in_accl [dataSize, N_VAL]
+VARIABLE STREAM IN float#3 in_pos [dataSize, N_VAL]
+VARIABLE STREAM IN float#3 in_vel [dataSize, N_VAL]
+VARIABLE STREAM OUT float#3 out_pos [dataSize, N_VAL]
+VARIABLE STREAM OUT float#3 out_vel [dataSize, N_VAL]
+
+VARIABLE int dataSize
+VARIABLE int N_VAL
+VARIABLE int chunk1
+VARIABLE int chunk2
+
+TASK [0..dataSize:chunk1, 0..N_VAL:chunk2]
+SPM_WINDOWS 3
+
+DECLARE RobLoc s []
+
+ASSERT chunk1 > 0
+ASSERT chunk2 > 0
+ASSERT dataSize > 0
+ASSERT N_VAL > 0
+ASSERT dataSize % chunk1 == 0
+ASSERT N_VAL % chunk2 == 0
+
+CREATE_SPM s float#3 in_ran1 [chunk1, chunk2]
+CREATE_SPM s float#3 in_ran2 [chunk1, chunk2]
+CREATE_SPM s float#4 in_quat [chunk1, chunk2]
+CREATE_SPM s float#3 in_accl [chunk1, chunk2]
+CREATE_SPM s float#3 in_pos [chunk1, chunk2]
+CREATE_SPM s float#3 in_vel [chunk1, chunk2]
+CREATE_SPM s float#3 out_pos [chunk1, chunk2]
+CREATE_SPM s float#3 out_vel [chunk1, chunk2]
+
+in_ran1[0..dataSize, 0..N_VAL] => s.in_ran1[0..chunk1, 0..chunk2]
+in_ran2[0..dataSize, 0..N_VAL] => s.in_ran2[0..chunk1, 0..chunk2]
+in_quat[0..dataSize, 0..N_VAL] => s.in_quat[0..chunk1, 0..chunk2]
+in_accl[0..dataSize, 0..N_VAL] => s.in_accl[0..chunk1, 0..chunk2]
+in_pos[0..dataSize, 0..N_VAL] => s.in_pos[0..chunk1, 0..chunk2]
+in_vel[0..dataSize, 0..N_VAL] => s.in_vel[0..chunk1, 0..chunk2]
+s.out_pos[0..chunk1, 0..chunk2] => out_pos[0..dataSize, 0..N_VAL]
+s.out_vel[0..chunk1, 0..chunk2] => out_vel[0..dataSize, 0..N_VAL]
+
+s.in_ran1[0..chunk1, 0..chunk2] => s.in_ran1
+s.in_ran2[0..chunk1, 0..chunk2] => s.in_ran2
+s.in_quat[0..chunk1, 0..chunk2] => s.in_quat
+s.in_accl[0..chunk1, 0..chunk2] => s.in_accl
+s.in_pos[0..chunk1, 0..chunk2] => s.in_pos
+s.in_vel[0..chunk1, 0..chunk2] => s.in_vel
+s.out_pos => s.out_pos[0..chunk1, 0..chunk2]
+s.out_vel => s.out_vel[0..chunk1, 0..chunk2]
+

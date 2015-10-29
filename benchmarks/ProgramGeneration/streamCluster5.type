@@ -1,0 +1,54 @@
+MODULE streamCluster5
+OPCODE 1205
+POWER 1.0
+AREA 1.0
+DEPTH 1
+CYCLE 2
+II 1
+
+ARGUMENT INPUT uint32_t assign
+ARGUMENT INPUT uint32_t table
+ARGUMENT INPUT float lower
+ARGUMENT INPUT uint32_t switchMembership
+ARGUMENT INPUT float inCost
+ARGUMENT INPUT float weight
+ARGUMENT INPUT float#32 x
+ARGUMENT INPUT float#32 y
+
+ARGUMENT OUTPUT float outCost
+
+REGISTER uint64_t tableStart
+REGISTER uint64_t spmStart1
+REGISTER uint64_t lowerStart
+REGISTER uint64_t spmStart2
+
+BODY
+
+AddRead(tableStart + assign * sizeof(uint32_t), spmStart1 + iteration * sizeof(uint32_t), sizeof(uint32_t));
+
+END
+
+MEMORY_RESPONSE
+
+if(spmAddr >= spmStart1 && spmAddr < spmStart1 + sizeof(uint32_t) * maxIteration)
+{
+	AddRead(lowerStart + table * sizeof(uint32_t), spmStart2 + iteration * sizeof(uint32_t), sizeof(uint32_t));
+}
+else
+{
+	if(switchMembership || lower > 0)
+	{
+		outCost = 0;
+		for(int i = 0; i < 32; i++)
+		{
+			outCost += (x[i] - y[i]) * (x[i] - y[i]);
+		}
+		outCost *= weight;
+	}
+	else
+	{
+		outCost = inCost;
+	}
+}
+
+END

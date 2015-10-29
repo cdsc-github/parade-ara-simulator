@@ -1,0 +1,2 @@
+echo -e "TDLCA_CS_MR 0 66" | ./benchmarks/bench.out /benchmarks/TDLCA/
+m5 exit

@@ -1,0 +1,54 @@
+VARIABLE STREAM IN float u [sizeX, sizeY, sizeZ]
+VARIABLE STREAM IN float f [sizeX, sizeY, sizeZ]
+VARIABLE STREAM IN float g [sizeX, sizeY, sizeZ]
+VARIABLE STREAM OUT float result [sizeX, sizeY, sizeZ]
+
+VARIABLE int sizeX
+VARIABLE int sizeY
+VARIABLE int sizeZ
+
+VARIABLE int chunkX
+VARIABLE int chunkY
+VARIABLE int chunkZ
+
+VARIABLE float sigma
+VARIABLE float lambda
+VARIABLE float dt
+
+TASK [1..sizeX - 1:chunkX, 1..sizeY - 1:chunkY, 1..sizeZ - 1:chunkZ]
+SPM_WINDOWS 3
+
+DECLARE denoise2Mega d [width = chunkX, height = chunkY, depth = chunkZ, dt = dt, gamma = lambda / sigma, sigma = sigma]
+
+ASSERT chunkX > 0
+ASSERT chunkY > 0
+ASSERT chunkZ > 0
+
+ASSERT (sizeX - 2) > 0
+ASSERT (sizeY - 2) > 0
+ASSERT (sizeZ - 2) > 0
+ASSERT (sizeX - 2) % chunkX == 0
+ASSERT (sizeY - 2) % chunkY == 0
+ASSERT (sizeZ - 2) % chunkZ == 0
+ASSERT result != g
+ASSERT result != u
+ASSERT result != f
+
+CREATE_SPM d float u_in [chunkX + 2, chunkY + 2, chunkZ + 2]
+CREATE_SPM d float g_in [chunkX + 2, chunkY + 2, chunkZ + 2]
+CREATE_SPM d float f_in [chunkX, chunkY, chunkZ]
+CREATE_SPM d float u_out [chunkX, chunkY, chunkZ]
+
+
+//MEM <-> SPM for d3
+u[0..sizeX, 0..sizeY, 0..sizeZ] => d.u_in[0..chunkX + 2, 0..chunkY + 2, 0..chunkZ + 2]
+g[0..sizeX, 0..sizeY, 0..sizeZ] => d.g_in[0..chunkX + 2, 0..chunkY + 2, 0..chunkZ + 2]
+f[1..sizeX - 1, 1..sizeY - 1, 1..sizeZ - 1] => d.f_in[0..chunkX, 0..chunkY, 0..chunkZ]
+d.u_out[0..chunkX, 0..chunkY, 0..chunkZ] => result[1..sizeX - 1, 1..sizeY - 1, 1..sizeZ - 1]
+
+
+//here are the argument streams to the engine
+d.u_in[1..chunkX + 1, 1..chunkY + 1, 1..chunkZ + 1] => d.u_Center
+d.g_in[1..chunkX + 1, 1..chunkY + 1, 1..chunkZ + 1] => d.g_Center
+d.f_in[0..chunkX, 0..chunkY, 0..chunkZ] => d.f_Center
+d.u_Result => d.u_out [0..chunkX, 0..chunkY, 0..chunkZ]

@@ -1,0 +1,23 @@
+MODULE streamCluster4
+OPCODE 1204
+POWER 1.0
+AREA 1.0
+DEPTH 1
+CYCLE 1
+II 1
+
+ARGUMENT INPUT uint32_t predicate
+ARGUMENT INPUT uint32_t table
+ARGUMENT INPUT uint32_t low
+
+REGISTER uint64_t gl_lowStart
+REGISTER uint64_t lowStart
+
+BODY
+
+if(predicate)
+{
+	AddWrite(lowStart + iteration * sizeof(float), gl_lowStart + table * sizeof(float), sizeof(float));
+}
+
+END

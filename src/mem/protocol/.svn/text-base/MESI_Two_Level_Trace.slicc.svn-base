@@ -1,0 +1,8 @@
+protocol "MESI_Two_Level_Trace";
+include "RubySlicc_interfaces.slicc";
+include "MESI_Two_Level-msg.sm";
+include "MESI_Two_Level-L1cache.trace.sm";
+include "MESI_Two_Level-L2cache.trace.sm";
+include "MESI_Two_Level-dir.trace.sm";
+include "MESI_Two_Level-dma.sm";
+include "gem5NetworkPort.sm";

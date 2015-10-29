@@ -1,0 +1,449 @@
+VARIABLE STREAM OUTPUT float resultImage [imageCount, outputHeight, outputWidth]
+
+VARIABLE int inputHeight
+VARIABLE int inputWidth
+VARIABLE int outputHeight
+VARIABLE int outputWidth
+VARIABLE int imageCount
+
+VARIABLE intptr_t imageArrayStart
+VARIABLE intptr_t targetArrayStart
+VARIABLE intptr_t atlasArray
+
+VARIABLE uint32_t lineNumber
+VARIABLE int chunk
+
+TASK [0..imageCount:1, lineNumber..lineNumber + 1:1, 0..outputWidth:chunk]
+SPM_WINDOWS 3
+
+//LCAs
+////////////////////////////////////////////
+//region 0
+////////////////////////////////////////////
+DECLARE TexSynth2 atlasReader [output0 = @atlas0, output1 = @atlas1, output2 = @atlas2, output3 = @atlas3, offsetX0 = 0, offsetY0 = -2, offsetX1 = 0, offsetY1 = -1, offsetX2 = -1, offsetY2 = -1, offsetX3 = 1, offsetY3 = -1, elementSize = 4, elementCount = 2, inputAddr = atlasArray, width = outputWidth, height = outputHeight, line = lineNumber]
+CREATE_SPM atlasReader int32_t#2 atlas0 [1, 1, chunk]
+CREATE_SPM atlasReader int32_t#2 atlas1 [1, 1, chunk]
+CREATE_SPM atlasReader int32_t#2 atlas2 [1, 1, chunk]
+CREATE_SPM atlasReader int32_t#2 atlas3 [1, 1, chunk]
+CREATE_SPM atlasReader float dummy[1, 1, chunk]
+
+////////////////////////////////////////////
+//region 1
+////////////////////////////////////////////
+DECLARE TexSynth2 targetReader0 [output0 = @target0, output1 = @target1, output2 = @target2, output3 = @target3, offsetX0 = 0, offsetY0 = -2, offsetX1 = 0, offsetY1 = -1, offsetX2 = -1, offsetY2 = -1, offsetX3 = 1, offsetY3 = -1, elementSize = 4, elementCount = 1, inputAddr = targetArrayStart, width = outputWidth, height = outputHeight, line = lineNumber]
+CREATE_SPM targetReader0 float target0 [1, 1, chunk]
+CREATE_SPM targetReader0 float target1 [1, 1, chunk]
+CREATE_SPM targetReader0 float target2 [1, 1, chunk]
+CREATE_SPM targetReader0 float target3 [1, 1, chunk]
+
+DECLARE TexSynth2 resultReader0 [output0 = @result0, output1 = @result1, output2 = @result2, output3 = @result3, offsetX0 = 0, offsetY0 = -2, offsetX1 = 0, offsetY1 = -1, offsetX2 = -1, offsetY2 = -1, offsetX3 = 1, offsetY3 = -1, elementSize = 4, elementCount = 1, inputAddr = (uint64_t)resultImage, width = outputWidth, height = outputHeight, line = lineNumber]
+CREATE_SPM resultReader0 float result0 [1, 1, chunk]
+CREATE_SPM resultReader0 float result1 [1, 1, chunk]
+CREATE_SPM resultReader0 float result2 [1, 1, chunk]
+CREATE_SPM resultReader0 float result3 [1, 1, chunk]
+
+DECLARE TexSynth3 regionSample0 [xBias = 1, yBias = 0, sourceImageAddr = imageArrayStart, sourceImageWidth = inputWidth, sourceImageHeight = inputHeight, candidateXBias0 = 0, candidateYBias0 = -2, candidateXBias1 = 0, candidateYBias1 = -1, candidateXBias2 = -1, candidateYBias2 = -1, candidateXBias3 = 1, candidateYBias3 = -1, candidateXBias4 = 1, candidateYBias4 = 0, candidateXBias5 = -1, candidateYBias5 = 1, candidateXBias6 = 0, candidateYBias6 = 1, candidateXBias7 = 0, candidateYBias7 = 1, candidateXBias8 = 0, candidateYBias8 = 0, targetSPMLocation0 = @out0, targetSPMLocation1 = @out1, targetSPMLocation2 = @out2, targetSPMLocation3 = @out3, targetSPMLocation4 = @out4, targetSPMLocation5 = @out5, targetSPMLocation6 = @out6, targetSPMLocation7 = @out7, targetSPMLocation8 = @out8, dstImageWidth = outputWidth, dstImageHeight = outputHeight]
+CREATE_SPM regionSample0 int32_t#2 atlas [1, 1, chunk]
+CREATE_SPM regionSample0 float out0 [1, 1, chunk]
+CREATE_SPM regionSample0 float out1 [1, 1, chunk]
+CREATE_SPM regionSample0 float out2 [1, 1, chunk]
+CREATE_SPM regionSample0 float out3 [1, 1, chunk]
+CREATE_SPM regionSample0 float out4 [1, 1, chunk]
+CREATE_SPM regionSample0 float out5 [1, 1, chunk]
+CREATE_SPM regionSample0 float out6 [1, 1, chunk]
+CREATE_SPM regionSample0 float out7 [1, 1, chunk]
+CREATE_SPM regionSample0 float out8 [1, 1, chunk]
+
+DECLARE TexSynth4 diffCalc0 []
+CREATE_SPM diffCalc0 float img0 [1, 1, chunk]
+CREATE_SPM diffCalc0 float img1 [1, 1, chunk]
+CREATE_SPM diffCalc0 float img2 [1, 1, chunk]
+CREATE_SPM diffCalc0 float img3 [1, 1, chunk]
+CREATE_SPM diffCalc0 float img4 [1, 1, chunk]
+CREATE_SPM diffCalc0 float img5 [1, 1, chunk]
+CREATE_SPM diffCalc0 float img6 [1, 1, chunk]
+CREATE_SPM diffCalc0 float img7 [1, 1, chunk]
+CREATE_SPM diffCalc0 float target0 [1, 1, chunk]
+CREATE_SPM diffCalc0 float target1 [1, 1, chunk]
+CREATE_SPM diffCalc0 float target2 [1, 1, chunk]
+CREATE_SPM diffCalc0 float target3 [1, 1, chunk]
+CREATE_SPM diffCalc0 float result0 [1, 1, chunk]
+CREATE_SPM diffCalc0 float result1 [1, 1, chunk]
+CREATE_SPM diffCalc0 float result2 [1, 1, chunk]
+CREATE_SPM diffCalc0 float result3 [1, 1, chunk]
+CREATE_SPM diffCalc0 float outDiff [1, 1, chunk]
+
+////////////////////////////////////////////
+//region 2
+////////////////////////////////////////////
+DECLARE TexSynth2 targetReader1 [output0 = @target0, output1 = @target1, output2 = @target2, output3 = @target3, offsetX0 = 0, offsetY0 = -2, offsetX1 = 0, offsetY1 = -1, offsetX2 = -1, offsetY2 = -1, offsetX3 = 1, offsetY3 = -1, elementSize = 4, elementCount = 1, inputAddr = targetArrayStart, width = outputWidth, height = outputHeight, line = lineNumber]
+CREATE_SPM targetReader1 float target0 [1, 1, chunk]
+CREATE_SPM targetReader1 float target1 [1, 1, chunk]
+CREATE_SPM targetReader1 float target2 [1, 1, chunk]
+CREATE_SPM targetReader1 float target3 [1, 1, chunk]
+
+DECLARE TexSynth2 resultReader1 [output0 = @result0, output1 = @result1, output2 = @result2, output3 = @result3, offsetX0 = 0, offsetY0 = -2, offsetX1 = 0, offsetY1 = -1, offsetX2 = -1, offsetY2 = -1, offsetX3 = 1, offsetY3 = -1, elementSize = 4, elementCount = 1, inputAddr = (uint64_t)resultImage, width = outputWidth, height = outputHeight, line = lineNumber]
+CREATE_SPM resultReader1 float result0 [1, 1, chunk]
+CREATE_SPM resultReader1 float result1 [1, 1, chunk]
+CREATE_SPM resultReader1 float result2 [1, 1, chunk]
+CREATE_SPM resultReader1 float result3 [1, 1, chunk]
+
+DECLARE TexSynth3 regionSample1 [xBias = 1, yBias = 1, sourceImageAddr = imageArrayStart, sourceImageWidth = inputWidth, sourceImageHeight = inputHeight, candidateXBias0 = 0, candidateYBias0 = -2, candidateXBias1 = 0, candidateYBias1 = -1, candidateXBias2 = -1, candidateYBias2 = -1, candidateXBias3 = 1, candidateYBias3 = -1, candidateXBias4 = 1, candidateYBias4 = 0, candidateXBias5 = -1, candidateYBias5 = 1, candidateXBias6 = 0, candidateYBias6 = 1, candidateXBias7 = 0, candidateYBias7 = 1, candidateXBias8 = 0, candidateYBias8 = 0, targetSPMLocation0 = @out0, targetSPMLocation1 = @out1, targetSPMLocation2 = @out2, targetSPMLocation3 = @out3, targetSPMLocation4 = @out4, targetSPMLocation5 = @out5, targetSPMLocation6 = @out6, targetSPMLocation7 = @out7, targetSPMLocation8 = @out8, dstImageWidth = outputWidth, dstImageHeight = outputHeight]
+CREATE_SPM regionSample1 int32_t#2 atlas [1, 1, chunk]
+CREATE_SPM regionSample1 float out0 [1, 1, chunk]
+CREATE_SPM regionSample1 float out1 [1, 1, chunk]
+CREATE_SPM regionSample1 float out2 [1, 1, chunk]
+CREATE_SPM regionSample1 float out3 [1, 1, chunk]
+CREATE_SPM regionSample1 float out4 [1, 1, chunk]
+CREATE_SPM regionSample1 float out5 [1, 1, chunk]
+CREATE_SPM regionSample1 float out6 [1, 1, chunk]
+CREATE_SPM regionSample1 float out7 [1, 1, chunk]
+CREATE_SPM regionSample1 float out8 [1, 1, chunk]
+
+DECLARE TexSynth4 diffCalc1 []
+CREATE_SPM diffCalc1 float img0 [1, 1, chunk]
+CREATE_SPM diffCalc1 float img1 [1, 1, chunk]
+CREATE_SPM diffCalc1 float img2 [1, 1, chunk]
+CREATE_SPM diffCalc1 float img3 [1, 1, chunk]
+CREATE_SPM diffCalc1 float img4 [1, 1, chunk]
+CREATE_SPM diffCalc1 float img5 [1, 1, chunk]
+CREATE_SPM diffCalc1 float img6 [1, 1, chunk]
+CREATE_SPM diffCalc1 float img7 [1, 1, chunk]
+CREATE_SPM diffCalc1 float target0 [1, 1, chunk]
+CREATE_SPM diffCalc1 float target1 [1, 1, chunk]
+CREATE_SPM diffCalc1 float target2 [1, 1, chunk]
+CREATE_SPM diffCalc1 float target3 [1, 1, chunk]
+CREATE_SPM diffCalc1 float result0 [1, 1, chunk]
+CREATE_SPM diffCalc1 float result1 [1, 1, chunk]
+CREATE_SPM diffCalc1 float result2 [1, 1, chunk]
+CREATE_SPM diffCalc1 float result3 [1, 1, chunk]
+CREATE_SPM diffCalc1 float outDiff [1, 1, chunk]
+
+////////////////////////////////////////////
+//region 3
+////////////////////////////////////////////
+DECLARE TexSynth2 targetReader2 [output0 = @target0, output1 = @target1, output2 = @target2, output3 = @target3, offsetX0 = 0, offsetY0 = -2, offsetX1 = 0, offsetY1 = -1, offsetX2 = -1, offsetY2 = -1, offsetX3 = 1, offsetY3 = -1, elementSize = 4, elementCount = 1, inputAddr = targetArrayStart, width = outputWidth, height = outputHeight, line = lineNumber]
+CREATE_SPM targetReader2 float target0 [1, 1, chunk]
+CREATE_SPM targetReader2 float target1 [1, 1, chunk]
+CREATE_SPM targetReader2 float target2 [1, 1, chunk]
+CREATE_SPM targetReader2 float target3 [1, 1, chunk]
+
+DECLARE TexSynth2 resultReader2 [output0 = @result0, output1 = @result1, output2 = @result2, output3 = @result3, offsetX0 = 0, offsetY0 = -2, offsetX1 = 0, offsetY1 = -1, offsetX2 = -1, offsetY2 = -1, offsetX3 = 1, offsetY3 = -1, elementSize = 4, elementCount = 1, inputAddr = (uint64_t)resultImage, width = outputWidth, height = outputHeight, line = lineNumber]
+CREATE_SPM resultReader2 float result0 [1, 1, chunk]
+CREATE_SPM resultReader2 float result1 [1, 1, chunk]
+CREATE_SPM resultReader2 float result2 [1, 1, chunk]
+CREATE_SPM resultReader2 float result3 [1, 1, chunk]
+
+DECLARE TexSynth3 regionSample2 [xBias = 0, yBias = 1, sourceImageAddr = imageArrayStart, sourceImageWidth = inputWidth, sourceImageHeight = inputHeight, candidateXBias0 = 0, candidateYBias0 = -2, candidateXBias1 = 0, candidateYBias1 = -1, candidateXBias2 = -1, candidateYBias2 = -1, candidateXBias3 = 1, candidateYBias3 = -1, candidateXBias4 = 1, candidateYBias4 = 0, candidateXBias5 = -1, candidateYBias5 = 1, candidateXBias6 = 0, candidateYBias6 = 1, candidateXBias7 = 0, candidateYBias7 = 1, candidateXBias8 = 0, candidateYBias8 = 0, targetSPMLocation0 = @out0, targetSPMLocation1 = @out1, targetSPMLocation2 = @out2, targetSPMLocation3 = @out3, targetSPMLocation4 = @out4, targetSPMLocation5 = @out5, targetSPMLocation6 = @out6, targetSPMLocation7 = @out7, targetSPMLocation8 = @out8, dstImageWidth = outputWidth, dstImageHeight = outputHeight]
+CREATE_SPM regionSample2 int32_t#2 atlas [1, 1, chunk]
+CREATE_SPM regionSample2 float out0 [1, 1, chunk]
+CREATE_SPM regionSample2 float out1 [1, 1, chunk]
+CREATE_SPM regionSample2 float out2 [1, 1, chunk]
+CREATE_SPM regionSample2 float out3 [1, 1, chunk]
+CREATE_SPM regionSample2 float out4 [1, 1, chunk]
+CREATE_SPM regionSample2 float out5 [1, 1, chunk]
+CREATE_SPM regionSample2 float out6 [1, 1, chunk]
+CREATE_SPM regionSample2 float out7 [1, 1, chunk]
+CREATE_SPM regionSample2 float out8 [1, 1, chunk]
+
+DECLARE TexSynth4 diffCalc2 []
+CREATE_SPM diffCalc2 float img0 [1, 1, chunk]
+CREATE_SPM diffCalc2 float img1 [1, 1, chunk]
+CREATE_SPM diffCalc2 float img2 [1, 1, chunk]
+CREATE_SPM diffCalc2 float img3 [1, 1, chunk]
+CREATE_SPM diffCalc2 float img4 [1, 1, chunk]
+CREATE_SPM diffCalc2 float img5 [1, 1, chunk]
+CREATE_SPM diffCalc2 float img6 [1, 1, chunk]
+CREATE_SPM diffCalc2 float img7 [1, 1, chunk]
+CREATE_SPM diffCalc2 float target0 [1, 1, chunk]
+CREATE_SPM diffCalc2 float target1 [1, 1, chunk]
+CREATE_SPM diffCalc2 float target2 [1, 1, chunk]
+CREATE_SPM diffCalc2 float target3 [1, 1, chunk]
+CREATE_SPM diffCalc2 float result0 [1, 1, chunk]
+CREATE_SPM diffCalc2 float result1 [1, 1, chunk]
+CREATE_SPM diffCalc2 float result2 [1, 1, chunk]
+CREATE_SPM diffCalc2 float result3 [1, 1, chunk]
+CREATE_SPM diffCalc2 float outDiff [1, 1, chunk]
+
+////////////////////////////////////////////
+//region 4
+////////////////////////////////////////////
+DECLARE TexSynth2 targetReader3 [output0 = @target0, output1 = @target1, output2 = @target2, output3 = @target3, offsetX0 = 0, offsetY0 = -2, offsetX1 = 0, offsetY1 = -1, offsetX2 = -1, offsetY2 = -1, offsetX3 = 1, offsetY3 = -1, elementSize = 4, elementCount = 1, inputAddr = targetArrayStart, width = outputWidth, height = outputHeight, line = lineNumber]
+CREATE_SPM targetReader3 float target0 [1, 1, chunk]
+CREATE_SPM targetReader3 float target1 [1, 1, chunk]
+CREATE_SPM targetReader3 float target2 [1, 1, chunk]
+CREATE_SPM targetReader3 float target3 [1, 1, chunk]
+
+DECLARE TexSynth2 resultReader3 [output0 = @result0, output1 = @result1, output2 = @result2, output3 = @result3, offsetX0 = 0, offsetY0 = -2, offsetX1 = 0, offsetY1 = -1, offsetX2 = -1, offsetY2 = -1, offsetX3 = 1, offsetY3 = -1, elementSize = 4, elementCount = 1, inputAddr = (uint64_t)resultImage, width = outputWidth, height = outputHeight, line = lineNumber]
+CREATE_SPM resultReader3 float result0 [1, 1, chunk]
+CREATE_SPM resultReader3 float result1 [1, 1, chunk]
+CREATE_SPM resultReader3 float result2 [1, 1, chunk]
+CREATE_SPM resultReader3 float result3 [1, 1, chunk]
+
+DECLARE TexSynth3 regionSample3 [xBias = -1, yBias = 1, sourceImageAddr = imageArrayStart, sourceImageWidth = inputWidth, sourceImageHeight = inputHeight, candidateXBias0 = 0, candidateYBias0 = -2, candidateXBias1 = 0, candidateYBias1 = -1, candidateXBias2 = -1, candidateYBias2 = -1, candidateXBias3 = 1, candidateYBias3 = -1, candidateXBias4 = 1, candidateYBias4 = 0, candidateXBias5 = -1, candidateYBias5 = 1, candidateXBias6 = 0, candidateYBias6 = 1, candidateXBias7 = 0, candidateYBias7 = 1, candidateXBias8 = 0, candidateYBias8 = 0, targetSPMLocation0 = @out0, targetSPMLocation1 = @out1, targetSPMLocation2 = @out2, targetSPMLocation3 = @out3, targetSPMLocation4 = @out4, targetSPMLocation5 = @out5, targetSPMLocation6 = @out6, targetSPMLocation7 = @out7, targetSPMLocation8 = @out8, dstImageWidth = outputWidth, dstImageHeight = outputHeight]
+CREATE_SPM regionSample3 int32_t#2 atlas [1, 1, chunk]
+CREATE_SPM regionSample3 float out0 [1, 1, chunk]
+CREATE_SPM regionSample3 float out1 [1, 1, chunk]
+CREATE_SPM regionSample3 float out2 [1, 1, chunk]
+CREATE_SPM regionSample3 float out3 [1, 1, chunk]
+CREATE_SPM regionSample3 float out4 [1, 1, chunk]
+CREATE_SPM regionSample3 float out5 [1, 1, chunk]
+CREATE_SPM regionSample3 float out6 [1, 1, chunk]
+CREATE_SPM regionSample3 float out7 [1, 1, chunk]
+CREATE_SPM regionSample3 float out8 [1, 1, chunk]
+
+DECLARE TexSynth4 diffCalc3 []
+CREATE_SPM diffCalc3 float img0 [1, 1, chunk]
+CREATE_SPM diffCalc3 float img1 [1, 1, chunk]
+CREATE_SPM diffCalc3 float img2 [1, 1, chunk]
+CREATE_SPM diffCalc3 float img3 [1, 1, chunk]
+CREATE_SPM diffCalc3 float img4 [1, 1, chunk]
+CREATE_SPM diffCalc3 float img5 [1, 1, chunk]
+CREATE_SPM diffCalc3 float img6 [1, 1, chunk]
+CREATE_SPM diffCalc3 float img7 [1, 1, chunk]
+CREATE_SPM diffCalc3 float target0 [1, 1, chunk]
+CREATE_SPM diffCalc3 float target1 [1, 1, chunk]
+CREATE_SPM diffCalc3 float target2 [1, 1, chunk]
+CREATE_SPM diffCalc3 float target3 [1, 1, chunk]
+CREATE_SPM diffCalc3 float result0 [1, 1, chunk]
+CREATE_SPM diffCalc3 float result1 [1, 1, chunk]
+CREATE_SPM diffCalc3 float result2 [1, 1, chunk]
+CREATE_SPM diffCalc3 float result3 [1, 1, chunk]
+CREATE_SPM diffCalc3 float outDiff [1, 1, chunk]
+
+////////////////////////////////////////////
+//region 5
+////////////////////////////////////////////
+//muxer
+DECLARE TexSynth5 pickCandidate []
+CREATE_SPM pickCandidate float diff0 [1, 1, chunk]
+CREATE_SPM pickCandidate float pixel0 [1, 1, chunk]
+CREATE_SPM pickCandidate float diff1 [1, 1, chunk]
+CREATE_SPM pickCandidate float pixel1 [1, 1, chunk]
+CREATE_SPM pickCandidate float diff2 [1, 1, chunk]
+CREATE_SPM pickCandidate float pixel2 [1, 1, chunk]
+CREATE_SPM pickCandidate float diff3 [1, 1, chunk]
+CREATE_SPM pickCandidate float pixel3 [1, 1, chunk]
+CREATE_SPM pickCandidate float finalOutput [1, 1, chunk]
+
+
+//Communication
+//communication is centered around the source node.  If the source is memory,
+//source is memory, the destination is used instead.
+////////////////////////////////////////////
+//region 0
+////////////////////////////////////////////
+atlasReader.atlas0[0..1, 0..1, 0..chunk] => regionSample0.atlas[0..1, 0..1, 0..chunk]
+atlasReader.atlas1[0..1, 0..1, 0..chunk] => regionSample1.atlas[0..1, 0..1, 0..chunk]
+atlasReader.atlas2[0..1, 0..1, 0..chunk] => regionSample2.atlas[0..1, 0..1, 0..chunk]
+atlasReader.atlas3[0..1, 0..1, 0..chunk] => regionSample3.atlas[0..1, 0..1, 0..chunk]
+
+////////////////////////////////////////////
+//region 1
+////////////////////////////////////////////
+targetReader0.target0[0..1, 0..1, 0..chunk] => diffCalc0.target0[0..1, 0..1, 0..chunk]
+targetReader0.target1[0..1, 0..1, 0..chunk] => diffCalc0.target1[0..1, 0..1, 0..chunk]
+targetReader0.target2[0..1, 0..1, 0..chunk] => diffCalc0.target2[0..1, 0..1, 0..chunk]
+targetReader0.target3[0..1, 0..1, 0..chunk] => diffCalc0.target3[0..1, 0..1, 0..chunk]
+resultReader0.result0[0..1, 0..1, 0..chunk] => diffCalc0.result0[0..1, 0..1, 0..chunk]
+resultReader0.result1[0..1, 0..1, 0..chunk] => diffCalc0.result1[0..1, 0..1, 0..chunk]
+resultReader0.result2[0..1, 0..1, 0..chunk] => diffCalc0.result2[0..1, 0..1, 0..chunk]
+resultReader0.result3[0..1, 0..1, 0..chunk] => diffCalc0.result3[0..1, 0..1, 0..chunk]
+regionSample0.out0[0..1, 0..1, 0..chunk] => diffCalc0.img0[0..1, 0..1, 0..chunk]
+regionSample0.out1[0..1, 0..1, 0..chunk] => diffCalc0.img1[0..1, 0..1, 0..chunk]
+regionSample0.out2[0..1, 0..1, 0..chunk] => diffCalc0.img2[0..1, 0..1, 0..chunk]
+regionSample0.out3[0..1, 0..1, 0..chunk] => diffCalc0.img3[0..1, 0..1, 0..chunk]
+regionSample0.out4[0..1, 0..1, 0..chunk] => diffCalc0.img4[0..1, 0..1, 0..chunk]
+regionSample0.out5[0..1, 0..1, 0..chunk] => diffCalc0.img5[0..1, 0..1, 0..chunk]
+regionSample0.out6[0..1, 0..1, 0..chunk] => diffCalc0.img6[0..1, 0..1, 0..chunk]
+regionSample0.out7[0..1, 0..1, 0..chunk] => diffCalc0.img7[0..1, 0..1, 0..chunk]
+regionSample0.out8[0..1, 0..1, 0..chunk] => pickCandidate.pixel0[0..1, 0..1, 0..chunk]
+diffCalc0.outDiff[0..1, 0..1, 0..chunk] => pickCandidate.diff0[0..1, 0..1, 0..chunk]
+
+////////////////////////////////////////////
+//region 2
+////////////////////////////////////////////
+targetReader1.target0[0..1, 0..1, 0..chunk] => diffCalc1.target0[0..1, 0..1, 0..chunk]
+targetReader1.target1[0..1, 0..1, 0..chunk] => diffCalc1.target1[0..1, 0..1, 0..chunk]
+targetReader1.target2[0..1, 0..1, 0..chunk] => diffCalc1.target2[0..1, 0..1, 0..chunk]
+targetReader1.target3[0..1, 0..1, 0..chunk] => diffCalc1.target3[0..1, 0..1, 0..chunk]
+resultReader1.result0[0..1, 0..1, 0..chunk] => diffCalc1.result0[0..1, 0..1, 0..chunk]
+resultReader1.result1[0..1, 0..1, 0..chunk] => diffCalc1.result1[0..1, 0..1, 0..chunk]
+resultReader1.result2[0..1, 0..1, 0..chunk] => diffCalc1.result2[0..1, 0..1, 0..chunk]
+resultReader1.result3[0..1, 0..1, 0..chunk] => diffCalc1.result3[0..1, 0..1, 0..chunk]
+regionSample1.out0[0..1, 0..1, 0..chunk] => diffCalc1.img0[0..1, 0..1, 0..chunk]
+regionSample1.out1[0..1, 0..1, 0..chunk] => diffCalc1.img1[0..1, 0..1, 0..chunk]
+regionSample1.out2[0..1, 0..1, 0..chunk] => diffCalc1.img2[0..1, 0..1, 0..chunk]
+regionSample1.out3[0..1, 0..1, 0..chunk] => diffCalc1.img3[0..1, 0..1, 0..chunk]
+regionSample1.out4[0..1, 0..1, 0..chunk] => diffCalc1.img4[0..1, 0..1, 0..chunk]
+regionSample1.out5[0..1, 0..1, 0..chunk] => diffCalc1.img5[0..1, 0..1, 0..chunk]
+regionSample1.out6[0..1, 0..1, 0..chunk] => diffCalc1.img6[0..1, 0..1, 0..chunk]
+regionSample1.out7[0..1, 0..1, 0..chunk] => diffCalc1.img7[0..1, 0..1, 0..chunk]
+regionSample1.out8[0..1, 0..1, 0..chunk] => pickCandidate.pixel1[0..1, 0..1, 0..chunk]
+diffCalc1.outDiff[0..1, 0..1, 0..chunk] => pickCandidate.diff1[0..1, 0..1, 0..chunk]
+
+////////////////////////////////////////////
+//region 3
+////////////////////////////////////////////
+targetReader2.target0[0..1, 0..1, 0..chunk] => diffCalc2.target0[0..1, 0..1, 0..chunk]
+targetReader2.target1[0..1, 0..1, 0..chunk] => diffCalc2.target1[0..1, 0..1, 0..chunk]
+targetReader2.target2[0..1, 0..1, 0..chunk] => diffCalc2.target2[0..1, 0..1, 0..chunk]
+targetReader2.target3[0..1, 0..1, 0..chunk] => diffCalc2.target3[0..1, 0..1, 0..chunk]
+resultReader2.result0[0..1, 0..1, 0..chunk] => diffCalc2.result0[0..1, 0..1, 0..chunk]
+resultReader2.result1[0..1, 0..1, 0..chunk] => diffCalc2.result1[0..1, 0..1, 0..chunk]
+resultReader2.result2[0..1, 0..1, 0..chunk] => diffCalc2.result2[0..1, 0..1, 0..chunk]
+resultReader2.result3[0..1, 0..1, 0..chunk] => diffCalc2.result3[0..1, 0..1, 0..chunk]
+regionSample2.out0[0..1, 0..1, 0..chunk] => diffCalc2.img0[0..1, 0..1, 0..chunk]
+regionSample2.out1[0..1, 0..1, 0..chunk] => diffCalc2.img1[0..1, 0..1, 0..chunk]
+regionSample2.out2[0..1, 0..1, 0..chunk] => diffCalc2.img2[0..1, 0..1, 0..chunk]
+regionSample2.out3[0..1, 0..1, 0..chunk] => diffCalc2.img3[0..1, 0..1, 0..chunk]
+regionSample2.out4[0..1, 0..1, 0..chunk] => diffCalc2.img4[0..1, 0..1, 0..chunk]
+regionSample2.out5[0..1, 0..1, 0..chunk] => diffCalc2.img5[0..1, 0..1, 0..chunk]
+regionSample2.out6[0..1, 0..1, 0..chunk] => diffCalc2.img6[0..1, 0..1, 0..chunk]
+regionSample2.out7[0..1, 0..1, 0..chunk] => diffCalc2.img7[0..1, 0..1, 0..chunk]
+regionSample2.out8[0..1, 0..1, 0..chunk] => pickCandidate.pixel2[0..1, 0..1, 0..chunk]
+diffCalc2.outDiff[0..1, 0..1, 0..chunk] => pickCandidate.diff2[0..1, 0..1, 0..chunk]
+
+////////////////////////////////////////////
+//region 4
+////////////////////////////////////////////
+targetReader3.target0[0..1, 0..1, 0..chunk] => diffCalc3.target0[0..1, 0..1, 0..chunk]
+targetReader3.target1[0..1, 0..1, 0..chunk] => diffCalc3.target1[0..1, 0..1, 0..chunk]
+targetReader3.target2[0..1, 0..1, 0..chunk] => diffCalc3.target2[0..1, 0..1, 0..chunk]
+targetReader3.target3[0..1, 0..1, 0..chunk] => diffCalc3.target3[0..1, 0..1, 0..chunk]
+resultReader3.result0[0..1, 0..1, 0..chunk] => diffCalc3.result0[0..1, 0..1, 0..chunk]
+resultReader3.result1[0..1, 0..1, 0..chunk] => diffCalc3.result1[0..1, 0..1, 0..chunk]
+resultReader3.result2[0..1, 0..1, 0..chunk] => diffCalc3.result2[0..1, 0..1, 0..chunk]
+resultReader3.result3[0..1, 0..1, 0..chunk] => diffCalc3.result3[0..1, 0..1, 0..chunk]
+regionSample3.out0[0..1, 0..1, 0..chunk] => diffCalc3.img0[0..1, 0..1, 0..chunk]
+regionSample3.out1[0..1, 0..1, 0..chunk] => diffCalc3.img1[0..1, 0..1, 0..chunk]
+regionSample3.out2[0..1, 0..1, 0..chunk] => diffCalc3.img2[0..1, 0..1, 0..chunk]
+regionSample3.out3[0..1, 0..1, 0..chunk] => diffCalc3.img3[0..1, 0..1, 0..chunk]
+regionSample3.out4[0..1, 0..1, 0..chunk] => diffCalc3.img4[0..1, 0..1, 0..chunk]
+regionSample3.out5[0..1, 0..1, 0..chunk] => diffCalc3.img5[0..1, 0..1, 0..chunk]
+regionSample3.out6[0..1, 0..1, 0..chunk] => diffCalc3.img6[0..1, 0..1, 0..chunk]
+regionSample3.out7[0..1, 0..1, 0..chunk] => diffCalc3.img7[0..1, 0..1, 0..chunk]
+regionSample3.out8[0..1, 0..1, 0..chunk] => pickCandidate.pixel3[0..1, 0..1, 0..chunk]
+diffCalc3.outDiff[0..1, 0..1, 0..chunk] => pickCandidate.diff3[0..1, 0..1, 0..chunk]
+
+////////////////////////////////////////////
+//region 5
+////////////////////////////////////////////
+pickCandidate.finalOutput[0..1, 0..1, 0..chunk] => resultImage[0..imageCount, lineNumber..linNumber + 1, 0..outputWidth]
+
+//Computation
+////////////////////////////////////////////
+//region 0
+////////////////////////////////////////////
+atlasReader.dummy[0..1, 0..1, 0..chunk] => atlasReader.dummy
+
+////////////////////////////////////////////
+//region 1
+////////////////////////////////////////////
+targetReader0.target0[0..1, 0..1, 0..chunk] => targetReader0.dummy
+resultReader0.result0[0..1, 0..1, 0..chunk] => resultReader0.dummy
+regionSample0.atlas[0..1, 0..1, 0..chunk] => regionSample0.in_atlas
+diffCalc0.img0[0..1, 0..1, 0..chunk] => diffCalc0.in_image0
+diffCalc0.img1[0..1, 0..1, 0..chunk] => diffCalc0.in_image1
+diffCalc0.img2[0..1, 0..1, 0..chunk] => diffCalc0.in_image2
+diffCalc0.img3[0..1, 0..1, 0..chunk] => diffCalc0.in_image3
+diffCalc0.img4[0..1, 0..1, 0..chunk] => diffCalc0.in_image4
+diffCalc0.img5[0..1, 0..1, 0..chunk] => diffCalc0.in_image5
+diffCalc0.img6[0..1, 0..1, 0..chunk] => diffCalc0.in_image6
+diffCalc0.img7[0..1, 0..1, 0..chunk] => diffCalc0.in_image7
+diffCalc0.target0[0..1, 0..1, 0..chunk] => diffCalc0.in_target0
+diffCalc0.target1[0..1, 0..1, 0..chunk] => diffCalc0.in_target1
+diffCalc0.target2[0..1, 0..1, 0..chunk] => diffCalc0.in_target2
+diffCalc0.target3[0..1, 0..1, 0..chunk] => diffCalc0.in_target3
+diffCalc0.result0[0..1, 0..1, 0..chunk] => diffCalc0.in_result0
+diffCalc0.result1[0..1, 0..1, 0..chunk] => diffCalc0.in_result1
+diffCalc0.result2[0..1, 0..1, 0..chunk] => diffCalc0.in_result2
+diffCalc0.result3[0..1, 0..1, 0..chunk] => diffCalc0.in_result3
+diffCalc0.out_diff => diffCalc0.outDiff[0..1, 0..1, 0..chunk]
+
+////////////////////////////////////////////
+//region 2
+////////////////////////////////////////////
+targetReader1.target0[0..1, 0..1, 0..chunk] => targetReader1.dummy
+resultReader1.result0[0..1, 0..1, 0..chunk] => resultReader1.dummy
+regionSample1.atlas[0..1, 0..1, 0..chunk] => regionSample1.in_atlas
+diffCalc1.img0[0..1, 0..1, 0..chunk] => diffCalc1.in_image0
+diffCalc1.img1[0..1, 0..1, 0..chunk] => diffCalc1.in_image1
+diffCalc1.img2[0..1, 0..1, 0..chunk] => diffCalc1.in_image2
+diffCalc1.img3[0..1, 0..1, 0..chunk] => diffCalc1.in_image3
+diffCalc1.img4[0..1, 0..1, 0..chunk] => diffCalc1.in_image4
+diffCalc1.img5[0..1, 0..1, 0..chunk] => diffCalc1.in_image5
+diffCalc1.img6[0..1, 0..1, 0..chunk] => diffCalc1.in_image6
+diffCalc1.img7[0..1, 0..1, 0..chunk] => diffCalc1.in_image7
+diffCalc1.target0[0..1, 0..1, 0..chunk] => diffCalc1.in_target0
+diffCalc1.target1[0..1, 0..1, 0..chunk] => diffCalc1.in_target1
+diffCalc1.target2[0..1, 0..1, 0..chunk] => diffCalc1.in_target2
+diffCalc1.target3[0..1, 0..1, 0..chunk] => diffCalc1.in_target3
+diffCalc1.result0[0..1, 0..1, 0..chunk] => diffCalc1.in_result0
+diffCalc1.result1[0..1, 0..1, 0..chunk] => diffCalc1.in_result1
+diffCalc1.result2[0..1, 0..1, 0..chunk] => diffCalc1.in_result2
+diffCalc1.result3[0..1, 0..1, 0..chunk] => diffCalc1.in_result3
+diffCalc1.out_diff => diffCalc1.outDiff[0..1, 0..1, 0..chunk]
+
+////////////////////////////////////////////
+//region 3
+////////////////////////////////////////////
+targetReader2.target0[0..1, 0..1, 0..chunk] => targetReader2.dummy
+resultReader2.result0[0..1, 0..1, 0..chunk] => resultReader2.dummy
+regionSample2.atlas[0..1, 0..1, 0..chunk] => regionSample2.in_atlas
+diffCalc2.img0[0..1, 0..1, 0..chunk] => diffCalc2.in_image0
+diffCalc2.img1[0..1, 0..1, 0..chunk] => diffCalc2.in_image1
+diffCalc2.img2[0..1, 0..1, 0..chunk] => diffCalc2.in_image2
+diffCalc2.img3[0..1, 0..1, 0..chunk] => diffCalc2.in_image3
+diffCalc2.img4[0..1, 0..1, 0..chunk] => diffCalc2.in_image4
+diffCalc2.img5[0..1, 0..1, 0..chunk] => diffCalc2.in_image5
+diffCalc2.img6[0..1, 0..1, 0..chunk] => diffCalc2.in_image6
+diffCalc2.img7[0..1, 0..1, 0..chunk] => diffCalc2.in_image7
+diffCalc2.target0[0..1, 0..1, 0..chunk] => diffCalc2.in_target0
+diffCalc2.target1[0..1, 0..1, 0..chunk] => diffCalc2.in_target1
+diffCalc2.target2[0..1, 0..1, 0..chunk] => diffCalc2.in_target2
+diffCalc2.target3[0..1, 0..1, 0..chunk] => diffCalc2.in_target3
+diffCalc2.result0[0..1, 0..1, 0..chunk] => diffCalc2.in_result0
+diffCalc2.result1[0..1, 0..1, 0..chunk] => diffCalc2.in_result1
+diffCalc2.result2[0..1, 0..1, 0..chunk] => diffCalc2.in_result2
+diffCalc2.result3[0..1, 0..1, 0..chunk] => diffCalc2.in_result3
+diffCalc2.out_diff => diffCalc2.outDiff[0..1, 0..1, 0..chunk]
+
+////////////////////////////////////////////
+//region 4
+////////////////////////////////////////////
+targetReader3.target0[0..1, 0..1, 0..chunk] => targetReader3.dummy
+resultReader3.result0[0..1, 0..1, 0..chunk] => resultReader3.dummy
+regionSample3.atlas[0..1, 0..1, 0..chunk] => regionSample3.in_atlas
+diffCalc3.img0[0..1, 0..1, 0..chunk] => diffCalc3.in_image0
+diffCalc3.img1[0..1, 0..1, 0..chunk] => diffCalc3.in_image1
+diffCalc3.img2[0..1, 0..1, 0..chunk] => diffCalc3.in_image2
+diffCalc3.img3[0..1, 0..1, 0..chunk] => diffCalc3.in_image3
+diffCalc3.img4[0..1, 0..1, 0..chunk] => diffCalc3.in_image4
+diffCalc3.img5[0..1, 0..1, 0..chunk] => diffCalc3.in_image5
+diffCalc3.img6[0..1, 0..1, 0..chunk] => diffCalc3.in_image6
+diffCalc3.img7[0..1, 0..1, 0..chunk] => diffCalc3.in_image7
+diffCalc3.target0[0..1, 0..1, 0..chunk] => diffCalc3.in_target0
+diffCalc3.target1[0..1, 0..1, 0..chunk] => diffCalc3.in_target1
+diffCalc3.target2[0..1, 0..1, 0..chunk] => diffCalc3.in_target2
+diffCalc3.target3[0..1, 0..1, 0..chunk] => diffCalc3.in_target3
+diffCalc3.result0[0..1, 0..1, 0..chunk] => diffCalc3.in_result0
+diffCalc3.result1[0..1, 0..1, 0..chunk] => diffCalc3.in_result1
+diffCalc3.result2[0..1, 0..1, 0..chunk] => diffCalc3.in_result2
+diffCalc3.result3[0..1, 0..1, 0..chunk] => diffCalc3.in_result3
+diffCalc3.out_diff => diffCalc3.outDiff[0..1, 0..1, 0..chunk]
+
+
+////////////////////////////////////////////
+//region 5
+////////////////////////////////////////////
+pickCandidate.diff0[0..1, 0..1, 0..chunk] => pickCandidate.in_diff0
+pickCandidate.diff1[0..1, 0..1, 0..chunk] => pickCandidate.in_diff1
+pickCandidate.diff2[0..1, 0..1, 0..chunk] => pickCandidate.in_diff2
+pickCandidate.diff3[0..1, 0..1, 0..chunk] => pickCandidate.in_diff3
+pickCandidate.pixel0[0..1, 0..1, 0..chunk] => pickCandidate.in_pixel0
+pickCandidate.pixel1[0..1, 0..1, 0..chunk] => pickCandidate.in_pixel1
+pickCandidate.pixel2[0..1, 0..1, 0..chunk] => pickCandidate.in_pixel2
+pickCandidate.pixel3[0..1, 0..1, 0..chunk] => pickCandidate.in_pixel3
+pickCandidate.out_pixel => pickCandidate.finalOutput[0..1, 0..1, 0..chunk]
+

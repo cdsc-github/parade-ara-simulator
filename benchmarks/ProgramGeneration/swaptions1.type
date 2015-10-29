@@ -1,0 +1,50 @@
+MODULE swaptions1
+OPCODE 1301
+POWER 1.0
+AREA 1.0
+DEPTH 60
+CYCLE 2
+II 2
+
+ARGUMENT INPUT float randSeed
+ARGUMENT OUTPUT float#3#11 randResult
+
+BODY
+
+#define RanUnif(x, result) \
+{ \
+        float ix, k1; \
+        float dRes; \
+        ix = x; \
+        k1 = ix * 7.8263796e-6f; \
+        ix = 16807.0f * (ix - k1 * 127773.0f) - k1 * 2836.0f; \
+        x = ix; \
+        dRes = ix * 4.656612875e-10f; \
+        result = dRes; \
+}
+
+#define randVal(factor, iN) randResult[factor][iN]
+
+#define FillRandVal_Fac(x) \
+        RanUnif(randSeed, randVal(x, 0)); \
+        RanUnif(randSeed, randVal(x, 1)); \
+        RanUnif(randSeed, randVal(x, 2)); \
+        RanUnif(randSeed, randVal(x, 3)); \
+        RanUnif(randSeed, randVal(x, 4)); \
+        RanUnif(randSeed, randVal(x, 5)); \
+        RanUnif(randSeed, randVal(x, 6)); \
+        RanUnif(randSeed, randVal(x, 7)); \
+        RanUnif(randSeed, randVal(x, 8)); \
+        RanUnif(randSeed, randVal(x, 9)); \
+        RanUnif(randSeed, randVal(x, 10));
+
+
+                FillRandVal_Fac(0);
+                FillRandVal_Fac(1);
+                FillRandVal_Fac(2);
+
+#undef randVal
+#undef RanUnif
+#undef FillRandVal
+
+END

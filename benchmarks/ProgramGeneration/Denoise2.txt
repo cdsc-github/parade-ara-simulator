@@ -1,0 +1,67 @@
+VARIABLE STREAM IN float u [sizeX, sizeY, sizeZ]
+VARIABLE STREAM IN float f [sizeX, sizeY, sizeZ]
+VARIABLE STREAM IN float g [sizeX, sizeY, sizeZ]
+VARIABLE STREAM OUT float result [sizeX, sizeY, sizeZ]
+
+VARIABLE int sizeX
+VARIABLE int sizeY
+VARIABLE int sizeZ
+
+VARIABLE int chunk
+VARIABLE float sigma
+VARIABLE float lambda
+VARIABLE float dt
+
+TASK [1..sizeX - 1:chunk, 1..sizeY - 1:chunk, 1..sizeX - 1:chunk]
+SPM_WINDOWS 3
+
+DECLARE denoise2 d2 [sigma = sigma]
+DECLARE denoise3 d3 [width = chunk, height = chunk, depth = chunk, dt = dt, gamma = lambda / sigma]
+
+ASSERT chunk > 0
+ASSERT (sizeX - 2) > 0
+ASSERT (sizeY - 2) > 0
+ASSERT (sizeZ - 2) > 0
+ASSERT (sizeX - 2) % chunk == 0
+ASSERT (sizeY - 2) % chunk == 0
+ASSERT (sizeZ - 2) % chunk == 0
+ASSERT result != g
+ASSERT result != u
+ASSERT result != f
+
+CREATE_SPM d2 float u_in [chunk, chunk, chunk]
+CREATE_SPM d2 float f_in [chunk, chunk, chunk]
+CREATE_SPM d2 float r_out [chunk, chunk, chunk]
+
+CREATE_SPM d3 float u_in [chunk + 2, chunk + 2, chunk + 2]
+CREATE_SPM d3 float g_in [chunk + 2, chunk + 2, chunk + 2]
+CREATE_SPM d3 float r_in [chunk, chunk, chunk]
+CREATE_SPM d3 float f_in [chunk, chunk, chunk]
+CREATE_SPM d3 float u_out [chunk, chunk, chunk]
+
+//MEM <-> SPM for d2
+u[1..sizeX - 1, 1..sizeY - 1, 1..sizeZ - 1] => d2.u_in[0..chunk, 0..chunk, 0..chunk]
+f[1..sizeX - 1, 1..sizeY - 1, 1..sizeZ - 1] => d2.f_in[0..chunk, 0..chunk, 0..chunk]
+
+//MEM <-> SPM for d3
+u[0..sizeX, 0..sizeY, 0..sizeZ] => d3.u_in[0..chunk + 2, 0..chunk + 2, 0..chunk + 2]
+g[0..sizeX, 0..sizeY, 0..sizeZ] => d3.g_in[0..chunk + 2, 0..chunk + 2, 0..chunk + 2]
+d3.u_out[0..chunk, 0..chunk, 0..chunk] => result[1..sizeX - 1, 1..sizeY - 1, 1..sizeZ - 1]
+
+//CHAINS
+d2.r_out[0..chunk, 0..chunk, 0..chunk] => d3.r_in[0..chunk, 0..chunk, 0..chunk]
+d2.f_in[0..chunk, 0..chunk, 0..chunk] => d3.f_in[0..chunk, 0..chunk, 0..chunk]
+
+//here are the argument streams to the engine
+d2.u_in[0..chunk, 0..chunk, 0..chunk] => d2.u
+d2.f_in[0..chunk, 0..chunk, 0..chunk] => d2.f
+d2.ret => d2.r_out[0..chunk, 0..chunk, 0..chunk]
+d3.u_in[1..chunk + 1, 1..chunk + 1, 1..chunk + 1] => d3.u_Center
+d3.g_in[1..chunk + 1, 1..chunk + 1, 1..chunk + 1] => d3.g_Center
+d3.r_in[0..chunk, 0..chunk, 0..chunk] => d3.r
+d3.f_in[0..chunk, 0..chunk, 0..chunk] => d3.f_Center
+d3.u_Result => d3.u_out [0..chunk, 0..chunk, 0..chunk]
+
+
+
+

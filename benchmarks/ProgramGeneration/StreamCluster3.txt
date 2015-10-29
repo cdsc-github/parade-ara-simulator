@@ -1,0 +1,48 @@
+VARIABLE STREAM IN float#32 point [size]
+VARIABLE STREAM IN float weight [size]
+VARIABLE STREAM IN float cost [size]
+VARIABLE STREAM IN uint32_t assign [size]
+VARIABLE STREAM IN uint32_t in_switch_membership [size]
+VARIABLE STREAM OUT uint32_t out_switch_membership [size]
+
+VARIABLE uint64_t center
+VARIABLE uint64_t lower
+VARIABLE float#32 xPoint
+
+VARIABLE int size
+
+VARIABLE int chunk
+
+TASK [0..size:chunk]
+SPM_WINDOWS 3
+
+DECLARE streamCluster3 x [tableAddr = center, tableStride = sizeof(uint32_t), spmAddr = @lowerSPM, lowerAddr = lower, lowerStride = sizeof(float), modificationAddr = @mod]
+
+CREATE_SPM x float#32 point [chunk]
+CREATE_SPM x float#32 xPoint [1]
+CREATE_SPM x float weight [chunk]
+CREATE_SPM x float cost [chunk]
+CREATE_SPM x uint32_t assign [chunk]
+CREATE_SPM x uint32_t lowerSPM [chunk]
+CREATE_SPM x uint32_t inSwitch [chunk]
+CREATE_SPM x uint32_t outSwitch [chunk]
+CREATE_SPM x float mod [chunk]
+CREATE_SPM x uint32_t predicate [chunk]
+
+point[0..size] => x.point[0..chunk]
+!xPoint => x.xPoint[0..1]
+weight[0..size] => x.weight[0..chunk]
+cost[0..size] => x.cost[0..chunk]
+assign[0..size] => x.assign[0..chunk]
+in_switch_membership[0..size] => x.inSwitch[0..chunk]
+x.outSwitch[0..chunk] => out_switch_membership[0..size]
+
+x.point[0..chunk] => x.src
+x.xPoint[0..1] => x.dst
+x.weight[0..chunk] => x.weight
+x.cost[0..chunk] => x.cost
+x.assign[0..chunk] => x.readIndex
+x.inSwitch[0..chunk] => x.inSwitchMembership
+x.outSwitchMembership => x.outSwitch[0..chunk]
+x.predicateResolution => x.predicate[0..chunk]
+x.modification => x.mod[0..chunk]

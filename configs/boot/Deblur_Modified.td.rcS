@@ -1,0 +1,2 @@
+echo -e "TDLCA_Deblur_Modified 0 130" | ./benchmarks/bench.out /benchmarks/TDLCA/
+m5 exit

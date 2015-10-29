@@ -1,0 +1,24 @@
+VARIABLE STREAM IN float#3#11 ppdFactors [size]
+VARIABLE STREAM IN float#3#11 pdZ [size]
+VARIABLE STREAM OUT float#55 shockVals [size]
+
+VARIABLE int size
+
+VARIABLE int chunk
+
+TASK [0..size:chunk]
+SPM_WINDOWS 3
+
+DECLARE swaptions3 x []
+CREATE_SPM x float#3#11 in_ppdFactors [chunk]
+CREATE_SPM x float#3#11 in_pdZ [chunk]
+CREATE_SPM x float#55 out_shock [chunk]
+
+ppdFactors[0..size] => x.in_ppdFactors[0..chunk]
+pdZ[0..size] => x.in_pdZ[0..chunk]
+x.out_shock[0..chunk] => shockVals[0..size]
+
+x.in_ppdFactors[0..chunk] => x.ppdFactors
+x.in_pdZ[0..chunk] => x.pdZ
+x.shockVals => x.out_shock[0..chunk]
+

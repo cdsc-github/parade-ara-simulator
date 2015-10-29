@@ -1,0 +1,2 @@
+echo -e "SW_EKF_SLAM 0 131072" | ./benchmarks/bench.out /benchmarks/SW/
+m5 exit

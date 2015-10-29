@@ -1,0 +1,30 @@
+MODULE blur1Mega
+OPCODE 105
+POWER 1.0
+AREA 1.0
+DEPTH 17
+CYCLE 1
+II 1
+
+ARGUMENT INPUT float val
+ARGUMENT INPUT INFERRED float val2 @val + 1 * ArgSize(val)
+
+ARGUMENT OUTPUT float out
+
+REGISTER float carry
+REGISTER float nu
+REGISTER int resetLength
+
+BODY
+
+if((iteration + maxIteration * taskID) % resetLength == 0)
+{
+	carry = val * nu;
+	out = val * nu + val2;
+}
+else
+{
+	carry = out = carry * nu + val2;
+}
+
+END

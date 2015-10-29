@@ -1,0 +1,15 @@
+# -*- mode:python -*-
+
+import os
+import sys
+
+from os.path import basename, isdir, join as joinpath
+
+import SCons
+
+Import('*')
+
+Source('NetworkInterrupts.cc')
+Source('lwi.cc')
+
+DebugFlag('LWI');

@@ -1,0 +1,2 @@
+echo -e "SW_Deblur 0 130" | ./benchmarks/bench.out /benchmarks/SW/
+m5 exit

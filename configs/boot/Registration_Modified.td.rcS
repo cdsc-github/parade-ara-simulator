@@ -1,0 +1,2 @@
+echo -e "TDLCA_Registration_Modified 0 130" | ./benchmarks/bench.out /benchmarks/TDLCA/
+m5 exit

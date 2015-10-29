@@ -1,0 +1,20 @@
+MODULE streamCluster1
+OPCODE 1201
+POWER 1.0
+AREA 1.0
+DEPTH 1
+CYCLE 1
+II 2
+
+ARGUMENT INPUT uint32_t predicate
+
+ARGUMENT OUTPUT uint32_t count
+
+REGISTER uint32_t counter = 0
+
+BODY
+
+if(predicate)
+	count = counter++;
+
+END

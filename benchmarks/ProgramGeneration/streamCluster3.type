@@ -1,0 +1,48 @@
+MODULE streamCluster3
+OPCODE 1203
+POWER 1.0
+AREA 1.0
+DEPTH 1
+CYCLE 2
+II 1
+
+ARGUMENT INPUT float#32 src
+ARGUMENT INPUT float#32 dst
+ARGUMENT INPUT float weight
+ARGUMENT INPUT float cost
+ARGUMENT INPUT uint32_t readIndex
+ARGUMENT INPUT uint32_t inSwitchMembership
+
+ARGUMENT OUTPUT uint32_t predicateResolution
+ARGUMENT OUTPUT uint32_t outSwitchMembership
+ARGUMENT OUTPUT float modification
+
+REGISTER uint64_t tableAddr
+REGISTER uint32_t tableStride
+REGISTER uint64_t spmAddr
+REGISTER uint64_t lowerAddr
+REGISTER uint32_t lowerStride
+REGISTER uint64_t modificationAddr
+
+BODY
+
+float x_cost= 0;
+for(int i = 0; i < 32; i++)
+{
+	x_cost += (src[i] - dst[i]) * (src[i] - dst[i]) * weight;
+}
+float current_cost = cost;
+
+predicateResolution = (x_cost < current_cost) ? 1 : 0;
+
+if(predicateResolution)
+{
+	outSwitchMembership = 1;
+}
+else
+{
+	outSwitchMembership = inSwitchMembership;
+	AddRead(tableAddr + tableStride * readIndex, spmAddr + iteration * sizeof(float), sizeof(float));
+}
+
+END

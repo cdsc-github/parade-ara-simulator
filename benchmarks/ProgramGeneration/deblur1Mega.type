@@ -1,0 +1,22 @@
+MODULE deblur1Mega
+OPCODE 201
+POWER 1.0
+AREA 1.0
+DEPTH 1
+CYCLE 2
+II 1
+
+ARGUMENT INPUT float conv_in
+ARGUMENT INPUT float f
+
+ARGUMENT OUTPUT float conv_out
+
+REGISTER float sigma
+
+BODY
+
+float r = conv_in * f / sigma;
+r = (r * (2.38944f + r * (0.950037f + r))) / (4.65314f + r * (2.57541f + r * (1.48937f + r)));
+conv_out = conv_in - f * r;
+
+END

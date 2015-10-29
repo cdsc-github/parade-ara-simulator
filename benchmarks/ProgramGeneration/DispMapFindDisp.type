@@ -1,0 +1,33 @@
+MODULE DispMapFindDisp
+OPCODE 832
+POWER 1.0
+AREA 1.0
+DEPTH 31
+CYCLE 1
+II 1
+
+ARGUMENT INPUT float in_IImg1
+ARGUMENT INPUT float in_IImg2
+ARGUMENT INPUT float in_IImg3
+ARGUMENT INPUT float in_IImg4
+ARGUMENT OUTPUT float out_Disp
+
+REGISTER float internal_min
+REGISTER float internal_index
+
+BODY
+
+	// Compute SAD (Sum of Absolute Differences) value
+    float SAD = in_IImg1 + in_IImg2 - in_IImg3 - in_IImg4;
+
+	// Check for minimum SAD value and return its index (i.e. disparity value)
+	if (internal_index == 0.f || SAD < internal_min) {
+		internal_min = SAD;
+		out_Disp = internal_index;
+	}
+	else
+		out_Disp = -1;
+	internal_index++;
+
+END
+

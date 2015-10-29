@@ -1,0 +1,3 @@
+echo -e "TDLCA_BlackScholes 0 262144" | ./benchmarks/bench.out /benchmarks/TDLCA/
+m5 dumpstats
+m5 exit

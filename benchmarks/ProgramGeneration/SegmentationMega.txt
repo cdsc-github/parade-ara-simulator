@@ -1,0 +1,5 @@
+Declare SegmentationMega d
+
+input:u => d:input_u
+input:f => d:input_phi
+d:output_nu => output:nu

@@ -1,0 +1,27 @@
+VARIABLE STREAM IN float in_a [size]
+VARIABLE STREAM IN float in_b [size]
+VARIABLE STREAM OUT float out [size]
+
+VARIABLE int size
+VARIABLE int chunk
+
+TASK [0..size:chunk]
+SPM_WINDOWS 2
+
+DECLARE VectorAddSample vAccel []
+
+ASSERT chunk > 0
+ASSERT size > chunk
+ASSERT size % chunk == 0
+
+CREATE_SPM vAccel float region_a [chunk]
+CREATE_SPM vAccel float region_b [chunk]
+CREATE_SPM vAccel float region_c [chunk]
+
+in_a[0..size] => vAccel.region_a[0..chunk]
+in_b[0..size] => vAccel.region_b[0..chunk]
+vAccel.region_c[0..chunk] => out[0..size]
+
+vAccel.region_a[0..chunk] => vAccel.input_a
+vAccel.region_b[0..chunk] => vAccel.input_b
+vAccel.output => vAccel.region_c[0..chunk]

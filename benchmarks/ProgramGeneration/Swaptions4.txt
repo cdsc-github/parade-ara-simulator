@@ -1,0 +1,31 @@
+VARIABLE STREAM IN float#11 pdTotalDrift [size]
+VARIABLE STREAM IN float#55 shockVals [size]
+VARIABLE STREAM IN float#11#11 in_ppdHJMPath [size]
+VARIABLE STREAM OUT float#11#11 out_ppdHJMPath [size]
+
+VARIABLE float ddelt
+VARIABLE float sqrt_ddelt
+
+VARIABLE int size
+
+VARIABLE int chunk
+
+TASK [0..size:chunk]
+SPM_WINDOWS 3
+
+DECLARE swaptions4 x [ddelt = ddelt, sqrt_ddelt = sqrt_ddelt]
+CREATE_SPM x float#11 in_pdTotalDrift [chunk]
+CREATE_SPM x float#55 in_shock [chunk]
+CREATE_SPM x float#11#11 in_Path [chunk]
+CREATE_SPM x float#11#11 out_Path [chunk]
+
+pdTotalDrift[0..size] => x.in_pdTotalDrift[0..chunk]
+shockVals[0..size] => x.in_shock[0..chunk]
+in_ppdHJMPath[0..size] => x.in_Path[0..chunk]
+x.out_Path[0..chunk] => out_ppdHJMPath[0..size]
+
+x.in_pdTotalDrift[0..chunk] => x.pdTotalDrift
+x.in_shock[0..chunk] => x.shock_arr
+x.in_Path[0..chunk] => x.in_ppdHJMPath
+x.out_ppdHJMPath => x.out_Path[0..chunk]
+

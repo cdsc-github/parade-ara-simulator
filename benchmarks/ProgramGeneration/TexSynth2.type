@@ -1,0 +1,63 @@
+MODULE TexSynth2
+OPCODE 911
+POWER 1.0
+AREA 1.0
+DEPTH 21
+CYCLE 1
+II 1
+
+ARGUMENT INPUT float dummy
+
+REGISTER uint32_t output0
+REGISTER uint32_t output1
+REGISTER uint32_t output2
+REGISTER uint32_t output3
+REGISTER int32_t offsetX0
+REGISTER int32_t offsetY0
+REGISTER int32_t offsetX1
+REGISTER int32_t offsetY1
+REGISTER int32_t offsetX2
+REGISTER int32_t offsetY2
+REGISTER int32_t offsetX3
+REGISTER int32_t offsetY3
+REGISTER uint32_t elementSize
+REGISTER uint32_t elementCount
+REGISTER intptr_t inputAddr
+REGISTER uint32_t width
+REGISTER uint32_t height
+REGISTER int line
+
+BODY
+
+int index = (iteration + maxIteration * taskID);
+int imageIndex = index / (width * height);
+int imagePitch = width * height * elementSize * elementCount * imageIndex;
+int in_j = line;
+int in_i = index % width;
+
+for(int i = 0; i < elementCount; i++)
+{
+	int x = (in_i + offsetX0 + width) % width;
+	int y = (in_j + offsetY0 + height) % height;
+	AddRead(inputAddr + imagePitch + (x + width * y) * (elementSize * elementCount) + (i * elementSize), output0 + iteration * (elementSize * elementCount) + (i * elementSize), elementSize);
+}
+for(int i = 0; i < elementCount; i++)
+{
+	int x = (in_i + offsetX1 + width) % width;
+	int y = (in_j + offsetY1 + height) % height; 
+	AddRead(inputAddr + imagePitch + (x + width * y) * (elementSize * elementCount) + (i * elementSize), output1 + iteration * (elementSize * elementCount) + (i * elementSize), elementSize);
+}
+for(int i = 0; i < elementCount; i++)
+{
+	int x = (in_i + offsetX2 + width) % width;
+	int y = (in_j + offsetY2 + height) % height; 
+	AddRead(inputAddr + imagePitch + (x + width * y) * (elementSize * elementCount) + (i * elementSize), output2 + iteration * (elementSize * elementCount) + (i * elementSize), elementSize);
+}
+for(int i = 0; i < elementCount; i++)
+{
+	int x = (in_i + offsetX3 + width) % width;
+	int y = (in_j + offsetY3 + height) % height; 
+	AddRead(inputAddr + imagePitch + (x + width * y) * (elementSize * elementCount) + (i * elementSize), output3 + iteration * (elementSize * elementCount) + (i * elementSize), elementSize);
+}
+
+END

@@ -1,0 +1,40 @@
+VARIABLE STREAM IN float conv_in [sizeX, sizeY, sizeZ]
+VARIABLE STREAM IN float f [sizeX, sizeY, sizeZ]
+VARIABLE STREAM OUT float conv_out [sizeX, sizeY, sizeZ]
+
+VARIABLE float sigma
+
+VARIABLE int sizeX
+VARIABLE int sizeY
+VARIABLE int sizeZ
+
+VARIABLE int chunkX
+VARIABLE int chunkY
+VARIABLE int chunkZ
+
+TASK [1..sizeX - 1:chunkX, 1..sizeY - 1:chunkY, 1..sizeZ - 1:chunkZ]
+SPM_WINDOWS 3
+
+DECLARE deblur1Mega d [sigma = sigma]
+
+ASSERT chunkX > 0
+ASSERT chunkY > 0
+ASSERT chunkZ > 0
+ASSERT sizeX - 2 > 0
+ASSERT sizeY - 2 > 0
+ASSERT sizeZ - 2 > 0
+ASSERT (sizeX - 2) % chunkX == 0
+ASSERT (sizeY - 2) % chunkY == 0
+ASSERT (sizeZ - 2) % chunkZ == 0
+
+CREATE_SPM d float cin [chunkX, chunkY, chunkZ]
+CREATE_SPM d float fin [chunkX, chunkY, chunkZ]
+CREATE_SPM d float cout [chunkX, chunkY, chunkZ]
+
+conv_in[1..sizeX - 1, 1..sizeY - 1, 1..sizeZ - 1] => d.cin[0..chunkX, 0..chunkY, 0..chunkZ]
+f[1..sizeX - 1, 1..sizeY - 1, 1..sizeZ - 1] => d.fin[0..chunkX, 0..chunkY, 0..chunkZ]
+d.cout[0..chunkX, 0..chunkY, 0..chunkZ] => conv_out[1..sizeX - 1, 1..sizeY - 1, 1..sizeZ - 1]
+
+d.cin[0..chunkX, 0..chunkY, 0..chunkZ] => d.conv_in
+d.fin[0..chunkX, 0..chunkY, 0..chunkZ] => d.f
+d.conv_out => d.cout[0..chunkX, 0..chunkY, 0..chunkZ]

@@ -1,0 +1,26 @@
+VARIABLE STREAM IN uint32_t isCenter [size]
+VARIABLE STREAM IN uint32_t centerTable [size]
+VARIABLE STREAM IN float low [size]
+
+VARIABLE uint64_t gl_low
+
+VARIABLE int size
+
+VARIABLE int chunk
+
+TASK [0..size:chunk]
+SPM_WINDOWS 3
+
+DECLARE streamCluster4 x [gl_lowStart = gl_low, lowStart = @x.low]
+
+CREATE_SPM x uint32_t predicate [chunk]
+CREATE_SPM x uint32_t table [chunk]
+CREATE_SPM x float low [chunk]
+
+isCenter[0..size] => x.predicate[0..chunk]
+centerTable[0..size] => x.table[0..chunk]
+low[0..size] => x.low[0..chunk]
+
+x.predicate[0..chunk] => x.predicate
+x.table[0..chunk] => x.table
+x.low[0..chunk] => x.low

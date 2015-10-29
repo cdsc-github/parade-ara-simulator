@@ -1,0 +1,36 @@
+MODULE denoise1Mega
+OPCODE 101
+POWER 1.0
+AREA 1.0
+DEPTH 1
+CYCLE 2
+II 1
+
+ARGUMENT INPUT float a_Center
+
+ARGUMENT INPUT float b_Center
+ARGUMENT INPUT INFERRED float b_Right @b_Center + 1 * ArgSize(b_Center)
+ARGUMENT INPUT INFERRED float b_Left @b_Center - 1 * ArgSize(b_Center)
+ARGUMENT INPUT INFERRED float b_Down @b_Center + (width + 2) * ArgSize(b_Center)
+ARGUMENT INPUT INFERRED float b_Up @b_Center - (width + 2) * ArgSize(b_Center)
+ARGUMENT INPUT INFERRED float b_In @b_Center + (width + 2) * (height + 2) * ArgSize(b_Center)
+ARGUMENT INPUT INFERRED float b_Out @b_Center - (width + 2) * (height + 2) * ArgSize(b_Center)
+
+ARGUMENT OUTPUT float g
+
+REGISTER int width
+REGISTER int height
+REGISTER int depth
+
+BODY
+
+float v1 = a_Center - b_Right;
+float v2 = a_Center - b_Left;
+float v3 = a_Center - b_In;
+float v4 = a_Center - b_Out;
+float v5 = a_Center - b_Up;
+float v6 = a_Center - b_Down;
+
+g = 1.0f / sqrt(v1 * v1 + v2 * v2 + v3 * v3 + v4 * v4 + v5 * v5 + v6 * v6);
+
+END
