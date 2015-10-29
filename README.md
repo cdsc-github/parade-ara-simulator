@@ -48,7 +48,7 @@ Let’s assume you are in the home directory (`$PARADE_HOME`) of the checked out
 
 ##Build Benchmarks
 
-Before you start, please download the disk image and Linux binaries to `$PARADE_HOME` from: http://vast.cs.ucla.edu/software/parade-ara-simulator, and `export M5_PATH=$PARADE_HOME`. We have prebuilt all the benchmarks used in the ICCAD 15 paper. 
+Before you start, please download the disk image and Linux binaries from: http://vast.cs.ucla.edu/software/parade-ara-simulator. Decompress it and move the folders to `$PARADE_HOME`, and finally `export M5_PATH=$PARADE_HOME`. We have prebuilt all the benchmarks used in the ICCAD 15 paper. 
 
 If you want to build the benchmarks by your own:
 * `cd benchmarks; make`	--- note it needs an older GCC version, e.g., GCC-4.1.2
