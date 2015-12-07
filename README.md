@@ -38,13 +38,13 @@ Let’s assume you are in the home directory (`$PARADE_HOME`) of the checked out
 1. Build CPU version:
 	* Disable the `SIM_DEDICATED_ARA` macro in all three files, `src/mem/ruby/profiler/Profiler.cc`, `src/mem/ruby/system/System.cc`, and `src/sim/simulate.cc`
 	* `./build.gem5.sh`	--- note that current PARADE release disabled visualization support though the cache protocol name is `MESI_Two_Level_Trace`
-	* `cp buid/X86/gem5.opt parade-test/`	--- backup the built CPU version
+	* `cp build/X86/gem5.opt parade-test/`	--- backup the built CPU version
 
 2.	Build ARA version:
 	* Enable the `SIM_DEDICATED_ARA` macro in all three files, `src/mem/ruby/profiler/Profiler.cc`, `src/mem/ruby/system/System.cc`, and `src/sim/simulate.cc`
 	* In current PARADE release, users have to manually configure which accelerators to enable in the source code: `RubySystem::startup()` function in `src/mem/ruby/system/System.cc`. For example, if you want to enable only the BlackScholes accelerator, just uncomment the `AddOperatingMode` lines for BlackScholes and comment all other benchmarks.
 	* `./build.gem5.sh`
-	* `cp buid/X86/gem5.opt parade-test/TDLCA_BlackScholes`
+	* `cp build/X86/gem5.opt parade-test/TDLCA_BlackScholes`
 
 ##Build Benchmarks
 
