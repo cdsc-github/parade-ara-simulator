@@ -128,3 +128,7 @@ Website: https://sites.google.com/site/fangzhenman/
 
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/cdsc-github/parade-ara-simulator/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/cdsc-github/parade-ara-simulator/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
