@@ -45,9 +45,9 @@ class Mesh(SimpleTopology):
         num_routers = options.num_networkports
         num_rows = options.mesh_rows
 
-	# Assume using 4*8 Mesh
-	assert(num_routers == 32)
-	assert(num_rows == 4) 
+        # Assume using 4*8 Mesh
+        assert(num_routers == 32)
+        assert(num_rows == 4)
         # There must be an evenly divisible number of cntrls to routers
         # Also, obviously the number or rows must be <= the number of routers
         cntrls_per_router, remainder = divmod(len(nodes), num_routers)
@@ -73,8 +73,8 @@ class Mesh(SimpleTopology):
                 remainder_nodes.append(nodes[node_index])
 
         # Connect each node to the appropriate router
-	# Remap the cores/network_ports to routers
-	core_pos = [11, 12, 3, 4, 10, 13, 19, 20, 1, 9, 17, 6, 14, 22, 25, 26, 27, 28, 29, 30, 0, 8, 16, 24, 7, 15, 23, 31, 2, 5, 18, 21]
+        # Remap the cores/network_ports to routers
+        core_pos = [11, 12, 3, 4, 10, 13, 19, 20, 1, 9, 17, 6, 14, 22, 25, 26, 27, 28, 29, 30, 0, 8, 16, 24, 7, 15, 23, 31, 2, 5, 18, 21]
         ext_links = []
         for (i, n) in enumerate(network_nodes):
             cntrl_level, router_id = divmod(i, num_routers)
@@ -83,20 +83,20 @@ class Mesh(SimpleTopology):
                                     int_node=routers[core_pos[router_id]]))
             link_count += 1
 
-	# These should be DMA nodes and Directory nodes
-	# Connect the DMA nodes to router 0.
-	# Distribute the Directory nodes, assume we are using 4 memory contorllers
-	dir_pos = [2, 5, 18, 21]
+        # These should be DMA nodes and Directory nodes
+        # Connect the DMA nodes to router 0.
+        # Distribute the Directory nodes, assume we are using 4 memory contorllers
+        dir_pos = [2, 5, 18, 21]
         for (i, node) in enumerate(remainder_nodes):
             assert(node.type == 'DMA_Controller' or node.type == 'Directory_Controller')
             assert(i < remainder)
-	    if node.type == 'Directory_Controller' :
-	        ext_links.append(ExtLink(link_id=link_count, ext_node=node,
-                                    int_node=routers[dir_pos[i%4]]))
-	    else :
-	        ext_links.append(ExtLink(link_id=link_count, ext_node=node,
-                                    int_node=routers[0]))
-            link_count += 1
+            if node.type == 'Directory_Controller' :
+                ext_links.append(ExtLink(link_id=link_count, ext_node=node,
+                                        int_node=routers[dir_pos[i%4]]))
+            else :
+                ext_links.append(ExtLink(link_id=link_count, ext_node=node,
+                                        int_node=routers[0]))
+                link_count += 1
 
         network.ext_links = ext_links
 

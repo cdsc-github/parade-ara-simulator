@@ -42,9 +42,12 @@ class RubySystem(ClockedObject):
     memory_size_bits = Param.UInt32(64,
         "number of bits that a memory address requires");
     num_simics_net_ports = Param.Int(32, "total number of network ports");
-    num_accelerators = Param.Int(2, "total number of accelerators");
-    num_TDs = Param.Int(1, "total number of accelerators");
-    visual_trace = Param.String("parade-test/visual.txt", "file name for visualization trace");
+    num_acc_instances = Param.Int(1, "number of accelerator instances");
+    num_TDs = Param.Int(1, "total number of taskdistributors");
+    visual_trace = Param.String("parade-test/visual.txt",
+        "file name for visualization trace");
+    acc_types = Param.String("BlackScholes",
+        "accelerator type to be instantiated in the system");
 
     # Profiler related configuration variables
     hot_lines = Param.Bool(False, "")

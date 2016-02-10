@@ -61,9 +61,11 @@ uint32_t RubySystem::m_block_size_bytes;
 uint32_t RubySystem::m_block_size_bits;
 uint32_t RubySystem::m_memory_size_bits;
 #ifdef SIM_NET_PORTS
+std::vector<std::string> RubySystem::accTypes;
 int RubySystem::m_num_simics_net_ports;
 int RubySystem::m_num_accelerators;
 int RubySystem::m_num_TDs;
+int RubySystem::m_num_acc_instances;
 #endif
 
 RubySystem::RubySystem(const Params *p)
@@ -82,9 +84,11 @@ RubySystem::RubySystem(const Params *p)
     m_memory_size_bits = p->memory_size_bits;
 
 #ifdef SIM_NET_PORTS
+    parseAccTypes(p->acc_types);
+
     m_num_simics_net_ports = p->num_simics_net_ports;
-    m_num_accelerators = p->num_accelerators;
     m_num_TDs = p->num_TDs;
+    m_num_acc_instances = p->num_acc_instances;
 #endif
 
     m_warmup_enabled = false;
@@ -101,6 +105,26 @@ RubySystem::RubySystem(const Params *p)
     // Create the profiler
     m_profiler = new Profiler(p);
     m_phys_mem = p->phys_mem;
+}
+
+void
+RubySystem::parseAccTypes(std::string acc_types)
+{
+    std::string delimiter = ",";
+    size_t pos = 0;
+    std::string token;
+    std::vector<std::string> typeDeviceNames;
+    while ((pos = acc_types.find(delimiter)) != std::string::npos) {
+        token = acc_types.substr(0, pos);
+        accTypes.push_back(token);
+        typeDeviceNames = m_acc_dict[token];
+        m_num_accelerators += typeDeviceNames.size();
+        acc_types.erase(0, pos + delimiter.length());
+    }
+
+    accTypes.push_back(acc_types);
+    typeDeviceNames = m_acc_dict[acc_types];
+    m_num_accelerators += typeDeviceNames.size();
 }
 
 void
@@ -398,7 +422,7 @@ RubySystem::startup()
     }
     warn("Initialize network_interrupts\n");//*/
 
-    g_LCAccDeviceHandle.resize(m_num_accelerators);
+    g_LCAccDeviceHandle.resize(m_num_accelerators * m_num_acc_instances);
     for(i = 0; i < g_LCAccDeviceHandle.size(); i++) {
       g_LCAccDeviceHandle[i] = LCAcc::CreateNewLCAccDeviceHandle();
     }//*/
@@ -407,7 +431,7 @@ RubySystem::startup()
     g_memObject = NULL;
     g_memInterface = NULL;
 
-    g_dmaDevice.resize(m_num_accelerators);
+    g_dmaDevice.resize(m_num_accelerators * m_num_acc_instances);
     for(i = 0; i < g_dmaDevice.size(); i++) {
       g_dmaDevice[i] = CreateDMAEngineHandle();
     }
@@ -416,7 +440,7 @@ RubySystem::startup()
     g_dmaInterface = CreateDMAEngineInterface();
     warn("Initialize dmaInterface\n");
 
-    g_spmObject.resize(m_num_accelerators);
+    g_spmObject.resize(m_num_accelerators * m_num_acc_instances);
     for(i = 0; i < g_spmObject.size(); i++) {
       g_spmObject[i] = CreateNewScratchPad();
     }
@@ -458,93 +482,34 @@ RubySystem::startup()
     }
     warn("Initialize TDInterface\n");
 
-    //All benchmarks except for Texture_Synthesis, actually bind to one port
-    //comment this out for Texture_Synthesis case
-    for(i = 0; i < m_num_accelerators; i++) {
-      g_LCAccInterface->SetNetPort(g_LCAccDeviceHandle[i], portID, RubySystem::accIDtoDeviceID(i));
-    }//*/
+    int id = 0;
+    for (i = 0; i < accTypes.size(); i++) {
+        std::string bench = accTypes[i];
+        std::vector<std::string> subAccNames = m_acc_dict[bench];
+        int numSubAccs = subAccNames.size();
 
-    //vector add
-    //g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[0], "VectorAddSample");
+        for (int j = 0; j < m_num_acc_instances; j++) {
+            for (int k = 0; k < numSubAccs; k++) {
+                g_LCAccInterface->SetNetPort(
+                    g_LCAccDeviceHandle[id],
+                    portID + j + i * m_num_acc_instances,
+                    RubySystem::accIDtoDeviceID(id));
 
-    /*###Medical Imaging(MI) benchmarks##############*/
-    //deblur
-    /*g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[0], "denoise1Mega");
-    g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[1], "blur1Mega");
-    g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[2], "deblur1Mega");
-    g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[3], "deblur2Mega");//*/
+                g_LCAccInterface->AddOperatingMode(
+                    g_LCAccDeviceHandle[id],
+                    subAccNames[k].c_str());
 
-    //denoise
-    /*g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[0], "denoise1Mega");
-    g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[1], "denoise2Mega");//*/
-
-    //registration
-    /*g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[0], "registration1Mega");
-    g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[1], "blur1Mega");//*/
-
-    //segmentation
-    //g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[0], "segmentation1Mega");
-
-    /*###CoMmercial(CM) benchmarks###################*/
-    //blackScholes
-    g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[0], "blackScholes");
-    
-    //streamCluster
-    /*g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[0], "streamCluster1");
-    g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[1], "streamCluster3");
-    g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[2], "streamCluster4");
-    g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[3], "streamCluster5");
-    g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[4], "streamCluster6");//*/
-
-    //swaptions
-    /*g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[0], "swaptions1");
-    g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[1], "swaptions2");
-    g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[2], "swaptions3");
-    g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[3], "swaptions4");//*/
-    /*###CoMmercial(CM) benchmarks###################*/
-
-    /*###computer VISion(VIS) benchmarks#############*/
-    //LPCIP
-    //g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[0], "LPCIP");
-
-    //Texture_Synthesis: still suffer from page fault
-    /*g_LCAccInterface->SetNetPort(g_LCAccDeviceHandle[0], portID, RubySystem::accIDtoDeviceID(0));
-    g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[0], "TexSynth1");
-    for(i = 1; i < 10; i++) {
-      g_LCAccInterface->SetNetPort(g_LCAccDeviceHandle[i], portID+i-1, RubySystem::accIDtoDeviceID(i));
-      g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[i], "TexSynth2");
+                id++;
+            }
+        }
     }
-    for(i = 10; i < 14; i++) {
-      g_LCAccInterface->SetNetPort(g_LCAccDeviceHandle[i], portID+i-10, RubySystem::accIDtoDeviceID(i));
-      g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[i], "TexSynth3");
-    }
-    for(i = 14; i < 18; i++) {
-      g_LCAccInterface->SetNetPort(g_LCAccDeviceHandle[i], portID+i-14, RubySystem::accIDtoDeviceID(i));
-      g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[i], "TexSynth4");
-    }
-    g_LCAccInterface->SetNetPort(g_LCAccDeviceHandle[18], portID, RubySystem::accIDtoDeviceID(18));
-    g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[18], "TexSynth5");//*/
 
-    /*###NAVigation(NAV) benchmarks##################*/
-    //robot_localization
-    //g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[0], "RobLoc");
-
-    //disparity_map
-    /*g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[0], "DispMapCompSAD");
-    g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[1], "DispMapFindDisp");
-    g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[2], "DispMapIntegSum");//*/
-
-    //ekf_slam
-    /*g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[0], "Jacobians");
-    g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[1], "SphericalCoords");//*/
-    /*###NAVigation(NAV) benchmarks##################*/
-
-    for(i = 0; i < m_num_accelerators; i++) {
+    for(i = 0; i < m_num_accelerators * m_num_acc_instances; i++) {
       g_LCAccInterface->SetPrefetchDistance(g_LCAccDeviceHandle[i], 0);
       g_LCAccInterface->SetSPMConfig(g_LCAccDeviceHandle[i], 1, 2048, 2, 1, 1, 1);
       //g_LCAccInterface->SetSPMConfig(g_LCAccDeviceHandle[i], 1, 64, 100000, 0, 100000, 0); //ideal SPM
       g_LCAccInterface->Initialize(g_LCAccDeviceHandle[i], 0);
-    }//*/    
+    }
 
     for(int i = 0; i < 30000; i++) {
       cycleCBRing.push_back(std::queue<CBContainer>());
@@ -656,8 +621,8 @@ RubySystem::functionalRead(PacketPtr pkt)
             access_perm = m_abs_cntrl_vec[i]->getAccessPermission(line_address);
             if (access_perm == AccessPermission_Backing_Store) {
 	        #ifdef SIM_NET_PORTS
- 	        MachineID id = m_abs_cntrl_vec[i]->getMachineID(); 
-	        if( !( (id.getType() == MachineType_L1Cache) && (id.getNum() >= (num_thread_contexts+m_num_accelerators+m_num_TDs)) ) )
+ 	        MachineID id = m_abs_cntrl_vec[i]->getMachineID();
+	        if( !( (id.getType() == MachineType_L1Cache) && (id.getNum() >= (num_thread_contexts+m_num_accelerators*m_num_acc_instances+m_num_TDs)) ) )
 		  m_abs_cntrl_vec[i]->functionalRead(line_address, pkt);
                 #else
 	        m_abs_cntrl_vec[i]->functionalRead(line_address, pkt);
@@ -680,8 +645,8 @@ RubySystem::functionalRead(PacketPtr pkt)
             if (access_perm == AccessPermission_Read_Only ||
                 access_perm == AccessPermission_Read_Write) {
 	        #ifdef SIM_NET_PORTS
- 	        MachineID id = m_abs_cntrl_vec[i]->getMachineID(); 
-	        if( !( (id.getType() == MachineType_L1Cache) && (id.getNum() >= (num_thread_contexts+m_num_accelerators+m_num_TDs)) ) )
+ 	        MachineID id = m_abs_cntrl_vec[i]->getMachineID();
+	        if( !( (id.getType() == MachineType_L1Cache) && (id.getNum() >= (num_thread_contexts+m_num_accelerators*m_num_acc_instances+m_num_TDs)) ) )
 		  m_abs_cntrl_vec[i]->functionalRead(line_address, pkt);
                 #else
 	        m_abs_cntrl_vec[i]->functionalRead(line_address, pkt);
@@ -719,8 +684,8 @@ RubySystem::functionalWrite(PacketPtr pkt)
 
     for (unsigned int i = 0; i < num_controllers;++i) {
 #ifdef SIM_NET_PORTS
-      MachineID id = m_abs_cntrl_vec[i]->getMachineID(); 
-      if( !( (id.getType() == MachineType_L1Cache) && (id.getNum() >= (num_thread_contexts+m_num_accelerators+m_num_TDs)) ) )
+      MachineID id = m_abs_cntrl_vec[i]->getMachineID();
+      if( !( (id.getType() == MachineType_L1Cache) && (id.getNum() >= (num_thread_contexts+m_num_accelerators*m_num_acc_instances+m_num_TDs)) ) )
         num_functional_writes +=
             m_abs_cntrl_vec[i]->functionalWriteBuffers(pkt);
 #else
@@ -732,8 +697,8 @@ RubySystem::functionalWrite(PacketPtr pkt)
         if (access_perm != AccessPermission_Invalid &&
             access_perm != AccessPermission_NotPresent) {
 #ifdef SIM_NET_PORTS
-	  MachineID id = m_abs_cntrl_vec[i]->getMachineID(); 
-	  if( !( (id.getType() == MachineType_L1Cache) && (id.getNum() >= (num_thread_contexts+m_num_accelerators+m_num_TDs)) ) )
+	  MachineID id = m_abs_cntrl_vec[i]->getMachineID();
+	  if( !( (id.getType() == MachineType_L1Cache) && (id.getNum() >= (num_thread_contexts+m_num_accelerators*m_num_acc_instances+m_num_TDs)) ) )
             num_functional_writes +=
                 m_abs_cntrl_vec[i]->functionalWrite(line_addr, pkt);
 #else

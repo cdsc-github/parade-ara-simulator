@@ -59,8 +59,12 @@ def create_system(options, full_system, system, dma_ports, ruby_system):
         fatal("This script requires the MESI_Two_Level_Trace protocol to be built.")
 
     ruby_system.num_simics_net_ports = options.num_networkports
-    ruby_system.num_accelerators = options.accelerators
     ruby_system.num_TDs = options.num_tds
+    ruby_system.num_acc_instances = options.num_accinstances
+
+    acc_type_list = options.acc_types.replace(',', ' ').split()
+    type_names = [Lcacc.get(acc) for acc in acc_type_list]
+    ruby_system.acc_types = ",".join(type_names)
 
     cpu_sequencers = []
 
@@ -83,17 +87,16 @@ def create_system(options, full_system, system, dma_ports, ruby_system):
     block_size_bits = int(math.log(options.cacheline_size, 2))
 
     assert(options.num_networkports == options.num_l2caches)
-    num_l1_cntrls = ((options.accelerators + options.num_tds + options.num_networkports - 1)/options.num_networkports) * options.num_networkports 
+    num_l1_cntrls = ((options.num_tds + options.num_networkports - 1)/options.num_networkports) * options.num_networkports
     print "num_l1_cntrls = %d" % num_l1_cntrls
-    assert(num_l1_cntrls >= (options.accelerators + options.num_tds))
 
     for i in xrange(options.num_networkports):
-        # First create the Ruby objects associated with 
+        # First create the Ruby objects associated with
         # the CPU and Accelerator signal communication
         netport_cntrl = gem5NetworkPortInterface_Controller(version = i,
                         transitions_per_cycle=options.ports,
                         ruby_system = ruby_system)
-        
+
         exec("ruby_system.netport_cntrl%d = netport_cntrl" % i)
         netport_cntrl_nodes.append(netport_cntrl)
         # Connect the netport controller to the network
@@ -119,7 +122,7 @@ def create_system(options, full_system, system, dma_ports, ruby_system):
                                       L1Icache = l1i_cache,
                                       L1Dcache = l1d_cache,
                                       l2_select_num_bits = l2_bits,
-				      l2_select_low_bit = block_size_bits,
+                                      l2_select_low_bit = block_size_bits,
                                       send_evictions = send_evicts(options),
                                       prefetcher = prefetcher,
                                       ruby_system = ruby_system,
@@ -137,7 +140,7 @@ def create_system(options, full_system, system, dma_ports, ruby_system):
         exec("ruby_system.l1_cntrl%d = l1_cntrl" % i)
 
         # Add controllers and sequencers to the appropriate lists
-	if len(cpu_sequencers) < options.num_cpus :
+        if len(cpu_sequencers) < options.num_cpus :
             cpu_sequencers.append(cpu_seq)
         l1_cntrl_nodes.append(l1_cntrl)
 

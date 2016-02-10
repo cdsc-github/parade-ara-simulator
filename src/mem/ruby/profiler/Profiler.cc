@@ -292,7 +292,8 @@ Profiler::regStats(const std::string &pName)
     System *m5_system = *system_iterator;
     assert(m5_system);
     int num_thread_contexts = m5_system->numContexts();
-    int num_L1Cache = num_thread_contexts+RubySystem::numberOfTDs()+RubySystem::numberOfAccelerators();
+    int num_L1Cache = num_thread_contexts + RubySystem::numberOfTDs() +
+        RubySystem::numberOfAccelerators() * RubySystem::numberOfAccInstances();
 
     m_bank_specific_L1Cache_active.resize(num_L1Cache);
     m_bank_specific_L1Cache_read.resize(num_L1Cache);

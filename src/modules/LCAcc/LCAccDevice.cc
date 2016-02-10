@@ -346,17 +346,6 @@ namespace LCAcc
 			awaitingRetireActionSet.pop();
 			if(curAc->notifyOnComplete)
 			{
-
-
-
-std::ofstream of("Msg", std::ios::out | std::ios::app);
-of << "******* Task Complete" << std::endl;
-of << netPort->GetNetworkPort() << std::endl;
-of << std::endl;
-of << std::endl;
-of.close();
-
-
 				uint32_t msg[2];
 				msg[0] = LCACC_CMD_TASK_COMPLETED;
 				msg[1] = currentUser;
@@ -457,24 +446,6 @@ std::cout << "process:" << process << std::endl;
 			break;
 			case(LCACC_CMD_BEGIN_EMBEDDED_TASK_SIGNATURE):
 			{
-
-
-std::ofstream of("Msg", std::ios::out | std::ios::app);
-
-of << "******* Task Recieved" << std::endl;
-of << src << std::endl;
-of << netPort->GetNetworkPort() << std::endl;
-of << packetSize << std::endl;
-for(size_t i = 0; i < packetSize; i++)
-{
-        of << " " << (int)(((uint8_t*)packet)[i]) << std::endl;
-}
-of << std::endl;
-of << std::endl;
-
-of.close();
-
-
 				assert(!lcaActive);
 				lcaActive = true;
 				currentUserProc = src;

@@ -72,8 +72,10 @@ class RubySystem : public ClockedObject
 
     // config accessors
 #ifdef SIM_NET_PORTS
+    static std::vector<std::string> accTypes;
     static int m_num_simics_net_ports;
     static int m_num_accelerators;
+    static int m_num_acc_instances;
     static int m_num_TDs;
     static int numberOfAccelerators() { return m_num_accelerators; }
     static int numberOfgem5NetworkPortPerChip() { return m_num_simics_net_ports; }
@@ -88,7 +90,8 @@ class RubySystem : public ClockedObject
     static int tdIDtoL1CacheID(int tdID);
     static int accIDtoL1CacheID(int accID);
     static int mapPortID(int port);
-  Network* getNetwork() {assert(m_network != NULL); return m_network;};
+    static int numberOfAccInstances() { return m_num_acc_instances; }
+    Network* getNetwork() {assert(m_network != NULL); return m_network;};
 #endif
 
     static int getRandomSeed() { return m_random_seed; }
@@ -110,6 +113,8 @@ class RubySystem : public ClockedObject
     void regStats() { m_profiler->regStats(name()); }
     void collateStats() { m_profiler->collateStats(); }
     void resetStats();
+
+    void parseAccTypes(std::string acc_types);
 
     void serialize(std::ostream &os);
     void unserialize(Checkpoint *cp, const std::string &section);
@@ -150,6 +155,22 @@ class RubySystem : public ClockedObject
 
     Network* m_network;
     std::vector<AbstractController *> m_abs_cntrl_vec;
+
+    std::map<std::string, std::vector<std::string>> m_acc_dict = {
+        {"Deblur_Modified", {"denoise1Mega", "blur1Mega", "deblur1Mega", "deblur2Mega"}},
+        {"Denoise", {"denoise1Mega", "denoise2Mega"}},
+        {"Registration_Modified", {"registration1Mega", "blur1Mega"}},
+        {"Segmentation", {"segmentation1Mega"}},
+        {"BlackScholes", {"blackScholes"}},
+        {"StreamCluster", {"streamCluster1", "streamCluster3", "streamCluster4", "streamCluster5", "streamCluster6"}},
+        {"Swaptions", {"swaptions1", "swaptions2", "swaptions3", "swaptions4"}},
+        {"LPCIP_Desc", {"LPCIP"}},
+        {"SURF_Desc", {"SURF1Mega", "SURF2Mega", "SURF3Mega", "SURF4Mega", "SURF5Mega"}},
+        {"Texture_Synthesis", {"TexSynth1", "TexSynth2", "TexSynth3", "TexSynth4", "TexSynth5"}},
+        {"Robot_Localization", {"RobLoc"}},
+        {"Disparity_Map", {"DispMapCompSAD", "DispMapFindDisp", "DispMapIntegSum"}},
+        {"EKF_SLAM", {"Jacobians", "SphericalCoords"}}
+    };
 
   public:
     Profiler* m_profiler;
