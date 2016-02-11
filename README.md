@@ -42,9 +42,9 @@ Let’s assume you are in the home directory (`$PARADE_HOME`) of the checked out
 
 2.	Build ARA version:
 	* Enable the `SIM_DEDICATED_ARA` macro in all three files, `src/mem/ruby/profiler/Profiler.cc`, `src/mem/ruby/system/System.cc`, and `src/sim/simulate.cc`
-	* Accelerators can be configured using the --acc_types and --num_accinstances options. --acc_types specifies the accelerator types to be instantiated in the simulated architecture. String type in the form of `ACC[,ACC]' is accepted, such as `Deblur' and `Deblur,Denoise'. --num_accinstances denotes the number of copies of each accelerator type.
+	* Accelerators can be configured using the `--acc_types` and `--num_accinstances options`. `--acc_types` specifies the accelerator types to be instantiated in the simulated architecture. String type in the form of `ACC[,ACC]` is accepted, such as `Deblur` and `Deblur,Denoise`. `--num_accinstances` denotes the number of copies of each accelerator type.
 	* `./build.gem5.sh`
-	* `cp build/X86/gem5.opt parade-test/TDLCA_BlackScholes`
+	* `cp build/X86/gem5.opt parade-test/gem5-ara.opt`
 
 ##Build Benchmarks
 

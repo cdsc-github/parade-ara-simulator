@@ -3,7 +3,7 @@
 #run it using atomic cpu until the end of initilization, then take checkpoint and exit
 
 #Common configurations in the script
-GEM5=./parade-test/gem5.opt
+GEM5=./parade-test/gem5-ara.opt
 OUT_DIR=./parade-test/
 BOOT_DIR=./configs/boot/
 START_CKPT_DIR=./parade-test/ckpt-1core/
