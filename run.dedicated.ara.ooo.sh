@@ -1,5 +1,5 @@
 ################################################################################################################
-#Command to restore from the checkpoint (after OS boot), and then read new script, 
+#Command to restore from the checkpoint (after OS boot), and then read new script,
 #run it using atomic cpu until the end of initilization, then take checkpoint and exit
 
 #Common configurations in the script
@@ -58,11 +58,11 @@ for((i=0; i < ${#BENCHS[@]}; i++)) do
     SCRIPT_FILE=${BOOT_DIR}/${bench}.${SUFFIX}.rcS
     OUT_FILE=${BENCH_DIR}/result.txt
     echo "(time -p ${GEM5} --outdir=${BENCH_DIR} ${COMMON_CONFIG} \
-    --acc_types=${bench} -s ${WARMUP[$i]} -W ${WARMUP[$i]} \
-    --script=${SCRIPT_FILE}) >& ${OUT_FILE} &"
+        --acc_types=${bench} -s ${WARMUP[$i]} -W ${WARMUP[$i]} \
+        --script=${SCRIPT_FILE}) >& ${OUT_FILE} &"
     (time -p ${GEM5} --outdir=${BENCH_DIR} ${COMMON_CONFIG} \
-    --acc_types=${bench} -s ${WARMUP[$i]} -W ${WARMUP[$i]} \
-    --script=${SCRIPT_FILE}) >& ${OUT_FILE} &
+        --acc_types=${bench} -s ${WARMUP[$i]} -W ${WARMUP[$i]} \
+        --script=${SCRIPT_FILE}) >& ${OUT_FILE} &
 done
 
 ################################################################################################################
