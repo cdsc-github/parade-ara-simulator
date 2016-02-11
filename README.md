@@ -121,14 +121,12 @@ We would like to thank the open source gem5 community and all Center for Domain-
 Current PARADE release mainly supports the simulation of dedicated ARA as presented in the ICCAD 15 paper. We didn’t release the composable ARA version or the visualization tool since they are still under testing. In addition, we cannot open source the AutoPilot high-level synthesis (HLS) tool due to the license issue. But we release all the accelerators used in the ICCAD 15 paper. Users can use their own tools to get the detailed timing info such as pipeline II, clock, area, and power. Once these numbers are given, users can integrate their own accelerators into PARADE for system-level design and evaluation.
 
 Zhenman Fang, Postdoctoral Researcher
+
 Center for Domain-Specific Computing, UCLA
+
 Email: zhenman@cs.ucla.edu
+
 Website: https://sites.google.com/site/fangzhenman/
-
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/cdsc-github/parade-ara-simulator/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
-
-
 
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/cdsc-github/parade-ara-simulator/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 
