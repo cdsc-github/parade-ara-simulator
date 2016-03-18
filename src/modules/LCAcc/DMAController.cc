@@ -149,8 +149,8 @@ namespace LCAcc
 		onTLBMiss = TLBMiss;
 		buffer = -1;
 		this->spm = spm;
-		std::cout << "Configurate DMA Controller, NodeID: " << ni->GetNetworkPort() << std::endl;
-		dmaInterface->Configure(dmaDevice, ni->GetNetworkPort(), spm->GetID(), OnTLBMissCB::Create(this), OnAddressTranslateCB::Create(this), OnAccessErrorCB::Create(this));
+		std::cout << "Configurate DMA Controller, NodeID: " << ni->GetNodeID() << std::endl;
+		dmaInterface->Configure(dmaDevice, ni->GetNodeID(), spm->GetID(), OnTLBMissCB::Create(this), OnAddressTranslateCB::Create(this), OnAccessErrorCB::Create(this));
 		ni->RegisterRecvHandler(OnNetworkMsgCB::Create(this));
 		isHookedToMemory = false;
 	}
