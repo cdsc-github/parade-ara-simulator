@@ -48,13 +48,15 @@
 #include <algorithm>
 #include <fstream>
 
-//1. Dedicated-ARA version
-#define SIM_DEDICATED_ARA
+//0. SW version
+// #define SIM_SW
 
 #define SIM_NET_PORTS
 #ifdef SIM_NET_PORTS
-#include "modules/LCAcc/gem5Interface.hh"
-#endif 
+#include "modules/LCAcc/SimicsInterface.hh"
+#endif
+
+#include "modules/TaskDistributor/SimicsInterface.hh"
 
 #include "base/stl_helpers.hh"
 #include "base/str.hh"
@@ -65,6 +67,9 @@
 #include "mem/ruby/profiler/Profiler.hh"
 #include "mem/ruby/system/Sequencer.hh"
 #include "mem/ruby/system/System.hh"
+
+#include "modules/LCAcc/DMAController.hh"
+#include "modules/LCAcc/SPMInterface.hh"
 
 #ifdef SIM_VISUAL_TRACE
 #include "sim/system.hh"
@@ -278,6 +283,59 @@ Profiler::regStats(const std::string &pName)
         }
     }
 
+    std::vector<System *>::iterator system_iterator = System::systemList.begin();
+    System *m5_system = *system_iterator;
+    int num_thread_contexts = m5_system->numContexts();
+    m_host_pagetable_walks.resize(num_thread_contexts);
+    m_host_pagetable_walk_time.resize(num_thread_contexts);
+
+    for (int i = 0; i < num_thread_contexts; i++) {
+        m_host_pagetable_walks[i]
+            .name(pName + csprintf(".networkinterrupts_%i.host_pagetable_walks", i))
+            .desc("Number of host pagetable walks called by accelerators");
+        m_host_pagetable_walk_time[i]
+            .name(pName + csprintf(".networkinterrupts_%i.host_pagetable_walk_time", i))
+            .desc("wait time of host pagetable walks");
+    }
+
+    // td tlb stats
+    m_td_tlb_hits
+        .name(pName + ".taskdistributor.tlb_hits")
+        .desc("");
+    m_td_tlb_misses
+        .name(pName + ".taskdistributor.tlb_misses")
+        .desc("");
+    m_td_tlb_accesses
+        .name(pName + ".taskdistributor.tlb_accesses")
+        .desc("");
+
+    // lcacc tlb stats
+    uint32_t numAcc = RubySystem::numberOfAccelerators() *
+        RubySystem::numberOfAccInstances();
+    m_lcacc_tlb_hits.resize(numAcc);
+    m_lcacc_tlb_misses.resize(numAcc);
+    m_lcacc_tlb_accesses.resize(numAcc);
+    m_lcacc_tlb_flush.resize(numAcc);
+    m_lcacc_tlbCycles.resize(numAcc);
+
+    for (int i = 0; i < numAcc; i++) {
+        m_lcacc_tlb_hits[i]
+            .name(pName + csprintf(".lcacc_%i.tlb_hits", i))
+            .desc("");
+        m_lcacc_tlb_misses[i]
+            .name(pName + csprintf(".lcacc_%i.tlb_misses", i))
+            .desc("");
+        m_lcacc_tlb_accesses[i]
+            .name(pName + csprintf(".lcacc_%i.tlb_accesses", i))
+            .desc("");
+        m_lcacc_tlb_flush[i]
+            .name(pName + csprintf(".lcacc_%i.tlb_flush", i))
+            .desc("");
+        m_lcacc_tlbCycles[i]
+            .name(pName + csprintf(".lcacc_%i.tlbCycles", i))
+            .desc("Number of cycles LCAcc has spent waiting for tlb");
+    }
+
 #ifdef SIM_VISUAL_TRACE
     m_L1Cache_read = 0;
     m_L1Cache_write = 0;
@@ -288,10 +346,6 @@ Profiler::regStats(const std::string &pName)
     m_MC_read = 0;
     m_MC_write = 0;
 
-    std::vector<System *>::iterator system_iterator = System::systemList.begin();
-    System *m5_system = *system_iterator;
-    assert(m5_system);
-    int num_thread_contexts = m5_system->numContexts();
     int num_L1Cache = num_thread_contexts + RubySystem::numberOfTDs() +
         RubySystem::numberOfAccelerators() * RubySystem::numberOfAccInstances();
 
@@ -306,10 +360,10 @@ Profiler::regStats(const std::string &pName)
       m_bank_specific_L1Cache_miss[i] = 0;
     }
 
-    m_bank_specific_L2Cache_active.resize(RubySystem::numberOfgem5NetworkPort());
-    m_bank_specific_L2Cache_read.resize(RubySystem::numberOfgem5NetworkPort());
-    m_bank_specific_L2Cache_write.resize(RubySystem::numberOfgem5NetworkPort());
-    m_bank_specific_L2Cache_miss.resize(RubySystem::numberOfgem5NetworkPort());
+    m_bank_specific_L2Cache_active.resize(RubySystem::numberOfSimicsNetworkPort());
+    m_bank_specific_L2Cache_read.resize(RubySystem::numberOfSimicsNetworkPort());
+    m_bank_specific_L2Cache_write.resize(RubySystem::numberOfSimicsNetworkPort());
+    m_bank_specific_L2Cache_miss.resize(RubySystem::numberOfSimicsNetworkPort());
     for(int i = 0; i < m_bank_specific_L2Cache_active.size(); i++) {
       m_bank_specific_L2Cache_active[i] = 0;
       m_bank_specific_L2Cache_read[i] = 0;
@@ -422,18 +476,49 @@ Profiler::collateStats()
             }
         }
     }
-#if defined(SIM_DEDICATED_ARA)
+#if !defined(SIM_SW)
     uint64_t total_spmReads = 0;
     uint64_t total_spmWrites = 0;
-    printf("spmSet.size() = %lld\n", LCAcc::gem5Interface::manager.deviceSet.size());
-    for(int i = 0; i < LCAcc::gem5Interface::manager.deviceSet.size(); i++) {
-      total_spmReads += LCAcc::gem5Interface::manager.deviceSet.at(i)->getSPM()->get_num_spm_reads();
-      total_spmWrites += LCAcc::gem5Interface::manager.deviceSet.at(i)->getSPM()->get_num_spm_writes();
+    // printf("spmSet.size() = %lld\n", LCAcc::SimicsInterface::manager.deviceSet.size());
+    for(int i = 0; i < LCAcc::SimicsInterface::manager.deviceSet.size(); i++) {
+      total_spmReads += LCAcc::SimicsInterface::manager.deviceSet.at(i)->getSPM()->get_num_spm_reads();
+      total_spmWrites += LCAcc::SimicsInterface::manager.deviceSet.at(i)->getSPM()->get_num_spm_writes();
     }
-    printf("total_spmReads = %lld\n", total_spmReads);
-    printf("total_spmWrites = %lld\n", total_spmWrites);
+    // printf("total_spmReads = %lld\n", total_spmReads);
+    // printf("total_spmWrites = %lld\n", total_spmWrites);
     m_spmReads = total_spmReads;
     m_spmWrites = total_spmWrites;
+
+    for (int i = 0; i < m_host_pagetable_walks.size(); i++) {
+        m_host_pagetable_walks[i] = g_network_interrupts[i]->getHostPTWalks();
+        m_host_pagetable_walk_time[i] = g_network_interrupts[i]->getHostPTWalkTime() ;
+
+    }
+
+    // td tlb stats
+    uint64_t hits = TaskDistributor::SimicsInterface::manager.tdSet.at(0)->getTlbHits();
+    uint64_t misses = TaskDistributor::SimicsInterface::manager.tdSet.at(0)->getTlbMisses();
+    uint64_t accesses = hits + misses;
+
+    m_td_tlb_hits = hits;
+    m_td_tlb_misses = misses;
+    m_td_tlb_accesses = accesses;
+
+    // lcacc tlb stats
+    uint32_t numAcc = LCAcc::SimicsInterface::manager.deviceSet.size();
+
+    // printf("numAcc = %d\n", numAcc);
+
+    for (int i = 0; i < numAcc; i++) {
+        hits      = LCAcc::SimicsInterface::manager.deviceSet.at(i)->getDMA()->getTlbHits();
+        misses    = LCAcc::SimicsInterface::manager.deviceSet.at(i)->getDMA()->getTlbMisses();
+        accesses  = hits + misses;
+        m_lcacc_tlb_hits[i]     = hits;
+        m_lcacc_tlb_misses[i]   = misses;
+        m_lcacc_tlb_accesses[i] = accesses;
+        m_lcacc_tlb_flush[i] = LCAcc::SimicsInterface::manager.deviceSet.at(i)->getDMA()->getTlbFlush();
+        m_lcacc_tlbCycles[i] = LCAcc::SimicsInterface::manager.deviceSet.at(i)->getDMA()->getTlbCycles();
+    }
 #endif
 }
 
@@ -455,7 +540,7 @@ Profiler::addAddressTraceSample(const RubyRequest& msg, NodeID id)
 
 #ifdef SIM_VISUAL_TRACE
 std::string int_to_string(int n);
-std::string int_to_string(int n) 
+std::string int_to_string(int n)
 {
   stringstream ss;
   ss << n;

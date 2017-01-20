@@ -32,6 +32,8 @@
 
 using namespace std;
 
+//#define SIM_NET_PORTS
+
 void
 RubyRequest::print(ostream& out) const
 {
@@ -43,6 +45,7 @@ RubyRequest::print(ostream& out) const
   out << "AccessMode = " << m_AccessMode << " ";
   out << "Size = " << m_Size << " ";
   out << "Prefetch = " << m_Prefetch << " ";
+  out << "BypassCache = " << m_BypassCache << " ";
 //  out << "Time = " << getTime() << " ";
   out << "]";
 }
@@ -60,7 +63,10 @@ RubyRequest::functionalRead(Packet *pkt)
 bool
 RubyRequest::functionalWrite(Packet *pkt)
 {
+//#ifdef SIM_NET_PORTS
+#if 1
     return false;
+#endif
     // This needs a little explanation. I am not sure if this message
     // should be written. Essentially the question is how are writes
     // ordered. I am assuming that if a functional write is issued after

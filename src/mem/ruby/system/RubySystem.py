@@ -41,13 +41,40 @@ class RubySystem(ClockedObject):
         "default cache block size; must be a power of two");
     memory_size_bits = Param.UInt32(64,
         "number of bits that a memory address requires");
+
+    td_tlb_size = Param.UInt32(64, "number of TD TLB entries");
+    td_tlb_latency = Param.UInt32(3, "the lookup latency for td tlb");
+    td_tlb_assoc = Param.UInt32(4, "the associativity of td tlb");
+
+    lcacc_tlb_size = Param.UInt32(32, "number of LCAcc TLB entries");
+    lcacc_tlb_latency = Param.UInt32(1, "the lookup latency for lcacc tlb");
+    lcacc_tlb_assoc = Param.UInt32(2, "the associativity of lcacc tlb");
+
     num_simics_net_ports = Param.Int(32, "total number of network ports");
     num_acc_instances = Param.Int(1, "number of accelerator instances");
+    # num_accelerators = Param.Int(2, "number of sub-accelerators in a type");
     num_TDs = Param.Int(1, "total number of taskdistributors");
     visual_trace = Param.String("parade-test/visual.txt",
         "file name for visualization trace");
+
+    iommu = Param.Bool(False, "simulate the behavior of an IOMMU");
+
+    tlb_hack = Param.Bool(False,
+        "insert into TLBHack while touching page");
+
+    ideal_mmu = Param.Bool(False,
+        "impossible to implement mmu with minimal latency");
+
+    host_ptw_latency = Param.Int(1, "latency to trigger host page table walk");
+
     acc_types = Param.String("BlackScholes",
         "accelerator type to be instantiated in the system");
+
+    lcacc_tlb_mshr = Param.UInt32(1, "number of MSHRs in LCAcc TLBs");
+
+    dma_issue_width = Param.UInt32(64, "LCAcc DMA issue width");
+
+
 
     # Profiler related configuration variables
     hot_lines = Param.Bool(False, "")

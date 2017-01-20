@@ -40,16 +40,16 @@ from Ruby import send_evicts
 # Note: the L1 Cache latency is only used by the sequencer on fast path hits
 #
 class L0Cache(RubyCache):
-    latency = 1
+    latency = 4
 
 class L1Cache(RubyCache):
-    latency = 5
+    latency = 12
 
 #
 # Note: the L2 Cache latency is not currently used
 #
 class L2Cache(RubyCache):
-    latency = 15
+    latency = 36
 
 def define_options(parser):
     parser.add_option("--num-clusters", type="int", default=1,
@@ -94,10 +94,10 @@ def create_system(options, full_system, system, dma_ports, ruby_system):
             #
             # First create the Ruby objects associated with this cpu
             #
-            l0i_cache = L0Cache(size = '4096B', assoc = 1, is_icache = True,
+            l0i_cache = L0Cache(size = '32KB', assoc = 8, is_icache = True,
                 start_index_bit = block_size_bits, replacement_policy="LRU")
 
-            l0d_cache = L0Cache(size = '4096B', assoc = 1, is_icache = False,
+            l0d_cache = L0Cache(size = '32KB', assoc = 8, is_icache = False,
                 start_index_bit = block_size_bits, replacement_policy="LRU")
 
             l0_cntrl = L0Cache_Controller(version = i*num_cpus_per_cluster + j,
@@ -112,7 +112,7 @@ def create_system(options, full_system, system, dma_ports, ruby_system):
 
             l0_cntrl.sequencer = cpu_seq
 
-            l1_cache = L1Cache(size = options.l1d_size, assoc = options.l1d_assoc,
+            l1_cache = L1Cache(size = '256KB', assoc = 8,
                             start_index_bit = block_size_bits, is_icache = False)
 
             l1_cntrl = L1Cache_Controller(version = i*num_cpus_per_cluster+j,

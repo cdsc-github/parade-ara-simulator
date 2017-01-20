@@ -9,4 +9,9 @@ import SCons
 
 Import('*')
 
+
+#if env[] == :
+
+#SimObject('AcceleratorInterface.py')
+
 Source('scratch-pad.cc')

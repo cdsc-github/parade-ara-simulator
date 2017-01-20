@@ -84,6 +84,14 @@ class Sequencer : public RubyPort
                       const Cycles forwardRequestTime = Cycles(0),
                       const Cycles firstResponseTime = Cycles(0));
 
+    void bypassCallback(const Address& address,
+                      DataBlock data,
+                      const bool externalHit = false,
+                      const MachineType mach = MachineType_NUM,
+                      const Cycles initialRequestTime = Cycles(0),
+                      const Cycles forwardRequestTime = Cycles(0),
+                      const Cycles firstResponseTime = Cycles(0));
+
 #if defined(SIM_ENHANCE) || defined(BUFFER_IN_CACHE)
     bool isReady(uint64_t pAddr);
     RequestStatus makeRequest(PacketPtr pkt, void(*cb)(void*), void* args);

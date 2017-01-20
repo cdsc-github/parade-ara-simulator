@@ -68,6 +68,8 @@ structure(RequestMsg, desc="...", interface="NetworkMessage") {
   int Len;
   bool Dirty, default="false",  desc="Dirty bit";
   PrefetchBit Prefetch,         desc="Is this a prefetch request";
+  bool BypassCache,             desc="Does this bypass cache";
+  MachineID BypassRequestor,    desc="What component request bypass";
 
   bool functionalRead(Packet *pkt) {
     // Only PUTX messages contains the data block
@@ -95,6 +97,8 @@ structure(ResponseMsg, desc="...", interface="NetworkMessage") {
   bool Dirty, default="false",  desc="Dirty bit";
   int AckCount, default="0",  desc="number of acks in this message";
   MessageSizeType MessageSize,  desc="size category of the message";
+  bool BypassCache,             desc="Does this bypass cache";
+  MachineID BypassRequestor,    desc="What component request bypass";
 
   bool functionalRead(Packet *pkt) {
     // Valid data block is only present in message with following types

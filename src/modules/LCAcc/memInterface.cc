@@ -100,8 +100,14 @@ void
 MemoryInterface::sendRequest(Addr paddr, uint8_t *data, int size, Packet::SenderState *state, MemCmd cmd, bool timing)
 {
     Request::Flags flags = 0;
+    // Note: although the M5 classic memory system (which includes
+    // packets and requests) supports uncachable requests, Ruby
+    // does not.  If changed to support M5, this can make simulations
+    // more realistic (no unrealistically small caches).
 
     RequestPtr req = new Request(paddr, size, flags, m_masterId);
+    // Assumption: do not want to read a block of memory, just
+    // one or more addresses. (Not sure if reading more than one works)
     PacketPtr pkt = new Packet(req, cmd);
 
     pkt->dataStatic<uint8_t>(data);
@@ -120,15 +126,14 @@ MemoryInterface::sendRequest(Addr paddr, uint8_t *data, int size, Packet::Sender
         panic("Unsupported functional command %s\n", pkt->cmdString());
       }
 
-      assert(pkt->isWrite() || pkt->isRead());
-      if(pkt->isWrite())
-	recvWriteResp(pkt);
-      else
-	recvReadResp(pkt);//*/
-      delete pkt->req;
-      pkt->req = NULL;
-      delete pkt;
-      //The state is deleted in the recieving function.
+        assert(pkt->isWrite() || pkt->isRead());
+        if (pkt->isWrite())
+            recvWriteResp(pkt);
+        else
+            recvReadResp(pkt);
+        delete pkt->req;
+        delete pkt;
+        //The state is deleted in the recieving function.
     }
 }
 
@@ -143,6 +148,15 @@ MemoryInterface::sendReadRequest(Addr paddr, uint8_t* data, int size, void (*cal
 void
 MemoryInterface::sendWriteRequest(Addr paddr, uint8_t* data, int size, void (*callback)(void*), void* arg)
 {
+    //uint8_t* newData = new uint8_t[size];
+    //memcpy(newData, data, size*sizeof(uint8_t));
+    // NOTE: uncommenting out the above lines, and using newData instead
+    // of data below frees caller from the responsibility of preserving
+    // the data array until the packet returns.
+    // HOWEVER: need to make sure newData is deleted: this may require
+    // code changes, as currently all read/write commands use the same
+    // interface.
+
     WriteCallbackState * state = new WriteCallbackState(callback, arg);
 
     sendRequest(paddr, data, size, state, MemCmd(MemCmd::Command::WriteReq), true);

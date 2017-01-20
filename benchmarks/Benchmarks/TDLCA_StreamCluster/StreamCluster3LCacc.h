@@ -457,8 +457,8 @@ public:
 		node_x.Reset();
 	}
 	inline InstanceData_sig__StreamCluster3LCacc() :
-		acceleratorSignature__x(true), 
-		node_x(1203), 
+		acceleratorSignature__x(true),
+		node_x(1203),
 		threadID(0)
 	{
 		Reset();
@@ -504,7 +504,7 @@ inline void Wait_sig__StreamCluster3LCacc(InstanceData_sig__StreamCluster3LCacc*
 		}
 	}
 }
-inline void (*GAMHandler_sig__StreamCluster3LCacc(InstanceData_sig__StreamCluster3LCacc* instance, InterruptArgs* args))(InstanceData_sig__StreamCluster3LCacc*) 
+inline void (*GAMHandler_sig__StreamCluster3LCacc(InstanceData_sig__StreamCluster3LCacc* instance, InterruptArgs* args))(InstanceData_sig__StreamCluster3LCacc*)
 {
 	int i;
 	int lcaccMode;
@@ -977,7 +977,7 @@ inline void CreateBuffer_StreamCluster3LCacc_td(uint8_t** buffer, uint32_t* buff
 		void* VNR_vardecl_4(assign);
 		void* VNR_vardecl_5(in_switch_membership);
 		void* VNR_vardecl_6(out_switch_membership);
-		LCAccNode VNR_vardecl_7(1203, (sizeof(float[32]) * (chunk)) + (sizeof(float[32]) * (1)) + (sizeof(float) * (chunk)) + (sizeof(float) * (chunk)) + (sizeof(uint32_t) * (chunk)) + (sizeof(uint32_t) * (chunk)) + (sizeof(uint32_t) * (chunk)) + (sizeof(uint32_t) * (chunk)) + (sizeof(float) * (chunk)) + (sizeof(uint32_t) * (chunk)), 3, 0, 0);
+		LCAccNode VNR_vardecl_7(1203, (sizeof(float[32]) * (chunk)) + (sizeof(float[32]) * (1)) + (sizeof(float) * (chunk)) + (sizeof(float) * (chunk)) + (sizeof(uint32_t) * (chunk)) + (sizeof(uint32_t) * (chunk)) + (sizeof(uint32_t) * (chunk)) + (sizeof(uint32_t) * (chunk)) + (sizeof(float) * (chunk)) + (sizeof(uint32_t) * (chunk)), 2, 0, 0);
 		std::vector<uint32_t> VNR_vardecl_8;
 		VNR_vardecl_8.push_back(((chunk) - (0)) / (1));
 		std::vector<int32_t> VNR_vardecl_9;
@@ -1048,7 +1048,7 @@ inline void CreateBuffer_StreamCluster3LCacc_td(uint8_t** buffer, uint32_t* buff
 		//See VNR_vardecl_22 for index variable decl
 		//See VNR_vardecl_23 for register set decl
 		mw.AddCompute(VNR_vardecl_7, VNR_vardecl_22, VNR_vardecl_23);
-		
+
 		//transfer from point to x
 		//Search VNR_vardecl_24 for source block size.
 		//Search VNR_vardecl_25 for source block stride.
@@ -1057,7 +1057,7 @@ inline void CreateBuffer_StreamCluster3LCacc_td(uint8_t** buffer, uint32_t* buff
 		//Search VNR_vardecl_26 for destination size.
 		//Search VNR_vardecl_27 for destination stride.
 		mw.AddTransfer(VNR_vardecl_1, VNR_vardecl_24, VNR_vardecl_25, VNR_vardecl_26, VNR_vardecl_27, VNR_vardecl_7, (0) + ((((0) * ((sizeof(float[32])))))), VNR_vardecl_26, VNR_vardecl_27, sizeof(float));
-		
+
 		//transfer from constant0 to x
 		//Search VNR_vardecl_28 for source block size.
 		//Search VNR_vardecl_29 for source block stride.
@@ -1066,7 +1066,7 @@ inline void CreateBuffer_StreamCluster3LCacc_td(uint8_t** buffer, uint32_t* buff
 		//Search VNR_vardecl_32 for destination size.
 		//Search VNR_vardecl_27 for destination stride.
 		mw.AddTransfer(VNR_vardecl_0, VNR_vardecl_28, VNR_vardecl_29, VNR_vardecl_30, VNR_vardecl_31, VNR_vardecl_7, ((sizeof(float[32]) * (chunk))) + ((((0) * ((sizeof(float[32])))))), VNR_vardecl_32, VNR_vardecl_27, sizeof(float));
-		
+
 		//transfer from weight to x
 		//Search VNR_vardecl_24 for source block size.
 		//Search VNR_vardecl_33 for source block stride.
@@ -1075,7 +1075,7 @@ inline void CreateBuffer_StreamCluster3LCacc_td(uint8_t** buffer, uint32_t* buff
 		//Search VNR_vardecl_8 for destination size.
 		//Search VNR_vardecl_34 for destination stride.
 		mw.AddTransfer(VNR_vardecl_2, VNR_vardecl_24, VNR_vardecl_33, VNR_vardecl_8, VNR_vardecl_34, VNR_vardecl_7, ((sizeof(float[32]) * (chunk)) + (sizeof(float[32]) * (1))) + ((((0) * ((sizeof(float)))))), VNR_vardecl_8, VNR_vardecl_34, sizeof(float));
-		
+
 		//transfer from cost to x
 		//Search VNR_vardecl_24 for source block size.
 		//Search VNR_vardecl_33 for source block stride.
@@ -1084,7 +1084,7 @@ inline void CreateBuffer_StreamCluster3LCacc_td(uint8_t** buffer, uint32_t* buff
 		//Search VNR_vardecl_8 for destination size.
 		//Search VNR_vardecl_34 for destination stride.
 		mw.AddTransfer(VNR_vardecl_3, VNR_vardecl_24, VNR_vardecl_33, VNR_vardecl_8, VNR_vardecl_34, VNR_vardecl_7, ((sizeof(float[32]) * (chunk)) + (sizeof(float[32]) * (1)) + (sizeof(float) * (chunk))) + ((((0) * ((sizeof(float)))))), VNR_vardecl_8, VNR_vardecl_34, sizeof(float));
-		
+
 		//transfer from assign to x
 		//Search VNR_vardecl_24 for source block size.
 		//Search VNR_vardecl_35 for source block stride.
@@ -1093,7 +1093,7 @@ inline void CreateBuffer_StreamCluster3LCacc_td(uint8_t** buffer, uint32_t* buff
 		//Search VNR_vardecl_8 for destination size.
 		//Search VNR_vardecl_36 for destination stride.
 		mw.AddTransfer(VNR_vardecl_4, VNR_vardecl_24, VNR_vardecl_35, VNR_vardecl_8, VNR_vardecl_36, VNR_vardecl_7, ((sizeof(float[32]) * (chunk)) + (sizeof(float[32]) * (1)) + (sizeof(float) * (chunk)) + (sizeof(float) * (chunk))) + ((((0) * ((sizeof(uint32_t)))))), VNR_vardecl_8, VNR_vardecl_36, sizeof(uint32_t));
-		
+
 		//transfer from in_switch_membership to x
 		//Search VNR_vardecl_24 for source block size.
 		//Search VNR_vardecl_35 for source block stride.
@@ -1102,7 +1102,7 @@ inline void CreateBuffer_StreamCluster3LCacc_td(uint8_t** buffer, uint32_t* buff
 		//Search VNR_vardecl_8 for destination size.
 		//Search VNR_vardecl_36 for destination stride.
 		mw.AddTransfer(VNR_vardecl_5, VNR_vardecl_24, VNR_vardecl_35, VNR_vardecl_8, VNR_vardecl_36, VNR_vardecl_7, ((sizeof(float[32]) * (chunk)) + (sizeof(float[32]) * (1)) + (sizeof(float) * (chunk)) + (sizeof(float) * (chunk)) + (sizeof(uint32_t) * (chunk)) + (sizeof(uint32_t) * (chunk))) + ((((0) * ((sizeof(uint32_t)))))), VNR_vardecl_8, VNR_vardecl_36, sizeof(uint32_t));
-		
+
 		//transfer from x to out_switch_membership
 		//Search VNR_vardecl_8 for source size.
 		//Search VNR_vardecl_36 for source stride.
@@ -1111,7 +1111,7 @@ inline void CreateBuffer_StreamCluster3LCacc_td(uint8_t** buffer, uint32_t* buff
 		//Search VNR_vardecl_8 for destination element size.
 		//Search VNR_vardecl_36 for destination element stride.
 		mw.AddTransfer(VNR_vardecl_7, ((sizeof(float[32]) * (chunk)) + (sizeof(float[32]) * (1)) + (sizeof(float) * (chunk)) + (sizeof(float) * (chunk)) + (sizeof(uint32_t) * (chunk)) + (sizeof(uint32_t) * (chunk)) + (sizeof(uint32_t) * (chunk))) + ((((0) * ((sizeof(uint32_t)))))), VNR_vardecl_8, VNR_vardecl_36, VNR_vardecl_6, VNR_vardecl_24, VNR_vardecl_35, VNR_vardecl_8, VNR_vardecl_36, sizeof(uint32_t));
-		
+
 		mw.SetTaskGrain(0);
 		mw.Finalize((((size) - (0)) / (chunk)));
 	}

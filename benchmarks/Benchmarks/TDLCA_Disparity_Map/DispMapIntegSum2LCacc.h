@@ -455,8 +455,8 @@ public:
 		node_sa.Reset();
 	}
 	inline InstanceData_sig__DispMapIntegSum2LCacc() :
-		acceleratorSignature__sa(true), 
-		node_sa(831), 
+		acceleratorSignature__sa(true),
+		node_sa(831),
 		threadID(0)
 	{
 		Reset();
@@ -502,7 +502,7 @@ inline void Wait_sig__DispMapIntegSum2LCacc(InstanceData_sig__DispMapIntegSum2LC
 		}
 	}
 }
-inline void (*GAMHandler_sig__DispMapIntegSum2LCacc(InstanceData_sig__DispMapIntegSum2LCacc* instance, InterruptArgs* args))(InstanceData_sig__DispMapIntegSum2LCacc*) 
+inline void (*GAMHandler_sig__DispMapIntegSum2LCacc(InstanceData_sig__DispMapIntegSum2LCacc* instance, InterruptArgs* args))(InstanceData_sig__DispMapIntegSum2LCacc*)
 {
 	int i;
 	int lcaccMode;
@@ -909,7 +909,7 @@ inline void CreateBuffer_DispMapIntegSum2LCacc_td(uint8_t** buffer, uint32_t* bu
 	{
 		void* VNR_vardecl_0(in_val_array);
 		void* VNR_vardecl_1(out_sum_array);
-		LCAccNode VNR_vardecl_2(831, (sizeof(float) * (chunk1) * (chunk2) * (chunk3) * (chunk4)) + (sizeof(float) * (chunk1) * (chunk2) * (chunk3) * (chunk4)), 3, 0, 0);
+		LCAccNode VNR_vardecl_2(831, (sizeof(float) * (chunk1) * (chunk2) * (chunk3) * (chunk4)) + (sizeof(float) * (chunk1) * (chunk2) * (chunk3) * (chunk4)), 2, 0, 0);
 		std::vector<uint32_t> VNR_vardecl_3;
 		VNR_vardecl_3.push_back(((chunk1) - (0)) / (1));
 		VNR_vardecl_3.push_back(((chunk2) - (0)) / (1));
@@ -950,7 +950,7 @@ inline void CreateBuffer_DispMapIntegSum2LCacc_td(uint8_t** buffer, uint32_t* bu
 		//See VNR_vardecl_7 for index variable decl
 		//See VNR_vardecl_8 for register set decl
 		mw.AddCompute(VNR_vardecl_2, VNR_vardecl_7, VNR_vardecl_8);
-		
+
 		//transfer from in_val_array to sa
 		//Search VNR_vardecl_9 for source block size.
 		//Search VNR_vardecl_10 for source block stride.
@@ -959,7 +959,7 @@ inline void CreateBuffer_DispMapIntegSum2LCacc_td(uint8_t** buffer, uint32_t* bu
 		//Search VNR_vardecl_3 for destination size.
 		//Search VNR_vardecl_12 for destination stride.
 		mw.AddTransfer(VNR_vardecl_0, VNR_vardecl_9, VNR_vardecl_10, VNR_vardecl_3, VNR_vardecl_11, VNR_vardecl_2, (0) + ((((0) * ((sizeof(float)) * (chunk2) * (chunk3) * (chunk4))) + ((0) * ((sizeof(float)) * (chunk3) * (chunk4))) + ((0) * ((sizeof(float)) * (chunk4))) + ((0) * ((sizeof(float)))))), VNR_vardecl_3, VNR_vardecl_12, sizeof(float));
-		
+
 		//transfer from sa to out_sum_array
 		//Search VNR_vardecl_3 for source size.
 		//Search VNR_vardecl_12 for source stride.
@@ -968,7 +968,7 @@ inline void CreateBuffer_DispMapIntegSum2LCacc_td(uint8_t** buffer, uint32_t* bu
 		//Search VNR_vardecl_3 for destination element size.
 		//Search VNR_vardecl_11 for destination element stride.
 		mw.AddTransfer(VNR_vardecl_2, ((sizeof(float) * (chunk1) * (chunk2) * (chunk3) * (chunk4))) + ((((0) * ((sizeof(float)) * (chunk2) * (chunk3) * (chunk4))) + ((0) * ((sizeof(float)) * (chunk3) * (chunk4))) + ((0) * ((sizeof(float)) * (chunk4))) + ((0) * ((sizeof(float)))))), VNR_vardecl_3, VNR_vardecl_12, VNR_vardecl_1, VNR_vardecl_9, VNR_vardecl_10, VNR_vardecl_3, VNR_vardecl_11, sizeof(float));
-		
+
 		mw.SetTaskGrain(0);
 		mw.Finalize((((dataSize) - (0)) / (chunk1)) * (((SHIFT) - (0)) / (chunk2)) * (((n1) - (0)) / (chunk3)) * (((n2) - (0)) / (chunk4)));
 	}

@@ -457,8 +457,8 @@ public:
 		node_s.Reset();
 	}
 	inline InstanceData_sig__RobLocLCacc() :
-		acceleratorSignature__s(true), 
-		node_s(820), 
+		acceleratorSignature__s(true),
+		node_s(820),
 		threadID(0)
 	{
 		Reset();
@@ -504,7 +504,7 @@ inline void Wait_sig__RobLocLCacc(InstanceData_sig__RobLocLCacc* instance)
 		}
 	}
 }
-inline void (*GAMHandler_sig__RobLocLCacc(InstanceData_sig__RobLocLCacc* instance, InterruptArgs* args))(InstanceData_sig__RobLocLCacc*) 
+inline void (*GAMHandler_sig__RobLocLCacc(InstanceData_sig__RobLocLCacc* instance, InterruptArgs* args))(InstanceData_sig__RobLocLCacc*)
 {
 	int i;
 	int lcaccMode;
@@ -990,7 +990,7 @@ inline void CreateBuffer_RobLocLCacc_td(uint8_t** buffer, uint32_t* bufferSize, 
 		void* VNR_vardecl_5(in_vel);
 		void* VNR_vardecl_6(out_pos);
 		void* VNR_vardecl_7(out_vel);
-		LCAccNode VNR_vardecl_8(820, (sizeof(float[3]) * (chunk1) * (chunk2)) + (sizeof(float[3]) * (chunk1) * (chunk2)) + (sizeof(float[4]) * (chunk1) * (chunk2)) + (sizeof(float[3]) * (chunk1) * (chunk2)) + (sizeof(float[3]) * (chunk1) * (chunk2)) + (sizeof(float[3]) * (chunk1) * (chunk2)) + (sizeof(float[3]) * (chunk1) * (chunk2)) + (sizeof(float[3]) * (chunk1) * (chunk2)), 3, 0, 0);
+		LCAccNode VNR_vardecl_8(820, (sizeof(float[3]) * (chunk1) * (chunk2)) + (sizeof(float[3]) * (chunk1) * (chunk2)) + (sizeof(float[4]) * (chunk1) * (chunk2)) + (sizeof(float[3]) * (chunk1) * (chunk2)) + (sizeof(float[3]) * (chunk1) * (chunk2)) + (sizeof(float[3]) * (chunk1) * (chunk2)) + (sizeof(float[3]) * (chunk1) * (chunk2)) + (sizeof(float[3]) * (chunk1) * (chunk2)), 2, 0, 0);
 		std::vector<uint32_t> VNR_vardecl_9;
 		VNR_vardecl_9.push_back(((chunk1) - (0)) / (1));
 		VNR_vardecl_9.push_back(((chunk2) - (0)) / (1));
@@ -1054,7 +1054,7 @@ inline void CreateBuffer_RobLocLCacc_td(uint8_t** buffer, uint32_t* bufferSize, 
 		//See VNR_vardecl_20 for index variable decl
 		//See VNR_vardecl_21 for register set decl
 		mw.AddCompute(VNR_vardecl_8, VNR_vardecl_20, VNR_vardecl_21);
-		
+
 		//transfer from in_ran1 to s
 		//Search VNR_vardecl_22 for source block size.
 		//Search VNR_vardecl_23 for source block stride.
@@ -1063,7 +1063,7 @@ inline void CreateBuffer_RobLocLCacc_td(uint8_t** buffer, uint32_t* bufferSize, 
 		//Search VNR_vardecl_24 for destination size.
 		//Search VNR_vardecl_26 for destination stride.
 		mw.AddTransfer(VNR_vardecl_0, VNR_vardecl_22, VNR_vardecl_23, VNR_vardecl_24, VNR_vardecl_25, VNR_vardecl_8, (0) + ((((0) * ((sizeof(float[3])) * (chunk2))) + ((0) * ((sizeof(float[3])))))), VNR_vardecl_24, VNR_vardecl_26, sizeof(float));
-		
+
 		//transfer from in_ran2 to s
 		//Search VNR_vardecl_22 for source block size.
 		//Search VNR_vardecl_23 for source block stride.
@@ -1072,7 +1072,7 @@ inline void CreateBuffer_RobLocLCacc_td(uint8_t** buffer, uint32_t* bufferSize, 
 		//Search VNR_vardecl_24 for destination size.
 		//Search VNR_vardecl_26 for destination stride.
 		mw.AddTransfer(VNR_vardecl_1, VNR_vardecl_22, VNR_vardecl_23, VNR_vardecl_24, VNR_vardecl_25, VNR_vardecl_8, ((sizeof(float[3]) * (chunk1) * (chunk2))) + ((((0) * ((sizeof(float[3])) * (chunk2))) + ((0) * ((sizeof(float[3])))))), VNR_vardecl_24, VNR_vardecl_26, sizeof(float));
-		
+
 		//transfer from in_quat to s
 		//Search VNR_vardecl_22 for source block size.
 		//Search VNR_vardecl_27 for source block stride.
@@ -1081,7 +1081,7 @@ inline void CreateBuffer_RobLocLCacc_td(uint8_t** buffer, uint32_t* bufferSize, 
 		//Search VNR_vardecl_28 for destination size.
 		//Search VNR_vardecl_30 for destination stride.
 		mw.AddTransfer(VNR_vardecl_2, VNR_vardecl_22, VNR_vardecl_27, VNR_vardecl_28, VNR_vardecl_29, VNR_vardecl_8, ((sizeof(float[3]) * (chunk1) * (chunk2)) + (sizeof(float[3]) * (chunk1) * (chunk2))) + ((((0) * ((sizeof(float[4])) * (chunk2))) + ((0) * ((sizeof(float[4])))))), VNR_vardecl_28, VNR_vardecl_30, sizeof(float));
-		
+
 		//transfer from in_accl to s
 		//Search VNR_vardecl_22 for source block size.
 		//Search VNR_vardecl_23 for source block stride.
@@ -1090,7 +1090,7 @@ inline void CreateBuffer_RobLocLCacc_td(uint8_t** buffer, uint32_t* bufferSize, 
 		//Search VNR_vardecl_24 for destination size.
 		//Search VNR_vardecl_26 for destination stride.
 		mw.AddTransfer(VNR_vardecl_3, VNR_vardecl_22, VNR_vardecl_23, VNR_vardecl_24, VNR_vardecl_25, VNR_vardecl_8, ((sizeof(float[3]) * (chunk1) * (chunk2)) + (sizeof(float[3]) * (chunk1) * (chunk2)) + (sizeof(float[4]) * (chunk1) * (chunk2))) + ((((0) * ((sizeof(float[3])) * (chunk2))) + ((0) * ((sizeof(float[3])))))), VNR_vardecl_24, VNR_vardecl_26, sizeof(float));
-		
+
 		//transfer from in_pos to s
 		//Search VNR_vardecl_22 for source block size.
 		//Search VNR_vardecl_23 for source block stride.
@@ -1099,7 +1099,7 @@ inline void CreateBuffer_RobLocLCacc_td(uint8_t** buffer, uint32_t* bufferSize, 
 		//Search VNR_vardecl_24 for destination size.
 		//Search VNR_vardecl_26 for destination stride.
 		mw.AddTransfer(VNR_vardecl_4, VNR_vardecl_22, VNR_vardecl_23, VNR_vardecl_24, VNR_vardecl_25, VNR_vardecl_8, ((sizeof(float[3]) * (chunk1) * (chunk2)) + (sizeof(float[3]) * (chunk1) * (chunk2)) + (sizeof(float[4]) * (chunk1) * (chunk2)) + (sizeof(float[3]) * (chunk1) * (chunk2))) + ((((0) * ((sizeof(float[3])) * (chunk2))) + ((0) * ((sizeof(float[3])))))), VNR_vardecl_24, VNR_vardecl_26, sizeof(float));
-		
+
 		//transfer from in_vel to s
 		//Search VNR_vardecl_22 for source block size.
 		//Search VNR_vardecl_23 for source block stride.
@@ -1108,7 +1108,7 @@ inline void CreateBuffer_RobLocLCacc_td(uint8_t** buffer, uint32_t* bufferSize, 
 		//Search VNR_vardecl_24 for destination size.
 		//Search VNR_vardecl_26 for destination stride.
 		mw.AddTransfer(VNR_vardecl_5, VNR_vardecl_22, VNR_vardecl_23, VNR_vardecl_24, VNR_vardecl_25, VNR_vardecl_8, ((sizeof(float[3]) * (chunk1) * (chunk2)) + (sizeof(float[3]) * (chunk1) * (chunk2)) + (sizeof(float[4]) * (chunk1) * (chunk2)) + (sizeof(float[3]) * (chunk1) * (chunk2)) + (sizeof(float[3]) * (chunk1) * (chunk2))) + ((((0) * ((sizeof(float[3])) * (chunk2))) + ((0) * ((sizeof(float[3])))))), VNR_vardecl_24, VNR_vardecl_26, sizeof(float));
-		
+
 		//transfer from s to out_pos
 		//Search VNR_vardecl_24 for source size.
 		//Search VNR_vardecl_26 for source stride.
@@ -1117,7 +1117,7 @@ inline void CreateBuffer_RobLocLCacc_td(uint8_t** buffer, uint32_t* bufferSize, 
 		//Search VNR_vardecl_24 for destination element size.
 		//Search VNR_vardecl_25 for destination element stride.
 		mw.AddTransfer(VNR_vardecl_8, ((sizeof(float[3]) * (chunk1) * (chunk2)) + (sizeof(float[3]) * (chunk1) * (chunk2)) + (sizeof(float[4]) * (chunk1) * (chunk2)) + (sizeof(float[3]) * (chunk1) * (chunk2)) + (sizeof(float[3]) * (chunk1) * (chunk2)) + (sizeof(float[3]) * (chunk1) * (chunk2))) + ((((0) * ((sizeof(float[3])) * (chunk2))) + ((0) * ((sizeof(float[3])))))), VNR_vardecl_24, VNR_vardecl_26, VNR_vardecl_6, VNR_vardecl_22, VNR_vardecl_23, VNR_vardecl_24, VNR_vardecl_25, sizeof(float));
-		
+
 		//transfer from s to out_vel
 		//Search VNR_vardecl_24 for source size.
 		//Search VNR_vardecl_26 for source stride.
@@ -1126,7 +1126,7 @@ inline void CreateBuffer_RobLocLCacc_td(uint8_t** buffer, uint32_t* bufferSize, 
 		//Search VNR_vardecl_24 for destination element size.
 		//Search VNR_vardecl_25 for destination element stride.
 		mw.AddTransfer(VNR_vardecl_8, ((sizeof(float[3]) * (chunk1) * (chunk2)) + (sizeof(float[3]) * (chunk1) * (chunk2)) + (sizeof(float[4]) * (chunk1) * (chunk2)) + (sizeof(float[3]) * (chunk1) * (chunk2)) + (sizeof(float[3]) * (chunk1) * (chunk2)) + (sizeof(float[3]) * (chunk1) * (chunk2)) + (sizeof(float[3]) * (chunk1) * (chunk2))) + ((((0) * ((sizeof(float[3])) * (chunk2))) + ((0) * ((sizeof(float[3])))))), VNR_vardecl_24, VNR_vardecl_26, VNR_vardecl_7, VNR_vardecl_22, VNR_vardecl_23, VNR_vardecl_24, VNR_vardecl_25, sizeof(float));
-		
+
 		mw.SetTaskGrain(0);
 		mw.Finalize((((dataSize) - (0)) / (chunk1)) * (((N_VAL) - (0)) / (chunk2)));
 	}

@@ -9,10 +9,13 @@ import SCons
 
 Import('*')
 
+
+#if env[] == :
+
 SimObject('MemoryInterface.py')
 
 Source('memInterface.cc')
-Source('gem5Interface.cc')
+Source('SimicsInterface.cc')
 Source('LCAccDevice.cc')
 Source('LCAccManager.cc')
 Source('LCAccOperatingMode.cc')

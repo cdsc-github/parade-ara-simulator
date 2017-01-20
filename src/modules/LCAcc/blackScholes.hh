@@ -155,17 +155,17 @@ namespace LCAcc
 			\
 			    output = OutputX;\
 			}
-			
+
 			    float OptionPrice;
 			    float OptionPrice2;
-			
+
 			    float xStockPrice;
 			    float xStrikePrice;
 			    float xRiskFreeRate;
 			    float xVolatility;
 			    float xTime;
 			    float xSqrtTime;
-			
+
 			    float logValues;
 			    float xLogTerm;
 			    float xD1;
@@ -179,45 +179,45 @@ namespace LCAcc
 			    float NofXd2;
 			    float NegNofXd1;
 			    float NegNofXd2;
-			
+
 			    xStockPrice = sptprice;
 			    xStrikePrice = strike;
 			    xRiskFreeRate = rate;
 			    xVolatility = volatility;
-			
+
 			    xTime = time;
 			    xSqrtTime = sqrt(xTime);
-			
+
 			    logValues = log( sptprice / strike );
-			
+
 			    xLogTerm = logValues;
-			
+
 			    xPowerTerm = xVolatility * xVolatility;
 			    xPowerTerm = xPowerTerm * 0.5f;
-			
+
 			    xD1 = xRiskFreeRate + xPowerTerm;
 			    xD1 = xD1 * xTime;
 			    xD1 = xD1 + xLogTerm;
-			
+
 			    xDen = xVolatility * xSqrtTime;
 			    xD1 = xD1 / xDen;
 			    xD2 = xD1 -  xDen;
 			   d1 = xD1;
 			    d2 = xD2;
-			
+
 			    CNDF( d1, NofXd1);
 			    CNDF( d2, NofXd2);
-			
+
 			    FutureValueX = strike * ( expf( -(rate)*(time) ) );
 			        OptionPrice = (sptprice * NofXd1) - (FutureValueX * NofXd2);
 			     NegNofXd1 = (1.0f - NofXd1);
 			        NegNofXd2 = (1.0f - NofXd2);
 			        OptionPrice2 = (FutureValueX * NegNofXd2) - (sptprice * NegNofXd1);
 			        OptionPrice = (otype < 1) ? OptionPrice2 : OptionPrice;
-			
+
 			    output= OptionPrice;
-			
-			
+
+
 			#undef CNDF
 			#undef SPMAddressOf
 

@@ -456,8 +456,8 @@ public:
 		node_sa.Reset();
 	}
 	inline InstanceData_sig__DispMapFindDispLCacc() :
-		acceleratorSignature__sa(true), 
-		node_sa(832), 
+		acceleratorSignature__sa(true),
+		node_sa(832),
 		threadID(0)
 	{
 		Reset();
@@ -503,7 +503,7 @@ inline void Wait_sig__DispMapFindDispLCacc(InstanceData_sig__DispMapFindDispLCac
 		}
 	}
 }
-inline void (*GAMHandler_sig__DispMapFindDispLCacc(InstanceData_sig__DispMapFindDispLCacc* instance, InterruptArgs* args))(InstanceData_sig__DispMapFindDispLCacc*) 
+inline void (*GAMHandler_sig__DispMapFindDispLCacc(InstanceData_sig__DispMapFindDispLCacc* instance, InterruptArgs* args))(InstanceData_sig__DispMapFindDispLCacc*)
 {
 	int i;
 	int lcaccMode;
@@ -952,7 +952,7 @@ inline void CreateBuffer_DispMapFindDispLCacc_td(uint8_t** buffer, uint32_t* buf
 	{
 		void* VNR_vardecl_0(in_imgIntegral);
 		void* VNR_vardecl_1(out_Disp);
-		LCAccNode VNR_vardecl_2(832, (sizeof(float) * (chunk1) * (chunk2) * (chunk3) * (chunk4)) + (sizeof(float) * (chunk1) * (chunk2) * (chunk3) * (chunk4)) + (sizeof(float) * (chunk1) * (chunk2) * (chunk3) * (chunk4)) + (sizeof(float) * (chunk1) * (chunk2) * (chunk3) * (chunk4)) + (sizeof(float) * (chunk1) * (chunk2) * (chunk3) * (chunk4)), 3, 0, 0);
+		LCAccNode VNR_vardecl_2(832, (sizeof(float) * (chunk1) * (chunk2) * (chunk3) * (chunk4)) + (sizeof(float) * (chunk1) * (chunk2) * (chunk3) * (chunk4)) + (sizeof(float) * (chunk1) * (chunk2) * (chunk3) * (chunk4)) + (sizeof(float) * (chunk1) * (chunk2) * (chunk3) * (chunk4)) + (sizeof(float) * (chunk1) * (chunk2) * (chunk3) * (chunk4)), 2, 0, 0);
 		std::vector<uint32_t> VNR_vardecl_3;
 		VNR_vardecl_3.push_back(((chunk1) - (0)) / (1));
 		VNR_vardecl_3.push_back(((chunk2) - (0)) / (1));
@@ -1010,7 +1010,7 @@ inline void CreateBuffer_DispMapFindDispLCacc_td(uint8_t** buffer, uint32_t* buf
 		//See VNR_vardecl_10 for index variable decl
 		//See VNR_vardecl_11 for register set decl
 		mw.AddCompute(VNR_vardecl_2, VNR_vardecl_10, VNR_vardecl_11);
-		
+
 		//transfer from in_imgIntegral to sa
 		//Search VNR_vardecl_12 for source block size.
 		//Search VNR_vardecl_13 for source block stride.
@@ -1019,7 +1019,7 @@ inline void CreateBuffer_DispMapFindDispLCacc_td(uint8_t** buffer, uint32_t* buf
 		//Search VNR_vardecl_3 for destination size.
 		//Search VNR_vardecl_15 for destination stride.
 		mw.AddTransfer(VNR_vardecl_0, VNR_vardecl_12, VNR_vardecl_13, VNR_vardecl_3, VNR_vardecl_14, VNR_vardecl_2, (0) + ((((0) * ((sizeof(float)) * (chunk2) * (chunk3) * (chunk4))) + ((0) * ((sizeof(float)) * (chunk3) * (chunk4))) + ((0) * ((sizeof(float)) * (chunk4))) + ((0) * ((sizeof(float)))))), VNR_vardecl_3, VNR_vardecl_15, sizeof(float));
-		
+
 		//transfer from in_imgIntegral to sa
 		//Search VNR_vardecl_12 for source block size.
 		//Search VNR_vardecl_13 for source block stride.
@@ -1028,7 +1028,7 @@ inline void CreateBuffer_DispMapFindDispLCacc_td(uint8_t** buffer, uint32_t* buf
 		//Search VNR_vardecl_3 for destination size.
 		//Search VNR_vardecl_15 for destination stride.
 		mw.AddTransfer(VNR_vardecl_0, VNR_vardecl_12, VNR_vardecl_13, VNR_vardecl_3, VNR_vardecl_14, VNR_vardecl_2, ((sizeof(float) * (chunk1) * (chunk2) * (chunk3) * (chunk4))) + ((((0) * ((sizeof(float)) * (chunk2) * (chunk3) * (chunk4))) + ((0) * ((sizeof(float)) * (chunk3) * (chunk4))) + ((0) * ((sizeof(float)) * (chunk4))) + ((0) * ((sizeof(float)))))), VNR_vardecl_3, VNR_vardecl_15, sizeof(float));
-		
+
 		//transfer from in_imgIntegral to sa
 		//Search VNR_vardecl_12 for source block size.
 		//Search VNR_vardecl_13 for source block stride.
@@ -1037,7 +1037,7 @@ inline void CreateBuffer_DispMapFindDispLCacc_td(uint8_t** buffer, uint32_t* buf
 		//Search VNR_vardecl_3 for destination size.
 		//Search VNR_vardecl_15 for destination stride.
 		mw.AddTransfer(VNR_vardecl_0, VNR_vardecl_12, VNR_vardecl_13, VNR_vardecl_3, VNR_vardecl_14, VNR_vardecl_2, ((sizeof(float) * (chunk1) * (chunk2) * (chunk3) * (chunk4)) + (sizeof(float) * (chunk1) * (chunk2) * (chunk3) * (chunk4))) + ((((0) * ((sizeof(float)) * (chunk2) * (chunk3) * (chunk4))) + ((0) * ((sizeof(float)) * (chunk3) * (chunk4))) + ((0) * ((sizeof(float)) * (chunk4))) + ((0) * ((sizeof(float)))))), VNR_vardecl_3, VNR_vardecl_15, sizeof(float));
-		
+
 		//transfer from in_imgIntegral to sa
 		//Search VNR_vardecl_12 for source block size.
 		//Search VNR_vardecl_13 for source block stride.
@@ -1046,7 +1046,7 @@ inline void CreateBuffer_DispMapFindDispLCacc_td(uint8_t** buffer, uint32_t* buf
 		//Search VNR_vardecl_3 for destination size.
 		//Search VNR_vardecl_15 for destination stride.
 		mw.AddTransfer(VNR_vardecl_0, VNR_vardecl_12, VNR_vardecl_13, VNR_vardecl_3, VNR_vardecl_14, VNR_vardecl_2, ((sizeof(float) * (chunk1) * (chunk2) * (chunk3) * (chunk4)) + (sizeof(float) * (chunk1) * (chunk2) * (chunk3) * (chunk4)) + (sizeof(float) * (chunk1) * (chunk2) * (chunk3) * (chunk4))) + ((((0) * ((sizeof(float)) * (chunk2) * (chunk3) * (chunk4))) + ((0) * ((sizeof(float)) * (chunk3) * (chunk4))) + ((0) * ((sizeof(float)) * (chunk4))) + ((0) * ((sizeof(float)))))), VNR_vardecl_3, VNR_vardecl_15, sizeof(float));
-		
+
 		//transfer from sa to out_Disp
 		//Search VNR_vardecl_3 for source size.
 		//Search VNR_vardecl_15 for source stride.
@@ -1055,7 +1055,7 @@ inline void CreateBuffer_DispMapFindDispLCacc_td(uint8_t** buffer, uint32_t* buf
 		//Search VNR_vardecl_3 for destination element size.
 		//Search VNR_vardecl_17 for destination element stride.
 		mw.AddTransfer(VNR_vardecl_2, ((sizeof(float) * (chunk1) * (chunk2) * (chunk3) * (chunk4)) + (sizeof(float) * (chunk1) * (chunk2) * (chunk3) * (chunk4)) + (sizeof(float) * (chunk1) * (chunk2) * (chunk3) * (chunk4)) + (sizeof(float) * (chunk1) * (chunk2) * (chunk3) * (chunk4))) + ((((0) * ((sizeof(float)) * (chunk2) * (chunk3) * (chunk4))) + ((0) * ((sizeof(float)) * (chunk3) * (chunk4))) + ((0) * ((sizeof(float)) * (chunk4))) + ((0) * ((sizeof(float)))))), VNR_vardecl_3, VNR_vardecl_15, VNR_vardecl_1, VNR_vardecl_12, VNR_vardecl_16, VNR_vardecl_3, VNR_vardecl_17, sizeof(float));
-		
+
 		mw.SetTaskGrain(0);
 		mw.Finalize((((dataSize) - (0)) / (chunk1)) * (((SHIFT) - (0)) / (chunk2)) * (((nRows) - (0)) / (chunk3)) * (((nCols) - (0)) / (chunk4)));
 	}

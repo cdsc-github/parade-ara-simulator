@@ -121,7 +121,7 @@ namespace LCAcc
 			float v4 = a_Center - b_Out;
 			float v5 = a_Center - b_Up;
 			float v6 = a_Center - b_Down;
-			
+
 			g = 1.0f / sqrt(v1 * v1 + v2 * v2 + v3 * v3 + v4 * v4 + v5 * v5 + v6 * v6);
 			#undef SPMAddressOf
 

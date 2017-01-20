@@ -45,7 +45,7 @@ DirectoryMemory::DirectoryMemory(const Params *p)
 {
     m_version = p->version;
     m_size_bytes = p->size;
-    //To support more than 3GB memory simulation. 
+    //To support more than 3GB memory simulation.
     //Since 3GB-4GB memory rannge are reserved for devices, we need to
     //add 1GB extra memory to Ruby if memory size is greater than 3GB
     if(m_size_bytes > 0xC0000000)
@@ -124,7 +124,6 @@ DirectoryMemory::lookup(PhysAddress address)
     DPRINTF(RubyCache, "Looking up address: %s\n", address);
 
     uint64_t idx = mapAddressToLocalIdx(address);
-    //std::cout << "address: " << address << ", idx: " << idx << ", m_num_entries: " << m_num_entries << std::endl;
     assert(idx < m_num_entries);
     return m_entries[idx];
 }

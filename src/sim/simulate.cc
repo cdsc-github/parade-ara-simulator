@@ -44,8 +44,8 @@
 #include "sim/simulate.hh"
 #include "sim/stat_control.hh"
 
-//1. Dedicated-ARA version
-#define SIM_DEDICATED_ARA
+//0. SW version
+//#define SIM_SW
 
 #define SIM_NET_PORTS
 #ifdef SIM_NET_PORTS
@@ -107,22 +107,23 @@ simulate(Tick num_cycles)
         }
 
 #ifdef SIM_NET_PORTS
-	//Before Ruby starts, we need to initilize TLB interface and barrier interface
-	g_TLBHack_interface = (TLBHackInterface *)malloc(sizeof(TLBHackInterface));
-	memset(g_TLBHack_interface, 0, sizeof(TLBHackInterface));
-	g_TLBHack_interface->PageKnown = PageKnownHandler;
-	g_TLBHack_interface->Lookup = LookupHandler;
-	g_TLBHack_interface->AddEntry = AddEntryHandler;
-	warn("Initialize TLBHack_interface\n");//*/
+        //Before Ruby starts, we need to initilize TLB interface and barrier interface
+        g_TLBHack_interface = (TLBHackInterface *)malloc(sizeof(TLBHackInterface));
+        memset(g_TLBHack_interface, 0, sizeof(TLBHackInterface));
+        g_TLBHack_interface->PageKnown = PageKnownHandler;
+        g_TLBHack_interface->Lookup = LookupHandler;
+        g_TLBHack_interface->AddEntry = AddEntryHandler;
+        inform("Initialize TLBHack_interface\n");//*/
 
-	//This is the number of applications to run, to synchronize
-	std::vector<System *>::iterator system_iterator = System::systemList.begin();
-	System *m5_system = *system_iterator;
-	assert(m5_system);
-	int num_thread_contexts = m5_system->numContexts();
-	//SetBarrierWidth(num_thread_contexts);
-	SetBarrierWidth(1);
-	warn("Set Barrier Width to %d\n", num_thread_contexts);//*/
+        //This is the number of applications to run, to synchronize
+        std::vector<System *>::iterator system_iterator = System::systemList.begin();
+        System *m5_system = *system_iterator;
+        assert(m5_system);
+        int num_thread_contexts = m5_system->numContexts();
+        inform("Number of threadcontexts is %d\n", num_thread_contexts);
+        // num_thread_contexts = 2;
+        SetBarrierWidth(num_thread_contexts);
+        inform("Set Barrier Width to %d\n", num_thread_contexts);//*/
 #endif
 
         threads_initialized = true;
@@ -215,7 +216,7 @@ doSimLoop(EventQueue *eventq)
     curEventQueue(eventq);
     eventq->handleAsyncInsertions();
 
-#if defined(SIM_NET_PORTS) && defined(SIM_DEDICATED_ARA)
+#if defined(SIM_NET_PORTS) && !defined(SIM_SW)
     std::vector<System *>::iterator system_iterator = System::systemList.begin();
     System *m5_system = *system_iterator;
     assert(m5_system);
@@ -229,7 +230,7 @@ doSimLoop(EventQueue *eventq)
         assert(curTick() <= eventq->nextTick() &&
                "event scheduled in the past");
 
-#if defined(SIM_NET_PORTS) && defined(SIM_DEDICATED_ARA)
+#if defined(SIM_NET_PORTS) && !defined(SIM_SW)
         //advance our private event queue for local CBs
 	while( lastCycle < m5_system->ticksToCycles(eventq->nextTick()) ) {
 	  while(localCBsForCycle(lastCycle)) {

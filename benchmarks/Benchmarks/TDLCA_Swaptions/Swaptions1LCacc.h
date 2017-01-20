@@ -449,8 +449,8 @@ public:
 		node_x.Reset();
 	}
 	inline InstanceData_sig__Swaptions1LCacc() :
-		acceleratorSignature__x(true), 
-		node_x(1301), 
+		acceleratorSignature__x(true),
+		node_x(1301),
 		threadID(0)
 	{
 		Reset();
@@ -496,7 +496,7 @@ inline void Wait_sig__Swaptions1LCacc(InstanceData_sig__Swaptions1LCacc* instanc
 		}
 	}
 }
-inline void (*GAMHandler_sig__Swaptions1LCacc(InstanceData_sig__Swaptions1LCacc* instance, InterruptArgs* args))(InstanceData_sig__Swaptions1LCacc*) 
+inline void (*GAMHandler_sig__Swaptions1LCacc(InstanceData_sig__Swaptions1LCacc* instance, InterruptArgs* args))(InstanceData_sig__Swaptions1LCacc*)
 {
 	int i;
 	int lcaccMode;
@@ -862,7 +862,7 @@ inline void CreateBuffer_Swaptions1LCacc_td(uint8_t** buffer, uint32_t* bufferSi
 	{
 		void* VNR_vardecl_0(seed);
 		void* VNR_vardecl_1(result);
-		LCAccNode VNR_vardecl_2(1301, (sizeof(float) * (chunk)) + (sizeof(float[3][11]) * (chunk)), 3, 0, 0);
+		LCAccNode VNR_vardecl_2(1301, (sizeof(float) * (chunk)) + (sizeof(float[3][11]) * (chunk)), 2, 0, 0);
 		std::vector<uint32_t> VNR_vardecl_3;
 		VNR_vardecl_3.push_back(((chunk) - (0)) / (1));
 		std::vector<int32_t> VNR_vardecl_4;
@@ -892,7 +892,7 @@ inline void CreateBuffer_Swaptions1LCacc_td(uint8_t** buffer, uint32_t* bufferSi
 		//See VNR_vardecl_8 for index variable decl
 		//See VNR_vardecl_9 for register set decl
 		mw.AddCompute(VNR_vardecl_2, VNR_vardecl_8, VNR_vardecl_9);
-		
+
 		//transfer from seed to x
 		//Search VNR_vardecl_10 for source block size.
 		//Search VNR_vardecl_11 for source block stride.
@@ -901,7 +901,7 @@ inline void CreateBuffer_Swaptions1LCacc_td(uint8_t** buffer, uint32_t* bufferSi
 		//Search VNR_vardecl_3 for destination size.
 		//Search VNR_vardecl_12 for destination stride.
 		mw.AddTransfer(VNR_vardecl_0, VNR_vardecl_10, VNR_vardecl_11, VNR_vardecl_3, VNR_vardecl_12, VNR_vardecl_2, (0) + ((((0) * ((sizeof(float)))))), VNR_vardecl_3, VNR_vardecl_12, sizeof(float));
-		
+
 		//transfer from x to result
 		//Search VNR_vardecl_13 for source size.
 		//Search VNR_vardecl_14 for source stride.
@@ -910,7 +910,7 @@ inline void CreateBuffer_Swaptions1LCacc_td(uint8_t** buffer, uint32_t* bufferSi
 		//Search VNR_vardecl_13 for destination element size.
 		//Search VNR_vardecl_14 for destination element stride.
 		mw.AddTransfer(VNR_vardecl_2, ((sizeof(float) * (chunk))) + ((((0) * ((sizeof(float[3][11])))))), VNR_vardecl_13, VNR_vardecl_14, VNR_vardecl_1, VNR_vardecl_10, VNR_vardecl_15, VNR_vardecl_13, VNR_vardecl_14, sizeof(float));
-		
+
 		mw.SetTaskGrain(0);
 		mw.Finalize((((size) - (0)) / (chunk)));
 	}

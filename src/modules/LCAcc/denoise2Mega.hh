@@ -184,9 +184,9 @@ namespace LCAcc
 
 			#define SPMAddressOf(x) (addr_##x)
 			float r = u_Center * f_Center / sigma;
-			
+
 			r = (r * (2.38944f + r * (0.950037f + r))) / (4.65314f + r * (2.57541f + r * (1.48937f + r)));
-			
+
 			u_Result = (u_Center + dt * (u_Right * g_Right + u_Left * g_Left + u_Down * g_Down + u_Up * g_Up + u_Out * g_Out + u_In * g_In + gamma * f_Center * r) ) / (1.0f + dt * (g_Right + g_Left + g_Down + g_Up + g_Out + g_In + gamma));
 			#undef SPMAddressOf
 

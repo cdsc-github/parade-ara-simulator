@@ -114,7 +114,7 @@ namespace LCAcc
 			        float ppd_path_val_1_7 = out_ppdHJMPath[1][7] = in_ppdHJMPath[0][8] + pdTotalDrift[7] * ddelt + sqrt_ddelt * shock_arr[7];
 			        float ppd_path_val_1_8 = out_ppdHJMPath[1][8] = in_ppdHJMPath[0][9] + pdTotalDrift[8] * ddelt + sqrt_ddelt * shock_arr[8];
 			        float ppd_path_val_1_9 = out_ppdHJMPath[1][9] = in_ppdHJMPath[0][10] + pdTotalDrift[9] * ddelt + sqrt_ddelt * shock_arr[9];
-			
+
 			        float ppd_path_val_2_0 = out_ppdHJMPath[2][0] = ppd_path_val_1_1 + pdTotalDrift[0] * ddelt + sqrt_ddelt * shock_arr[10];
 			        float ppd_path_val_2_1 = out_ppdHJMPath[2][1] = ppd_path_val_1_2 + pdTotalDrift[1] * ddelt + sqrt_ddelt * shock_arr[11];
 			        float ppd_path_val_2_2 = out_ppdHJMPath[2][2] = ppd_path_val_1_3 + pdTotalDrift[2] * ddelt + sqrt_ddelt * shock_arr[12];
@@ -124,7 +124,7 @@ namespace LCAcc
 			        float ppd_path_val_2_6 = out_ppdHJMPath[2][6] = ppd_path_val_1_7 + pdTotalDrift[6] * ddelt + sqrt_ddelt * shock_arr[16];
 			        float ppd_path_val_2_7 = out_ppdHJMPath[2][7] = ppd_path_val_1_8 + pdTotalDrift[7] * ddelt + sqrt_ddelt * shock_arr[17];
 			        float ppd_path_val_2_8 = out_ppdHJMPath[2][8] = ppd_path_val_1_9 + pdTotalDrift[8] * ddelt + sqrt_ddelt * shock_arr[18];
-			
+
 			        float ppd_path_val_3_0 = out_ppdHJMPath[3][0] = ppd_path_val_2_1 + pdTotalDrift[0] * ddelt + sqrt_ddelt * shock_arr[19];
 			        float ppd_path_val_3_1 = out_ppdHJMPath[3][1] = ppd_path_val_2_2 + pdTotalDrift[1] * ddelt + sqrt_ddelt * shock_arr[20];
 			        float ppd_path_val_3_2 = out_ppdHJMPath[3][2] = ppd_path_val_2_3 + pdTotalDrift[2] * ddelt + sqrt_ddelt * shock_arr[21];
@@ -133,7 +133,7 @@ namespace LCAcc
 			        float ppd_path_val_3_5 = out_ppdHJMPath[3][5] = ppd_path_val_2_6 + pdTotalDrift[5] * ddelt + sqrt_ddelt * shock_arr[24];
 			        float ppd_path_val_3_6 = out_ppdHJMPath[3][6] = ppd_path_val_2_7 + pdTotalDrift[6] * ddelt + sqrt_ddelt * shock_arr[25];
 			        float ppd_path_val_3_7 = out_ppdHJMPath[3][7] = ppd_path_val_2_8 + pdTotalDrift[7] * ddelt + sqrt_ddelt * shock_arr[26];
-			
+
 			        float ppd_path_val_4_0 = out_ppdHJMPath[4][0] = ppd_path_val_3_1 + pdTotalDrift[0] * ddelt + sqrt_ddelt * shock_arr[27];
 			        float ppd_path_val_4_1 = out_ppdHJMPath[4][1] = ppd_path_val_3_2 + pdTotalDrift[1] * ddelt + sqrt_ddelt * shock_arr[28];
 			        float ppd_path_val_4_2 = out_ppdHJMPath[4][2] = ppd_path_val_3_3 + pdTotalDrift[2] * ddelt + sqrt_ddelt * shock_arr[29];
@@ -141,33 +141,44 @@ namespace LCAcc
 			        float ppd_path_val_4_4 = out_ppdHJMPath[4][4] = ppd_path_val_3_5 + pdTotalDrift[4] * ddelt + sqrt_ddelt * shock_arr[31];
 			        float ppd_path_val_4_5 = out_ppdHJMPath[4][5] = ppd_path_val_3_6 + pdTotalDrift[5] * ddelt + sqrt_ddelt * shock_arr[32];
 			        float ppd_path_val_4_6 = out_ppdHJMPath[4][6] = ppd_path_val_3_7 + pdTotalDrift[6] * ddelt + sqrt_ddelt * shock_arr[33];
-			
+
 			        float ppd_path_val_5_0 = out_ppdHJMPath[5][0] = ppd_path_val_4_1 + pdTotalDrift[0] * ddelt + sqrt_ddelt * shock_arr[34];
 			        float ppd_path_val_5_1 = out_ppdHJMPath[5][1] = ppd_path_val_4_2 + pdTotalDrift[1] * ddelt + sqrt_ddelt * shock_arr[35];
 			        float ppd_path_val_5_2 = out_ppdHJMPath[5][2] = ppd_path_val_4_3 + pdTotalDrift[2] * ddelt + sqrt_ddelt * shock_arr[36];
 			        float ppd_path_val_5_3 = out_ppdHJMPath[5][3] = ppd_path_val_4_4 + pdTotalDrift[3] * ddelt + sqrt_ddelt * shock_arr[37];
 			        float ppd_path_val_5_4 = out_ppdHJMPath[5][4] = ppd_path_val_4_5 + pdTotalDrift[4] * ddelt + sqrt_ddelt * shock_arr[38];
 			        float ppd_path_val_5_5 = out_ppdHJMPath[5][5] = ppd_path_val_4_6 + pdTotalDrift[5] * ddelt + sqrt_ddelt * shock_arr[39];
-			
+
 			        float ppd_path_val_6_0 = out_ppdHJMPath[6][0] = ppd_path_val_5_1 + pdTotalDrift[0] * ddelt + sqrt_ddelt * shock_arr[40];
 			        float ppd_path_val_6_1 = out_ppdHJMPath[6][1] = ppd_path_val_5_2 + pdTotalDrift[1] * ddelt + sqrt_ddelt * shock_arr[41];
 			        float ppd_path_val_6_2 = out_ppdHJMPath[6][2] = ppd_path_val_5_3 + pdTotalDrift[2] * ddelt + sqrt_ddelt * shock_arr[42];
 			        float ppd_path_val_6_3 = out_ppdHJMPath[6][3] = ppd_path_val_5_4 + pdTotalDrift[3] * ddelt + sqrt_ddelt * shock_arr[43];
 			        float ppd_path_val_6_4 = out_ppdHJMPath[6][4] = ppd_path_val_5_5 + pdTotalDrift[4] * ddelt + sqrt_ddelt * shock_arr[44];
-			
+
 			        float ppd_path_val_7_0 = out_ppdHJMPath[7][0] = ppd_path_val_6_1 + pdTotalDrift[0] * ddelt + sqrt_ddelt * shock_arr[45];
 			        float ppd_path_val_7_1 = out_ppdHJMPath[7][1] = ppd_path_val_6_2 + pdTotalDrift[1] * ddelt + sqrt_ddelt * shock_arr[46];
 			        float ppd_path_val_7_2 = out_ppdHJMPath[7][2] = ppd_path_val_6_3 + pdTotalDrift[2] * ddelt + sqrt_ddelt * shock_arr[47];
 			        float ppd_path_val_7_3 = out_ppdHJMPath[7][3] = ppd_path_val_6_4 + pdTotalDrift[3] * ddelt + sqrt_ddelt * shock_arr[48];
-			
+
 			        float ppd_path_val_8_0 = out_ppdHJMPath[8][0] = ppd_path_val_7_1 + pdTotalDrift[0] * ddelt + sqrt_ddelt * shock_arr[49];
 			        float ppd_path_val_8_1 = out_ppdHJMPath[8][1] = ppd_path_val_7_2 + pdTotalDrift[1] * ddelt + sqrt_ddelt * shock_arr[50];
 			        float ppd_path_val_8_2 = out_ppdHJMPath[8][2] = ppd_path_val_7_3 + pdTotalDrift[2] * ddelt + sqrt_ddelt * shock_arr[51];
-			
+
 			        float ppd_path_val_9_0 = out_ppdHJMPath[9][0] = ppd_path_val_8_1 + pdTotalDrift[0] * ddelt + sqrt_ddelt * shock_arr[52];
 			        float ppd_path_val_9_1 = out_ppdHJMPath[9][1] = ppd_path_val_8_2 + pdTotalDrift[1] * ddelt + sqrt_ddelt * shock_arr[53];
-			
+
 			        float ppd_path_val_10_0 = out_ppdHJMPath[10][0] = ppd_path_val_9_1 + pdTotalDrift[0] * ddelt + sqrt_ddelt * shock_arr[54];
+
+        			out_ppdHJMPath[1][0] = ppd_path_val_1_0;
+        			out_ppdHJMPath[2][0] = ppd_path_val_2_0;
+        			out_ppdHJMPath[3][0] = ppd_path_val_3_0;
+        			out_ppdHJMPath[4][0] = ppd_path_val_4_0;
+        			out_ppdHJMPath[5][0] = ppd_path_val_5_0;
+        			out_ppdHJMPath[6][0] = ppd_path_val_6_0;
+        			out_ppdHJMPath[7][0] = ppd_path_val_7_0;
+        			out_ppdHJMPath[8][0] = ppd_path_val_8_0;
+        			out_ppdHJMPath[9][0] = ppd_path_val_9_0;
+        			out_ppdHJMPath[10][0] = ppd_path_val_10_0;
 			#undef SPMAddressOf
 
 			for(size_t i = 0; i < 121; i++)

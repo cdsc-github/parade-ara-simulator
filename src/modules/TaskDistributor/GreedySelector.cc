@@ -382,7 +382,7 @@ uint32_t GreedySelector::GetLastCalculationDelay()
 bool GreedySelector::FindAssignment(int core, const TDProgram& prog, int cfusPerIsland, const std::vector<CFUIdentifier>& fullSystem, const std::vector<CFUIdentifier>& available, std::vector<CFUIdentifier>& assignment, std::vector<int>& requiredModeSet, bool allowPartial)
 {
 	assert(!allowPartial);
-	//condense allocations first
+//condense allocations first
 	std::map<unsigned int, unsigned int> modeToID;
 	std::map<unsigned int, unsigned int> idToMode;
 	for(size_t i = 0; i < available.size(); i++)

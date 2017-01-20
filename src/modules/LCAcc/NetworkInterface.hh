@@ -1,5 +1,5 @@
-#ifndef NETWORK_INTERFACE_H
-#define NETWORK_INTERFACE_H
+#ifndef LCACCNETWORK_INTERFACE_H
+#define LCACCNETWORK_INTERFACE_H
 
 #include "../Common/BaseCallbacks.hh"
 #include <vector>

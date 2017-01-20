@@ -6,25 +6,25 @@
 float inv_sqrt_2xPI = 0.0053f;
 class SW_BlackScholes : public BenchmarkNode
 {
-	int dataSize;
-	int thread;
-	float* sptprice;
-	float* strike;
-	float* rate;
-	float* volatility;
-	float* otime;
-	int* otype;
-	float* price;
-	float CNDF(float InputX);
-	float BlkSchlsEqEuroNoDiv(float& sptprice, float& strike, float& rate, float& volatility, float& time, int& otype);
+    int dataSize;
+    int thread;
+    float* sptprice;
+    float* strike;
+    float* rate;
+    float* volatility;
+    float* otime;
+    int* otype;
+    float* price;
+    float CNDF(float InputX);
+    float BlkSchlsEqEuroNoDiv(float& sptprice, float& strike, float& rate, float& volatility, float& time, int& otype);
 public:
-	SW_BlackScholes()
-	{
-		std::cin >> dataSize;
-	}
-	virtual void Initialize(int threadID, int procID);
-	virtual void Run();
-	virtual void Shutdown();
+    SW_BlackScholes()
+    {
+        std::cin >> dataSize;
+    }
+    virtual void Initialize(int threadID, int procID);
+    virtual void Run();
+    virtual void Shutdown();
 };
 
 BENCH_DECL(SW_BlackScholes);
@@ -147,30 +147,29 @@ float SW_BlackScholes::BlkSchlsEqEuroNoDiv(float& sptprice, float& strike, float
 }
 void SW_BlackScholes::Initialize(int threadID, int procID)
 {
-	thread = threadID;
-        sptprice = new float[dataSize];
-        strike = new float[dataSize];
-        rate = new float[dataSize];
-        volatility = new float[dataSize];
-        otime = new float[dataSize];
-        otype = new int[dataSize];
-        price = new float[dataSize];
-	for(int i = 0; i < dataSize; i++)
-	{
-		sptprice[i] = strike[i] = rate[i] = volatility[i] = otime[i] = price[i] = 0.0;
-		otype[i] = 0;
-	}
+    thread = threadID;
+    sptprice = new float[dataSize];
+    strike = new float[dataSize];
+    rate = new float[dataSize];
+    volatility = new float[dataSize];
+    otime = new float[dataSize];
+    otype = new int[dataSize];
+    price = new float[dataSize];
+
+    for (int i = 0; i < dataSize; i++)
+    {
+        sptprice[i] = strike[i] = rate[i] = volatility[i] = otime[i] = price[i] = 0.0;
+        otype[i] = 0;
+    }
 }
 void SW_BlackScholes::Run()
 {
-  //std::cout << "dataSize: " << dataSize << std::endl;
-	for(int i = 0; i < dataSize; i++)
-	{
-		price[i] = BlkSchlsEqEuroNoDiv(sptprice[i], strike[i], rate[i], volatility[i], otime[i], otype[i]);
-		//std::cout << "price[" << i << "]: " << price[i] << std::endl;
-	}
+    for (int i = 0; i < dataSize; i++)
+    {
+        price[i] = BlkSchlsEqEuroNoDiv(sptprice[i], strike[i], rate[i], volatility[i], otime[i], otype[i]);
+    }
 }
 void SW_BlackScholes::Shutdown()
 {
-	while(true);
+    while(true);
 }

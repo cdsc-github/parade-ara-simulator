@@ -35,13 +35,14 @@ vector<map<uint32_t, AbstractController *> > g_abs_controls;
 Cycles g_ruby_start;
 #ifdef SIM_NET_PORTS
 lwInt_ifc_t* g_lwInt_interface;
-gem5NetworkPortInterface* g_networkPort_interface;
+SimicsNetworkPortInterface* g_networkPort_interface;
 vector<NetworkInterruptHandle*> g_network_interrupt_handle;
 vector<NetworkInterrupts*> g_network_interrupts;
 TLBHackInterface* g_TLBHack_interface;
+GAMInterface* g_gamObject;
 TaskDistributorInterface* g_TDInterface;
 vector<TDHandle*> g_TDHandle;
-MeteredMemory_Interface::gem5Interface* g_memObject;
+MeteredMemory_Interface::SimicsInterface* g_memObject;
 MemoryDeviceInterface* g_memInterface;
 vector<DMAEngineHandle*> g_dmaDevice;
 vector<DMAEngineHandle*> g_TdDmaDevice;

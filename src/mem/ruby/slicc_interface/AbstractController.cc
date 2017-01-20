@@ -221,6 +221,28 @@ AbstractController::queueMemoryRead(const MachineID &id, Address addr,
 }
 
 void
+AbstractController::queueMemoryReadBypass(const MachineID &id, Address addr,
+                                          Cycles latency,
+                                          const MachineID &bypassRequestor)
+{
+    RequestPtr req = new Request(addr.getAddress(),
+                                 RubySystem::getBlockSizeBytes(), 0,
+                                 m_masterId);
+
+    req->setFlags(Request::BYPASS_CACHE);
+
+    PacketPtr pkt = Packet::createRead(req);
+    uint8_t *newData = new uint8_t[RubySystem::getBlockSizeBytes()];
+    pkt->dataDynamic(newData);
+
+    SenderState *s = new SenderState(id);
+    pkt->pushSenderState(s);
+    pkt->bypassRequestor = bypassRequestor;
+
+    memoryPort.schedTimingReq(pkt, clockEdge(latency));
+}
+
+void
 AbstractController::queueMemoryWrite(const MachineID &id, Address addr,
                                      Cycles latency, const DataBlock &block)
 {
@@ -311,6 +333,11 @@ AbstractController::recvTimingResp(PacketPtr pkt)
         (*msg).m_MessageSize = MessageSizeType_Writeback_Control;
     } else {
         panic("Incorrect packet type received from memory controller!");
+    }
+
+    if (pkt->req->isBypassCache()) {
+      (*msg).m_BypassCache = true;
+      (*msg).m_BypassRequestor = pkt->bypassRequestor;
     }
 
     m_responseFromMemory_ptr->enqueue(msg);

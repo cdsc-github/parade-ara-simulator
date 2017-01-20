@@ -451,8 +451,8 @@ public:
 		node_j.Reset();
 	}
 	inline InstanceData_sig__JacobiansLCacc() :
-		acceleratorSignature__j(true), 
-		node_j(801), 
+		acceleratorSignature__j(true),
+		node_j(801),
 		threadID(0)
 	{
 		Reset();
@@ -498,7 +498,7 @@ inline void Wait_sig__JacobiansLCacc(InstanceData_sig__JacobiansLCacc* instance)
 		}
 	}
 }
-inline void (*GAMHandler_sig__JacobiansLCacc(InstanceData_sig__JacobiansLCacc* instance, InterruptArgs* args))(InstanceData_sig__JacobiansLCacc*) 
+inline void (*GAMHandler_sig__JacobiansLCacc(InstanceData_sig__JacobiansLCacc* instance, InterruptArgs* args))(InstanceData_sig__JacobiansLCacc*)
 {
 	int i;
 	int lcaccMode;
@@ -902,7 +902,7 @@ inline void CreateBuffer_JacobiansLCacc_td(uint8_t** buffer, uint32_t* bufferSiz
 		void* VNR_vardecl_1(u);
 		void* VNR_vardecl_2(dFdX);
 		void* VNR_vardecl_3(xu);
-		LCAccNode VNR_vardecl_4(801, (sizeof(float[7]) * (chunk)) + (sizeof(float[7]) * (chunk)) + (sizeof(float[28]) * (chunk)) + (sizeof(float[7]) * (chunk)), 3, 0, 0);
+		LCAccNode VNR_vardecl_4(801, (sizeof(float[7]) * (chunk)) + (sizeof(float[7]) * (chunk)) + (sizeof(float[28]) * (chunk)) + (sizeof(float[7]) * (chunk)), 2, 0, 0);
 		std::vector<uint32_t> VNR_vardecl_5;
 		VNR_vardecl_5.push_back(((chunk) - (0)) / (1));
 		std::vector<int32_t> VNR_vardecl_6;
@@ -940,7 +940,7 @@ inline void CreateBuffer_JacobiansLCacc_td(uint8_t** buffer, uint32_t* bufferSiz
 		//See VNR_vardecl_12 for index variable decl
 		//See VNR_vardecl_13 for register set decl
 		mw.AddCompute(VNR_vardecl_4, VNR_vardecl_12, VNR_vardecl_13);
-		
+
 		//transfer from x to j
 		//Search VNR_vardecl_14 for source block size.
 		//Search VNR_vardecl_15 for source block stride.
@@ -949,7 +949,7 @@ inline void CreateBuffer_JacobiansLCacc_td(uint8_t** buffer, uint32_t* bufferSiz
 		//Search VNR_vardecl_16 for destination size.
 		//Search VNR_vardecl_17 for destination stride.
 		mw.AddTransfer(VNR_vardecl_0, VNR_vardecl_14, VNR_vardecl_15, VNR_vardecl_16, VNR_vardecl_17, VNR_vardecl_4, (0) + ((((0) * ((sizeof(float[7])))))), VNR_vardecl_16, VNR_vardecl_17, sizeof(float));
-		
+
 		//transfer from u to j
 		//Search VNR_vardecl_14 for source block size.
 		//Search VNR_vardecl_15 for source block stride.
@@ -958,7 +958,7 @@ inline void CreateBuffer_JacobiansLCacc_td(uint8_t** buffer, uint32_t* bufferSiz
 		//Search VNR_vardecl_16 for destination size.
 		//Search VNR_vardecl_17 for destination stride.
 		mw.AddTransfer(VNR_vardecl_1, VNR_vardecl_14, VNR_vardecl_15, VNR_vardecl_16, VNR_vardecl_17, VNR_vardecl_4, ((sizeof(float[7]) * (chunk))) + ((((0) * ((sizeof(float[7])))))), VNR_vardecl_16, VNR_vardecl_17, sizeof(float));
-		
+
 		//transfer from j to dFdX
 		//Search VNR_vardecl_18 for source size.
 		//Search VNR_vardecl_19 for source stride.
@@ -967,7 +967,7 @@ inline void CreateBuffer_JacobiansLCacc_td(uint8_t** buffer, uint32_t* bufferSiz
 		//Search VNR_vardecl_18 for destination element size.
 		//Search VNR_vardecl_19 for destination element stride.
 		mw.AddTransfer(VNR_vardecl_4, ((sizeof(float[7]) * (chunk)) + (sizeof(float[7]) * (chunk))) + ((((0) * ((sizeof(float[28])))))), VNR_vardecl_18, VNR_vardecl_19, VNR_vardecl_2, VNR_vardecl_14, VNR_vardecl_20, VNR_vardecl_18, VNR_vardecl_19, sizeof(float));
-		
+
 		//transfer from j to xu
 		//Search VNR_vardecl_16 for source size.
 		//Search VNR_vardecl_17 for source stride.
@@ -976,7 +976,7 @@ inline void CreateBuffer_JacobiansLCacc_td(uint8_t** buffer, uint32_t* bufferSiz
 		//Search VNR_vardecl_16 for destination element size.
 		//Search VNR_vardecl_17 for destination element stride.
 		mw.AddTransfer(VNR_vardecl_4, ((sizeof(float[7]) * (chunk)) + (sizeof(float[7]) * (chunk)) + (sizeof(float[28]) * (chunk))) + ((((0) * ((sizeof(float[7])))))), VNR_vardecl_16, VNR_vardecl_17, VNR_vardecl_3, VNR_vardecl_14, VNR_vardecl_15, VNR_vardecl_16, VNR_vardecl_17, sizeof(float));
-		
+
 		mw.SetTaskGrain(0);
 		mw.Finalize((((totalSize) - (0)) / (chunk)));
 	}

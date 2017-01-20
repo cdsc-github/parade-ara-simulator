@@ -37,6 +37,8 @@ MessageBuffer responseFromMemory, ordered="false";
 // making timing access to the memory maintained by the
 // memory controllers.
 void queueMemoryRead(MachineID id, Address addr, Cycles latency);
+void queueMemoryReadBypass(MachineID id, Address addr, Cycles latency,
+                           MachineID bypassRequestor);
 void queueMemoryWrite(MachineID id, Address addr, Cycles latency,
                       DataBlock block);
 void queueMemoryWritePartial(MachineID id, Address addr, Cycles latency,

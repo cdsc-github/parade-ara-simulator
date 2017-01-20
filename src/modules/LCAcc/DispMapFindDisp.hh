@@ -84,7 +84,7 @@ namespace LCAcc
 			#define SPMAddressOf(x) (addr_##x)
 			// Compute SAD (Sum of Absolute Differences) value
 			    float SAD = in_IImg1 + in_IImg2 - in_IImg3 - in_IImg4;
-			
+
 				// Check for minimum SAD value and return its index (i.e. disparity value)
 				if (internal_index == 0.f || SAD < internal_min) {
 					internal_min = SAD;

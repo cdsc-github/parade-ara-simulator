@@ -1,7 +1,7 @@
 #include <iostream>
 #include <cstring>
 #include "NetworkInterface.hh"
-#include "gem5Interface.hh"
+#include "SimicsInterface.hh"
 
 NetworkInterface::NetworkInterface(int node, int port)
 {
@@ -18,13 +18,13 @@ int NetworkInterface::GetNodeID() const
 }
 void NetworkInterface::SendMessage(int dest, const void* buffer, unsigned int size)
 {
-	TaskDistributor::gem5Interface::SendMessage(GetNetworkPort(), dest, size, buffer);
+	TaskDistributor::SimicsInterface::SendMessage(GetNetworkPort(), dest, size, buffer);
 }
 void NetworkInterface::SendMessage(int dest, const void* buffer, unsigned int size, int delay)
 {
 	uint8_t* b = new uint8_t[size];
 	memcpy(b, buffer, size);
-	TaskDistributor::gem5Interface::RegisterCallback(SendMessageDelayCB::Create(this, dest, b, size), delay);
+	TaskDistributor::SimicsInterface::RegisterCallback(SendMessageDelayCB::Create(this, dest, b, size), delay);
 }
 void NetworkInterface::RegisterRecvHandler(Arg3CallbackBase<int, const void*, unsigned int>* handler)
 {

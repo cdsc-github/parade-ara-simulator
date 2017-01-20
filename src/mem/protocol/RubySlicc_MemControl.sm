@@ -61,6 +61,8 @@ structure(MemoryMsg, desc="...", interface="Message") {
   PrefetchBit Prefetch,         desc="Is this a prefetch request";
   bool ReadX,                   desc="Exclusive";
   int Acks,                     desc="How many acks to expect";
+  bool BypassCache,             desc="Does bypass cache";
+  MachineID BypassRequestor,    desc="What component request bypass";
 
   bool functionalRead(Packet *pkt) {
     return testAndRead(Addr, DataBlk, pkt);

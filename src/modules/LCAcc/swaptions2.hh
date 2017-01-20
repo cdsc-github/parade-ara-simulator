@@ -57,9 +57,9 @@ namespace LCAcc
 			        float r2 = 0.3374754822726147f + r2a * (0.9761690190917186f + r2a * (0.1607979714918209f + r2a * (0.0276438810333863f + r2a * (0.0038405729373609f + r2a * (0.0003951896511919f + r2a * (0.0000321767881768f + r2a * (0.0000002888167364f + r2a * 0.0000003960315187f))))))); \
 			        result = selectff(x, 0.42f, selectff(-0.42f, x, r1, r2), r2); \
 			}
-			
+
 			CumNormalInv(input, output);
-			
+
 			#undef CumNormalInv
 			#undef selectff
 			#undef SPMAddressOf

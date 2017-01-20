@@ -449,8 +449,8 @@ public:
 		node_x.Reset();
 	}
 	inline InstanceData_sig__StreamCluster1LCacc() :
-		acceleratorSignature__x(true), 
-		node_x(1201), 
+		acceleratorSignature__x(true),
+		node_x(1201),
 		threadID(0)
 	{
 		Reset();
@@ -496,7 +496,7 @@ inline void Wait_sig__StreamCluster1LCacc(InstanceData_sig__StreamCluster1LCacc*
 		}
 	}
 }
-inline void (*GAMHandler_sig__StreamCluster1LCacc(InstanceData_sig__StreamCluster1LCacc* instance, InterruptArgs* args))(InstanceData_sig__StreamCluster1LCacc*) 
+inline void (*GAMHandler_sig__StreamCluster1LCacc(InstanceData_sig__StreamCluster1LCacc* instance, InterruptArgs* args))(InstanceData_sig__StreamCluster1LCacc*)
 {
 	int i;
 	int lcaccMode;
@@ -853,7 +853,7 @@ inline void CreateBuffer_StreamCluster1LCacc_td(uint8_t** buffer, uint32_t* buff
 	{
 		void* VNR_vardecl_0(isCenter);
 		void* VNR_vardecl_1(table);
-		LCAccNode VNR_vardecl_2(1201, (sizeof(uint32_t) * (chunk)) + (sizeof(uint32_t) * (chunk)), 3, 0, 0);
+		LCAccNode VNR_vardecl_2(1201, (sizeof(uint32_t) * (chunk)) + (sizeof(uint32_t) * (chunk)), 2, 0, 0);
 		std::vector<uint32_t> VNR_vardecl_3;
 		VNR_vardecl_3.push_back(((chunk) - (0)) / (1));
 		std::vector<int32_t> VNR_vardecl_4;
@@ -874,7 +874,7 @@ inline void CreateBuffer_StreamCluster1LCacc_td(uint8_t** buffer, uint32_t* buff
 		//See VNR_vardecl_7 for index variable decl
 		//See VNR_vardecl_8 for register set decl
 		mw.AddCompute(VNR_vardecl_2, VNR_vardecl_7, VNR_vardecl_8);
-		
+
 		//transfer from isCenter to x
 		//Search VNR_vardecl_9 for source block size.
 		//Search VNR_vardecl_10 for source block stride.
@@ -883,7 +883,7 @@ inline void CreateBuffer_StreamCluster1LCacc_td(uint8_t** buffer, uint32_t* buff
 		//Search VNR_vardecl_3 for destination size.
 		//Search VNR_vardecl_11 for destination stride.
 		mw.AddTransfer(VNR_vardecl_0, VNR_vardecl_9, VNR_vardecl_10, VNR_vardecl_3, VNR_vardecl_11, VNR_vardecl_2, (0) + ((((0) * ((sizeof(uint32_t)))))), VNR_vardecl_3, VNR_vardecl_11, sizeof(uint32_t));
-		
+
 		//transfer from x to table
 		//Search VNR_vardecl_3 for source size.
 		//Search VNR_vardecl_11 for source stride.
@@ -892,7 +892,7 @@ inline void CreateBuffer_StreamCluster1LCacc_td(uint8_t** buffer, uint32_t* buff
 		//Search VNR_vardecl_3 for destination element size.
 		//Search VNR_vardecl_11 for destination element stride.
 		mw.AddTransfer(VNR_vardecl_2, ((sizeof(uint32_t) * (chunk))) + ((((0) * ((sizeof(uint32_t)))))), VNR_vardecl_3, VNR_vardecl_11, VNR_vardecl_1, VNR_vardecl_9, VNR_vardecl_10, VNR_vardecl_3, VNR_vardecl_11, sizeof(uint32_t));
-		
+
 		mw.SetTaskGrain(size / chunk);
 		mw.Finalize((((size) - (0)) / (chunk)));
 	}

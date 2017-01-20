@@ -79,7 +79,7 @@ class MemoryInterface : public MemObject
     virtual ~MemoryInterface() {}
 
     /**
-     * A temporary measure to give accelerators global access to the
+     * A temporary (?) measure to give accelerators global access to the
      * accelerator interface.  Will not work as implemented with multiple
      * accelerator interfaces - Should then be altered to use python
      * configuration.

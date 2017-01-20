@@ -64,6 +64,7 @@
 #include "base/types.hh"
 #include "mem/request.hh"
 #include "sim/core.hh"
+#include "mem/ruby/common/MachineID.hh"
 
 class Packet;
 typedef Packet *PacketPtr;
@@ -269,6 +270,8 @@ class Packet : public Printable
 
     /// A pointer to the original request.
     RequestPtr req;
+
+    MachineID bypassRequestor;
 
   private:
    /**
@@ -583,8 +586,8 @@ class Packet : public Printable
     }
 
     /**
-     * When ruby is in use, Ruby will monitor the cache line and thus M5 
-     * phys memory should treat LL ops as normal reads. 
+     * When ruby is in use, Ruby will monitor the cache line and thus M5
+     * phys memory should treat LL ops as normal reads.
      */
     void
     convertLlToRead()
@@ -948,7 +951,7 @@ class Packet : public Printable
      * another packet (i.e. an in-transit request or response).
      */
     bool
-    checkFunctional(PacketPtr other) 
+    checkFunctional(PacketPtr other)
     {
         uint8_t *data = other->hasData() ? other->getPtr<uint8_t>() : NULL;
         return checkFunctional(other, other->getAddr(), other->isSecure(),

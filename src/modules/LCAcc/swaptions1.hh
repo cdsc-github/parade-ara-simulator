@@ -64,9 +64,9 @@ namespace LCAcc
 			        dRes = ix * 4.656612875e-10f; \
 			        result = dRes; \
 			}
-			
+
 			#define randVal(factor, iN) randResult[factor][iN]
-			
+
 			#define FillRandVal_Fac(x) \
 			        RanUnif(randSeed, randVal(x, 0)); \
 			        RanUnif(randSeed, randVal(x, 1)); \
@@ -79,12 +79,12 @@ namespace LCAcc
 			        RanUnif(randSeed, randVal(x, 8)); \
 			        RanUnif(randSeed, randVal(x, 9)); \
 			        RanUnif(randSeed, randVal(x, 10));
-			
-			
+
+
 			                FillRandVal_Fac(0);
 			                FillRandVal_Fac(1);
 			                FillRandVal_Fac(2);
-			
+
 			#undef randVal
 			#undef RanUnif
 			#undef FillRandVal

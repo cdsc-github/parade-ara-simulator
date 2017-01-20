@@ -59,8 +59,22 @@ def create_system(options, full_system, system, dma_ports, ruby_system):
         fatal("This script requires the MESI_Two_Level_Trace protocol to be built.")
 
     ruby_system.num_simics_net_ports = options.num_networkports
-    ruby_system.num_TDs = options.num_tds
-    ruby_system.num_acc_instances = options.num_accinstances
+    ruby_system.num_TDs              = options.num_tds
+    ruby_system.num_acc_instances    = options.num_accinstances
+
+    ruby_system.host_ptw_latency     = options.host_ptw_latency
+    ruby_system.tlb_hack             = options.tlb_hack
+    ruby_system.ideal_mmu            = options.ideal_mmu
+    ruby_system.iommu                = options.iommu
+
+    ruby_system.td_tlb_latency       = options.td_tlb_latency
+    ruby_system.td_tlb_size          = options.td_tlb_size
+
+    ruby_system.lcacc_tlb_latency    = options.lcacc_tlb_latency
+    ruby_system.lcacc_tlb_size       = options.lcacc_tlb_size
+    ruby_system.lcacc_tlb_mshr       = options.lcacc_tlb_mshr
+
+    ruby_system.dma_issue_width      = options.dma_issue_width
 
     acc_type_list = options.acc_types.replace(',', ' ').split()
     type_names = [Lcacc.get(acc) for acc in acc_type_list]
@@ -87,13 +101,15 @@ def create_system(options, full_system, system, dma_ports, ruby_system):
     block_size_bits = int(math.log(options.cacheline_size, 2))
 
     assert(options.num_networkports == options.num_l2caches)
+    # num_l1_cntrls = ((options.accelerators + options.num_tds + options.num_networkports - 1)/options.num_networkports) * options.num_networkports
     num_l1_cntrls = ((options.num_tds + options.num_networkports - 1)/options.num_networkports) * options.num_networkports
     print "num_l1_cntrls = %d" % num_l1_cntrls
+    # assert(num_l1_cntrls >= (options.accelerators + options.num_tds))
 
     for i in xrange(options.num_networkports):
         # First create the Ruby objects associated with
         # the CPU and Accelerator signal communication
-        netport_cntrl = gem5NetworkPortInterface_Controller(version = i,
+        netport_cntrl = SimicsNetworkPortInterface_Controller(version = i,
                         transitions_per_cycle=options.ports,
                         ruby_system = ruby_system)
 
@@ -137,7 +153,7 @@ def create_system(options, full_system, system, dma_ports, ruby_system):
                                 ruby_system = ruby_system)
 
         l1_cntrl.sequencer = cpu_seq
-        exec("ruby_system.l1_cntrl%d = l1_cntrl" % i)
+        exec("ruby_system.l1_cntrl%02d = l1_cntrl" % i)
 
         # Add controllers and sequencers to the appropriate lists
         if len(cpu_sequencers) < options.num_cpus :

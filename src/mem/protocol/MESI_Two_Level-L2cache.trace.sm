@@ -170,8 +170,8 @@ machine(L2Cache, "MESI Directory L2 Cache CMP")
 
   void addSharer(Address addr, MachineID requestor, Entry cache_entry) {
     assert(is_valid(cache_entry));
-    DPRINTF(RubySlicc, "machineID: %s, requestor: %s, address: %s\n",
-            machineID, requestor, addr);
+    // DPRINTF(RubySlicc, "machineID: %s, requestor: %s, address: %s\n",
+    //         machineID, requestor, addr);
     cache_entry.Sharers.add(requestor);
   }
 
@@ -198,17 +198,17 @@ machine(L2Cache, "MESI Directory L2 Cache CMP")
   AccessPermission getAccessPermission(Address addr) {
     TBE tbe := TBEs[addr];
     if(is_valid(tbe)) {
-      DPRINTF(RubySlicc, "%s\n", L2Cache_State_to_permission(tbe.TBEState));
+      // DPRINTF(RubySlicc, "%s\n", L2Cache_State_to_permission(tbe.TBEState));
       return L2Cache_State_to_permission(tbe.TBEState);
     }
 
     Entry cache_entry := getCacheEntry(addr);
     if(is_valid(cache_entry)) {
-      DPRINTF(RubySlicc, "%s\n", L2Cache_State_to_permission(cache_entry.CacheState));
+      // DPRINTF(RubySlicc, "%s\n", L2Cache_State_to_permission(cache_entry.CacheState));
       return L2Cache_State_to_permission(cache_entry.CacheState);
     }
 
-    DPRINTF(RubySlicc, "%s\n", AccessPermission:NotPresent);
+    // DPRINTF(RubySlicc, "%s\n", AccessPermission:NotPresent);
     return AccessPermission:NotPresent;
   }
 
@@ -263,7 +263,7 @@ machine(L2Cache, "MESI Directory L2 Cache CMP")
         return Event:L1_PUTX_old;
       }
     } else {
-      DPRINTF(RubySlicc, "address: %s, Request Type: %s\n", addr, type);
+      // DPRINTF(RubySlicc, "address: %s, Request Type: %s\n", addr, type);
       error("Invalid L1 forwarded request type");
     }
   }
@@ -289,9 +289,9 @@ machine(L2Cache, "MESI Directory L2 Cache CMP")
       peek(L1unblockNetwork_in,  ResponseMsg) {
         Entry cache_entry := getCacheEntry(in_msg.Addr);
         TBE tbe := TBEs[in_msg.Addr];
-        DPRINTF(RubySlicc, "Addr: %s State: %s Sender: %s Type: %s Dest: %s\n",
-                in_msg.Addr, getState(tbe, cache_entry, in_msg.Addr),
-                in_msg.Sender, in_msg.Type, in_msg.Destination);
+        // DPRINTF(RubySlicc, "Addr: %s State: %s Sender: %s Type: %s Dest: %s\n",
+        //         in_msg.Addr, getState(tbe, cache_entry, in_msg.Addr),
+        //         in_msg.Sender, in_msg.Type, in_msg.Destination);
 
         assert(in_msg.Destination.isElement(machineID));
         if (in_msg.Type == CoherenceResponseType:EXCLUSIVE_UNBLOCK) {
@@ -309,6 +309,36 @@ machine(L2Cache, "MESI Directory L2 Cache CMP")
   in_port(responseL2Network_in, ResponseMsg, responseToL2Cache, rank = 1) {
     if (responseL2Network_in.isReady()) {
       peek(responseL2Network_in, ResponseMsg) {
+
+        if (in_msg.BypassCache) {
+          DPRINTF(RubySlicc, "bypass cache response received. %s\n", in_msg.DataBlk);
+          Entry cache_entry := getCacheEntry(in_msg.Addr);
+          if (is_valid(cache_entry)) {
+            enqueue(responseL2Network_out, ResponseMsg, 1) {
+              out_msg.Addr := in_msg.Addr;
+              out_msg.Type := CoherenceResponseType:DATA;
+              out_msg.Sender := machineID;
+              out_msg.Destination.add(in_msg.BypassRequestor);
+              out_msg.DataBlk := cache_entry.DataBlk;
+              out_msg.MessageSize := MessageSizeType:Response_Data;
+              out_msg.AckCount := 0;
+              out_msg.BypassCache := in_msg.BypassCache;
+            }
+          } else {
+            enqueue(responseL2Network_out, ResponseMsg, 1) {
+              out_msg.Addr := in_msg.Addr;
+              out_msg.Type := CoherenceResponseType:DATA;
+              out_msg.Sender := machineID;
+              out_msg.Destination.add(in_msg.BypassRequestor);
+              out_msg.DataBlk := in_msg.DataBlk;
+              out_msg.MessageSize := MessageSizeType:Response_Data;
+              out_msg.AckCount := 0;
+              out_msg.BypassCache := in_msg.BypassCache;
+            }
+          }
+          responseL2Network_in.dequeue();
+        } else {
+
         // test wether it's from a local L1 or an off chip source
         assert(in_msg.Destination.isElement(machineID));
         Entry cache_entry := getCacheEntry(in_msg.Addr);
@@ -341,7 +371,7 @@ machine(L2Cache, "MESI Directory L2 Cache CMP")
           } else {
             error("unknown message type");
           }
-        }
+        }}
       }
     }  // if not ready, do nothing
   }
@@ -350,12 +380,40 @@ machine(L2Cache, "MESI Directory L2 Cache CMP")
   in_port(L1RequestL2Network_in, RequestMsg, L1RequestToL2Cache, rank = 0) {
     if(L1RequestL2Network_in.isReady()) {
       peek(L1RequestL2Network_in,  RequestMsg) {
+
+        if (in_msg.BypassCache) {
+          DPRINTF(RubySlicc, "bypass cache req received.\n");
+          enqueue(DirRequestL2Network_out, RequestMsg, 1) {
+            out_msg.Addr := in_msg.Addr;
+            out_msg.Type := CoherenceRequestType:GETS;
+            out_msg.Requestor := machineID;
+            out_msg.Destination.add(map_Address_to_Directory(in_msg.Addr));
+            out_msg.MessageSize := MessageSizeType:Control;
+            out_msg.BypassCache := in_msg.BypassCache;
+            out_msg.BypassRequestor := in_msg.BypassRequestor;
+          }
+          // Entry cache_entry := getCacheEntry(in_msg.Addr);
+          // enqueue(responseL2Network_out, ResponseMsg, l2_response_latency) {
+          //   assert(is_valid(cache_entry));
+          //   out_msg.Addr := in_msg.Addr;
+          //   out_msg.Type := CoherenceResponseType:DATA;
+          //   out_msg.Sender := machineID;
+          //   out_msg.Destination.add(in_msg.BypassRequestor);
+          //   out_msg.DataBlk := cache_entry.DataBlk;
+          //   out_msg.MessageSize := MessageSizeType:Response_Data;
+          //   out_msg.AckCount := 0;
+          //   out_msg.BypassCache := in_msg.BypassCache;
+          //   out_msg.BypassRequestor := in_msg.BypassRequestor;
+          // }
+          L1RequestL2Network_in.dequeue();
+        } else {
+
         Entry cache_entry := getCacheEntry(in_msg.Addr);
         TBE tbe := TBEs[in_msg.Addr];
 
-        DPRINTF(RubySlicc, "Addr: %s State: %s Req: %s Type: %s Dest: %s\n",
-                in_msg.Addr, getState(tbe, cache_entry, in_msg.Addr),
-                in_msg.Requestor, in_msg.Type, in_msg.Destination);
+        // DPRINTF(RubySlicc, "Addr: %s State: %s Req: %s Type: %s Dest: %s\n",
+        //         in_msg.Addr, getState(tbe, cache_entry, in_msg.Addr),
+        //         in_msg.Requestor, in_msg.Type, in_msg.Destination);
 
         assert(machineIDToMachineType(in_msg.Requestor) == MachineType:L1Cache);
         assert(in_msg.Destination.isElement(machineID));
@@ -382,7 +440,7 @@ machine(L2Cache, "MESI Directory L2 Cache CMP")
                       L2cache_entry, TBEs[L2cache.cacheProbe(in_msg.Addr)]);
             }
           }
-        }
+        }}
       }
     }
   }
@@ -540,10 +598,10 @@ machine(L2Cache, "MESI Directory L2 Cache CMP")
       out_msg.Type := CoherenceResponseType:DATA;
       out_msg.Sender := machineID;
       out_msg.Destination.add(tbe.L1_GetX_ID);
-      DPRINTF(RubySlicc, "%s\n", out_msg.Destination);
+      // DPRINTF(RubySlicc, "%s\n", out_msg.Destination);
       out_msg.DataBlk := cache_entry.DataBlk;
-      DPRINTF(RubySlicc, "Address: %s, Destination: %s, DataBlock: %s\n",
-              out_msg.Addr, out_msg.Destination, out_msg.DataBlk);
+      // DPRINTF(RubySlicc, "Address: %s, Destination: %s, DataBlock: %s\n",
+      //         out_msg.Addr, out_msg.Destination, out_msg.DataBlk);
       out_msg.MessageSize := MessageSizeType:Response_Data;
     }
   }

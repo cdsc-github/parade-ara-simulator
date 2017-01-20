@@ -454,8 +454,8 @@ public:
 		node_s.Reset();
 	}
 	inline InstanceData_sig__BlackScholesLCacc() :
-		acceleratorSignature__s(true), 
-		node_s(901), 
+		acceleratorSignature__s(true),
+		node_s(901),
 		threadID(0)
 	{
 		Reset();
@@ -501,7 +501,7 @@ inline void Wait_sig__BlackScholesLCacc(InstanceData_sig__BlackScholesLCacc* ins
 		}
 	}
 }
-inline void (*GAMHandler_sig__BlackScholesLCacc(InstanceData_sig__BlackScholesLCacc* instance, InterruptArgs* args))(InstanceData_sig__BlackScholesLCacc*) 
+inline void (*GAMHandler_sig__BlackScholesLCacc(InstanceData_sig__BlackScholesLCacc* instance, InterruptArgs* args))(InstanceData_sig__BlackScholesLCacc*)
 {
 	int i;
 	int lcaccMode;
@@ -939,7 +939,7 @@ inline void CreateBuffer_BlackScholesLCacc_td(uint8_t** buffer, uint32_t* buffer
 		void* VNR_vardecl_4(time);
 		void* VNR_vardecl_5(otype);
 		void* VNR_vardecl_6(output);
-		LCAccNode VNR_vardecl_7(901, (sizeof(float) * (chunk)) + (sizeof(float) * (chunk)) + (sizeof(float) * (chunk)) + (sizeof(float) * (chunk)) + (sizeof(float) * (chunk)) + (sizeof(int) * (chunk)) + (sizeof(float) * (chunk)), 3, 0, 0);
+		LCAccNode VNR_vardecl_7(901, (sizeof(float) * (chunk)) + (sizeof(float) * (chunk)) + (sizeof(float) * (chunk)) + (sizeof(float) * (chunk)) + (sizeof(float) * (chunk)) + (sizeof(int) * (chunk)) + (sizeof(float) * (chunk)), 2, 0, 0);
 		std::vector<uint32_t> VNR_vardecl_8;
 		VNR_vardecl_8.push_back(((chunk) - (0)) / (1));
 		std::vector<int32_t> VNR_vardecl_9;
@@ -975,7 +975,7 @@ inline void CreateBuffer_BlackScholesLCacc_td(uint8_t** buffer, uint32_t* buffer
 		//See VNR_vardecl_18 for index variable decl
 		//See VNR_vardecl_19 for register set decl
 		mw.AddCompute(VNR_vardecl_7, VNR_vardecl_18, VNR_vardecl_19);
-		
+
 		//transfer from sptprice to s
 		//Search VNR_vardecl_20 for source block size.
 		//Search VNR_vardecl_21 for source block stride.
@@ -984,7 +984,7 @@ inline void CreateBuffer_BlackScholesLCacc_td(uint8_t** buffer, uint32_t* buffer
 		//Search VNR_vardecl_8 for destination size.
 		//Search VNR_vardecl_22 for destination stride.
 		mw.AddTransfer(VNR_vardecl_0, VNR_vardecl_20, VNR_vardecl_21, VNR_vardecl_8, VNR_vardecl_22, VNR_vardecl_7, (0) + ((((0) * ((sizeof(float)))))), VNR_vardecl_8, VNR_vardecl_22, sizeof(float));
-		
+
 		//transfer from strike to s
 		//Search VNR_vardecl_20 for source block size.
 		//Search VNR_vardecl_21 for source block stride.
@@ -993,7 +993,7 @@ inline void CreateBuffer_BlackScholesLCacc_td(uint8_t** buffer, uint32_t* buffer
 		//Search VNR_vardecl_8 for destination size.
 		//Search VNR_vardecl_22 for destination stride.
 		mw.AddTransfer(VNR_vardecl_1, VNR_vardecl_20, VNR_vardecl_21, VNR_vardecl_8, VNR_vardecl_22, VNR_vardecl_7, ((sizeof(float) * (chunk))) + ((((0) * ((sizeof(float)))))), VNR_vardecl_8, VNR_vardecl_22, sizeof(float));
-		
+
 		//transfer from rate to s
 		//Search VNR_vardecl_20 for source block size.
 		//Search VNR_vardecl_21 for source block stride.
@@ -1002,7 +1002,7 @@ inline void CreateBuffer_BlackScholesLCacc_td(uint8_t** buffer, uint32_t* buffer
 		//Search VNR_vardecl_8 for destination size.
 		//Search VNR_vardecl_22 for destination stride.
 		mw.AddTransfer(VNR_vardecl_2, VNR_vardecl_20, VNR_vardecl_21, VNR_vardecl_8, VNR_vardecl_22, VNR_vardecl_7, ((sizeof(float) * (chunk)) + (sizeof(float) * (chunk))) + ((((0) * ((sizeof(float)))))), VNR_vardecl_8, VNR_vardecl_22, sizeof(float));
-		
+
 		//transfer from volatility to s
 		//Search VNR_vardecl_20 for source block size.
 		//Search VNR_vardecl_21 for source block stride.
@@ -1011,7 +1011,7 @@ inline void CreateBuffer_BlackScholesLCacc_td(uint8_t** buffer, uint32_t* buffer
 		//Search VNR_vardecl_8 for destination size.
 		//Search VNR_vardecl_22 for destination stride.
 		mw.AddTransfer(VNR_vardecl_3, VNR_vardecl_20, VNR_vardecl_21, VNR_vardecl_8, VNR_vardecl_22, VNR_vardecl_7, ((sizeof(float) * (chunk)) + (sizeof(float) * (chunk)) + (sizeof(float) * (chunk))) + ((((0) * ((sizeof(float)))))), VNR_vardecl_8, VNR_vardecl_22, sizeof(float));
-		
+
 		//transfer from time to s
 		//Search VNR_vardecl_20 for source block size.
 		//Search VNR_vardecl_21 for source block stride.
@@ -1020,7 +1020,7 @@ inline void CreateBuffer_BlackScholesLCacc_td(uint8_t** buffer, uint32_t* buffer
 		//Search VNR_vardecl_8 for destination size.
 		//Search VNR_vardecl_22 for destination stride.
 		mw.AddTransfer(VNR_vardecl_4, VNR_vardecl_20, VNR_vardecl_21, VNR_vardecl_8, VNR_vardecl_22, VNR_vardecl_7, ((sizeof(float) * (chunk)) + (sizeof(float) * (chunk)) + (sizeof(float) * (chunk)) + (sizeof(float) * (chunk))) + ((((0) * ((sizeof(float)))))), VNR_vardecl_8, VNR_vardecl_22, sizeof(float));
-		
+
 		//transfer from otype to s
 		//Search VNR_vardecl_20 for source block size.
 		//Search VNR_vardecl_23 for source block stride.
@@ -1029,7 +1029,7 @@ inline void CreateBuffer_BlackScholesLCacc_td(uint8_t** buffer, uint32_t* buffer
 		//Search VNR_vardecl_8 for destination size.
 		//Search VNR_vardecl_24 for destination stride.
 		mw.AddTransfer(VNR_vardecl_5, VNR_vardecl_20, VNR_vardecl_23, VNR_vardecl_8, VNR_vardecl_24, VNR_vardecl_7, ((sizeof(float) * (chunk)) + (sizeof(float) * (chunk)) + (sizeof(float) * (chunk)) + (sizeof(float) * (chunk)) + (sizeof(float) * (chunk))) + ((((0) * ((sizeof(int)))))), VNR_vardecl_8, VNR_vardecl_24, sizeof(int));
-		
+
 		//transfer from s to output
 		//Search VNR_vardecl_8 for source size.
 		//Search VNR_vardecl_22 for source stride.
@@ -1038,7 +1038,7 @@ inline void CreateBuffer_BlackScholesLCacc_td(uint8_t** buffer, uint32_t* buffer
 		//Search VNR_vardecl_8 for destination element size.
 		//Search VNR_vardecl_22 for destination element stride.
 		mw.AddTransfer(VNR_vardecl_7, ((sizeof(float) * (chunk)) + (sizeof(float) * (chunk)) + (sizeof(float) * (chunk)) + (sizeof(float) * (chunk)) + (sizeof(float) * (chunk)) + (sizeof(int) * (chunk))) + ((((0) * ((sizeof(float)))))), VNR_vardecl_8, VNR_vardecl_22, VNR_vardecl_6, VNR_vardecl_20, VNR_vardecl_21, VNR_vardecl_8, VNR_vardecl_22, sizeof(float));
-		
+
 		mw.SetTaskGrain(0);
 		mw.Finalize((((dataSize) - (0)) / (chunk)));
 	}

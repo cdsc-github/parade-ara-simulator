@@ -629,7 +629,7 @@ inline void StartEverythingHandler_sig__TexSynth1LCacc(InstanceData_sig__TexSynt
 inline void CreateBuffer_TexSynth1LCacc_sig(int thread, InstanceData_sig__TexSynth1LCacc* instance, int (*atlas)[2], float (*resultImage), uint32_t randSeed[100], int inHeight, int inWidth, int outHeight, int outWidth, int imageCount, intptr_t imageArrayStart, int chunk)
 {
 	int index, i;
-	instance->binBufSize = 0;
+	instance->binBufSize = ((sizeof(float) * (1) * (1) * (chunk)) + (sizeof(int[2]) * (1) * (1) * (chunk))) * (3);
 	instance->threadID = thread;
 	instance->GAM_INTERACTION.threadID = thread;
 	instance->GAM_INTERACTION.lcaccID = 0;
@@ -1210,7 +1210,7 @@ void TexSynth1LCacc_td(int thread, int (*atlas)[2], float (*resultImage), uint32
 }
 inline uint32_t TexSynth1LCacc_CalculateBiNSize(uint32_t randSeed[100], int inHeight, int inWidth, int outHeight, int outWidth, int imageCount, intptr_t imageArrayStart, int chunk)
 {
-	return 0;
+	return ((sizeof(float) * (1) * (1) * (chunk)) + (sizeof(int[2]) * (1) * (1) * (chunk))) * (3);
 }
 class BiN_TexSynth1LCacc_Arbitrator_td
 {

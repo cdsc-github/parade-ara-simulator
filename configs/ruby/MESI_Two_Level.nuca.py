@@ -61,6 +61,9 @@ def create_system(options, full_system, system, dma_ports, ruby_system):
     ruby_system.num_simics_net_ports = options.num_networkports
     ruby_system.num_accelerators = options.accelerators
     ruby_system.num_TDs = options.num_tds
+    ruby_system.num_acc_instances = options.num_accinstances
+    ruby_system.td_tlb_size = options.td_tlb_size
+    ruby_system.lcacc_tlb_size = options.lcacc_tlb_size
 
     cpu_sequencers = []
 
@@ -83,17 +86,17 @@ def create_system(options, full_system, system, dma_ports, ruby_system):
     block_size_bits = int(math.log(options.cacheline_size, 2))
 
     assert(options.num_networkports == options.num_l2caches)
-    num_l1_cntrls = ((options.accelerators + options.num_tds + options.num_networkports - 1)/options.num_networkports) * options.num_networkports 
+    num_l1_cntrls = ((options.accelerators + options.num_tds + options.num_networkports - 1)/options.num_networkports) * options.num_networkports
     print "num_l1_cntrls = %d" % num_l1_cntrls
     assert(num_l1_cntrls >= (options.accelerators + options.num_tds))
 
     for i in xrange(options.num_networkports):
-        # First create the Ruby objects associated with 
+        # First create the Ruby objects associated with
         # the CPU and Accelerator signal communication
-        netport_cntrl = gem5NetworkPortInterface_Controller(version = i,
+        netport_cntrl = SimicsNetworkPortInterface_Controller(version = i,
                         transitions_per_cycle=options.ports,
                         ruby_system = ruby_system)
-        
+
         exec("ruby_system.netport_cntrl%d = netport_cntrl" % i)
         netport_cntrl_nodes.append(netport_cntrl)
         # Connect the netport controller to the network

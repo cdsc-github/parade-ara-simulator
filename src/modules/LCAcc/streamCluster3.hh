@@ -152,9 +152,9 @@ namespace LCAcc
 				x_cost += (src[i] - dst[i]) * (src[i] - dst[i]) * weight;
 			}
 			float current_cost = cost;
-			
+
 			predicateResolution = (x_cost < current_cost) ? 1 : 0;
-			
+
 			if(predicateResolution)
 			{
 				outSwitchMembership = 1;

@@ -50,6 +50,7 @@
 #include "sim/full_system.hh"
 #include "sim/system.hh"
 #define SIM_NET_PORTS
+//#define SIM_MEMORY
 
 RubyPort::RubyPort(const Params *p)
     : MemObject(p), m_version(p->version), m_controller(NULL),
@@ -281,7 +282,7 @@ RubyPort::MemSlavePort::recvTimingReq(PacketPtr pkt)
     }
 
     //
-    // Unless one is using the ruby tester, record the stalled M5 port for 
+    // Unless one is using the ruby tester, record the stalled M5 port for
     // later retry when the sequencer becomes free.
     //
     if (!ruby_port->m_usingRubyTester) {
@@ -386,7 +387,7 @@ RubyPort::ruby_hit_callback(PacketPtr pkt)
     if (!retryList.empty()) {
         //
         // Record the current list of ports to retry on a temporary list before
-        // calling sendRetry on those ports.  sendRetry will cause an 
+        // calling sendRetry on those ports.  sendRetry will cause an
         // immediate retry, which may result in the ports being put back on the
         // list. Therefore we want to clear the retryList before calling
         // sendRetry.
@@ -486,7 +487,7 @@ RubyPort::MemSlavePort::hitCallback(PacketPtr pkt)
 {
     bool needsResponse = pkt->needsResponse();
 
-    // Unless specified at configuraiton, all responses except failed SC 
+    // Unless specified at configuraiton, all responses except failed SC
     // and Flush operations access M5 physical memory.
     bool accessPhysMem = access_backing_store;
 
@@ -522,8 +523,8 @@ RubyPort::MemSlavePort::hitCallback(PacketPtr pkt)
 
     if (accessPhysMem) {
 #ifdef SIM_MEMORY
-      RubyPort *ruby_port = static_cast<RubyPort *>(&owner);
-      ruby_port->system->getPhysMem().access(pkt);
+        RubyPort *ruby_port = static_cast<RubyPort *>(&owner);
+        ruby_port->system->getPhysMem().access(pkt);
 #else
         ruby_system->getPhysMem()->functionalAccess(pkt);
 #endif

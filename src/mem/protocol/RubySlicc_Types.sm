@@ -30,8 +30,8 @@
 
 //
 // **PLEASE NOTE!**  When adding objects to this file you must also add a line
-// in the src/mem/ruby/SConscript file.  Otherwise the external object's .hh 
-// file will not be copied to the protocol directory and you will encounter a 
+// in the src/mem/ruby/SConscript file.  Otherwise the external object's .hh
+// file will not be copied to the protocol directory and you will encounter a
 // undefined declaration error.
 //
 
@@ -100,6 +100,7 @@ structure (Sequencer, external = "yes") {
   void readCallback(Address, DataBlock, bool, MachineType);
   void readCallback(Address, DataBlock, bool, MachineType,
                     Cycles, Cycles, Cycles);
+  void bypassCallback(Address, DataBlock, bool);
 
   void writeCallback(Address, DataBlock);
   void writeCallback(Address, DataBlock, bool);
@@ -123,6 +124,7 @@ structure(RubyRequest, desc="...", interface="Message", external="yes") {
   int Size,                  desc="size in bytes of access";
   PrefetchBit Prefetch,      desc="Is this a prefetch request";
   int contextId,             desc="this goes away but must be replace with Nilay";
+  bool BypassCache,          desc="Does this request bypass cache";
 }
 
 structure(AbstractEntry, primitive="yes", external = "yes") {

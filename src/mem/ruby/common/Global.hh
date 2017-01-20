@@ -49,23 +49,25 @@ extern Cycles g_ruby_start;
 #ifdef SIM_NET_PORTS
 #include "../../../modules/NetworkInterrupt/lwint.hh"
 #include "../../../modules/NetworkInterrupt/NetworkInterrupts.hh"
-#include "../system/gem5NetworkPortInterface.hh"
+#include "../system/SimicsNetworkPortInterface.hh"
 #include "../../../modules/TLBHack/TLBHack.hh"
+#include "../../../modules/GlobalAcceleratorManager/GAM.hh"
 #include "../../../modules/Common/MemoryDeviceInterface.hh"
 #include "../../../modules/linked-prefetch-tile/DMAEngine.hh"
 #include "../../../modules/linked-prefetch-tile/prefetcher-tile.hh"
 #include "../../../modules/scratch-pad/scratch-pad.hh"
-#include "../../../modules/LCAcc/gem5Interface.hh"
+#include "../../../modules/LCAcc/SimicsInterface.hh"
 #include "../../../modules/TaskDistributor/Interface.hh"
 #include "modules/LCAcc/Interface.hh"
 extern lwInt_ifc_t* g_lwInt_interface;
-extern gem5NetworkPortInterface* g_networkPort_interface;
+extern SimicsNetworkPortInterface* g_networkPort_interface;
 extern std::vector<NetworkInterruptHandle*> g_network_interrupt_handle;
 extern std::vector<NetworkInterrupts*> g_network_interrupts;
 extern TLBHackInterface* g_TLBHack_interface;
+extern GAMInterface* g_gamObject;
 extern std::vector<TDHandle*> g_TDHandle;
 extern TaskDistributorInterface* g_TDInterface;
-extern MeteredMemory_Interface::gem5Interface* g_memObject;
+extern MeteredMemory_Interface::SimicsInterface* g_memObject;
 extern MemoryDeviceInterface* g_memInterface;
 extern std::vector<DMAEngineHandle*> g_dmaDevice;
 extern std::vector<DMAEngineHandle*> g_TdDmaDevice;

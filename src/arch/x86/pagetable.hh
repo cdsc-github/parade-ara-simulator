@@ -184,7 +184,7 @@ namespace X86ISA
         Addr getBasePtr(ThreadContext* tc)
         {
             CR3 cr3 = pageTablePhysAddr;
-            DPRINTF(MMU, "CR3: %d\n", cr3);
+            // DPRINTF(MMU, "CR3: %d\n", cr3);
             return cr3.longPdtb;
         }
 

@@ -231,7 +231,7 @@ Sequencer::printProgress(ostream& out)
         SequencerRequest* request = write->second;
         out << "\tRequest[ " << i << " ] = " << request->m_type
             << " Address " << request->pkt->getAddr()
-            << " Posted " << request->issue_time << endl; 
+            << " Posted " << request->issue_time << endl;
 	i++;
     }
     out << "---------------" << endl;
@@ -253,6 +253,7 @@ Sequencer::insertRequest(PacketPtr pkt, RubyRequestType request_type)
 
     Address line_addr(pkt->getAddr());
     line_addr.makeLineAddress();
+
     // Create a default entry, mapping the address to NULL, the cast is
     // there to make gcc 4.4 happy
     RequestTable::value_type default_entry(line_addr,
@@ -379,7 +380,7 @@ Sequencer::handleLlsc(const Address& address, SequencerRequest* request)
         } else {
             //
             // For successful SC requests, indicate the success to the cpu by
-            // setting the extra data to one.  
+            // setting the extra data to one.
             //
             request->pkt->req->setExtraData(1);
         }
@@ -504,6 +505,32 @@ Sequencer::readCallback(const Address& address, DataBlock& data,
                         Cycles forwardRequestTime,
                         Cycles firstResponseTime)
 {
+    assert(address == line_address(address));
+    assert(m_readRequestTable.count(line_address(address)));
+
+    RequestTable::iterator i = m_readRequestTable.find(address);
+    assert(i != m_readRequestTable.end());
+    SequencerRequest* request = i->second;
+
+    m_readRequestTable.erase(i);
+    markRemoved();
+
+    assert((request->m_type == RubyRequestType_LD) ||
+           (request->m_type == RubyRequestType_IFETCH));
+
+    hitCallback(request, data, true, mach, externalHit,
+                initialRequestTime, forwardRequestTime, firstResponseTime);
+}
+
+void
+Sequencer::bypassCallback(const Address& address, DataBlock data,
+                        bool externalHit, const MachineType mach,
+                        Cycles initialRequestTime,
+                        Cycles forwardRequestTime,
+                        Cycles firstResponseTime)
+{
+    // DPRINTF(PageTableWalker, "bypass response on addr %s\n", address.getAddress());
+
     assert(address == line_address(address));
     assert(m_readRequestTable.count(line_address(address)));
 
@@ -819,6 +846,10 @@ Sequencer::issueRequest(PacketPtr pkt, RubyRequestType secondary_type)
                                       pkt->getSize(), pc, secondary_type,
                                       RubyAccessMode_Supervisor, pkt,
                                       PrefetchBit_No, proc_id);
+
+    if (pkt->req->isBypassCache()) {
+        msg->m_BypassCache = true;
+    }
 
     DPRINTFR(ProtocolTrace, "%15s %3s %10s%20s %6s>%-6s %s %s\n",
             curTick(), m_version, "Seq", "Begin", "", "",

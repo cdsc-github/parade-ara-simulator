@@ -453,8 +453,8 @@ public:
 		node_x.Reset();
 	}
 	inline InstanceData_sig__Swaptions4LCacc() :
-		acceleratorSignature__x(true), 
-		node_x(1304), 
+		acceleratorSignature__x(true),
+		node_x(1304),
 		threadID(0)
 	{
 		Reset();
@@ -500,7 +500,7 @@ inline void Wait_sig__Swaptions4LCacc(InstanceData_sig__Swaptions4LCacc* instanc
 		}
 	}
 }
-inline void (*GAMHandler_sig__Swaptions4LCacc(InstanceData_sig__Swaptions4LCacc* instance, InterruptArgs* args))(InstanceData_sig__Swaptions4LCacc*) 
+inline void (*GAMHandler_sig__Swaptions4LCacc(InstanceData_sig__Swaptions4LCacc* instance, InterruptArgs* args))(InstanceData_sig__Swaptions4LCacc*)
 {
 	int i;
 	int lcaccMode;
@@ -912,7 +912,7 @@ inline void CreateBuffer_Swaptions4LCacc_td(uint8_t** buffer, uint32_t* bufferSi
 		void* VNR_vardecl_1(shockVals);
 		void* VNR_vardecl_2(in_ppdHJMPath);
 		void* VNR_vardecl_3(out_ppdHJMPath);
-		LCAccNode VNR_vardecl_4(1304, (sizeof(float[11]) * (chunk)) + (sizeof(float[55]) * (chunk)) + (sizeof(float[11][11]) * (chunk)) + (sizeof(float[11][11]) * (chunk)), 3, 0, 0);
+		LCAccNode VNR_vardecl_4(1304, (sizeof(float[11]) * (chunk)) + (sizeof(float[55]) * (chunk)) + (sizeof(float[11][11]) * (chunk)) + (sizeof(float[11][11]) * (chunk)), 2, 0, 0);
 		std::vector<uint32_t> VNR_vardecl_5;
 		VNR_vardecl_5.push_back(((chunk) - (0)) / (1));
 		std::vector<int32_t> VNR_vardecl_6;
@@ -962,7 +962,7 @@ inline void CreateBuffer_Swaptions4LCacc_td(uint8_t** buffer, uint32_t* bufferSi
 		//See VNR_vardecl_13 for index variable decl
 		//See VNR_vardecl_14 for register set decl
 		mw.AddCompute(VNR_vardecl_4, VNR_vardecl_13, VNR_vardecl_14);
-		
+
 		//transfer from pdTotalDrift to x
 		//Search VNR_vardecl_15 for source block size.
 		//Search VNR_vardecl_16 for source block stride.
@@ -971,7 +971,7 @@ inline void CreateBuffer_Swaptions4LCacc_td(uint8_t** buffer, uint32_t* bufferSi
 		//Search VNR_vardecl_17 for destination size.
 		//Search VNR_vardecl_18 for destination stride.
 		mw.AddTransfer(VNR_vardecl_0, VNR_vardecl_15, VNR_vardecl_16, VNR_vardecl_17, VNR_vardecl_18, VNR_vardecl_4, (0) + ((((0) * ((sizeof(float[11])))))), VNR_vardecl_17, VNR_vardecl_18, sizeof(float));
-		
+
 		//transfer from shockVals to x
 		//Search VNR_vardecl_15 for source block size.
 		//Search VNR_vardecl_19 for source block stride.
@@ -980,7 +980,7 @@ inline void CreateBuffer_Swaptions4LCacc_td(uint8_t** buffer, uint32_t* bufferSi
 		//Search VNR_vardecl_20 for destination size.
 		//Search VNR_vardecl_21 for destination stride.
 		mw.AddTransfer(VNR_vardecl_1, VNR_vardecl_15, VNR_vardecl_19, VNR_vardecl_20, VNR_vardecl_21, VNR_vardecl_4, ((sizeof(float[11]) * (chunk))) + ((((0) * ((sizeof(float[55])))))), VNR_vardecl_20, VNR_vardecl_21, sizeof(float));
-		
+
 		//transfer from in_ppdHJMPath to x
 		//Search VNR_vardecl_15 for source block size.
 		//Search VNR_vardecl_22 for source block stride.
@@ -989,7 +989,7 @@ inline void CreateBuffer_Swaptions4LCacc_td(uint8_t** buffer, uint32_t* bufferSi
 		//Search VNR_vardecl_23 for destination size.
 		//Search VNR_vardecl_24 for destination stride.
 		mw.AddTransfer(VNR_vardecl_2, VNR_vardecl_15, VNR_vardecl_22, VNR_vardecl_23, VNR_vardecl_24, VNR_vardecl_4, ((sizeof(float[11]) * (chunk)) + (sizeof(float[55]) * (chunk))) + ((((0) * ((sizeof(float[11][11])))))), VNR_vardecl_23, VNR_vardecl_24, sizeof(float));
-		
+
 		//transfer from x to out_ppdHJMPath
 		//Search VNR_vardecl_23 for source size.
 		//Search VNR_vardecl_24 for source stride.
@@ -998,7 +998,7 @@ inline void CreateBuffer_Swaptions4LCacc_td(uint8_t** buffer, uint32_t* bufferSi
 		//Search VNR_vardecl_23 for destination element size.
 		//Search VNR_vardecl_24 for destination element stride.
 		mw.AddTransfer(VNR_vardecl_4, ((sizeof(float[11]) * (chunk)) + (sizeof(float[55]) * (chunk)) + (sizeof(float[11][11]) * (chunk))) + ((((0) * ((sizeof(float[11][11])))))), VNR_vardecl_23, VNR_vardecl_24, VNR_vardecl_3, VNR_vardecl_15, VNR_vardecl_22, VNR_vardecl_23, VNR_vardecl_24, sizeof(float));
-		
+
 		mw.SetTaskGrain(0);
 		mw.Finalize((((size) - (0)) / (chunk)));
 	}

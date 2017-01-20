@@ -6,9 +6,9 @@
 
     --------------------------------------------------------------------
 
-    This file is part of the Ruby Multiprocessor Memory System Simulator, 
-    a component of the Multifacet GEMS (General Execution-driven 
-    Multiprocessor Simulator) software toolset originally developed at 
+    This file is part of the Ruby Multiprocessor Memory System Simulator,
+    a component of the Multifacet GEMS (General Execution-driven
+    Multiprocessor Simulator) software toolset originally developed at
     the University of Wisconsin-Madison.
 
     Ruby was originally developed primarily by Milo Martin and Daniel
@@ -19,7 +19,7 @@
     University of Wisconsin was performed by Alaa Alameldeen, Brad
     Beckmann, Jayaram Bobba, Ross Dickson, Dan Gibson, Pacia Harper,
     Derek Hower, Milo Martin, Michael Marty, Carl Mauer, Michelle Moravan,
-    Kevin Moore, Andrew Phelps, Manoj Plakal, Daniel Sorin, Haris Volos, 
+    Kevin Moore, Andrew Phelps, Manoj Plakal, Daniel Sorin, Haris Volos,
     Min Xu, and Luke Yen.
     --------------------------------------------------------------------
 
@@ -71,21 +71,21 @@
 
 typedef struct CacheConfig
 {
-	int valid;
-	unsigned numSets;
-	unsigned blockSize;
-	unsigned associativity;
+    int valid;
+    unsigned numSets;
+    unsigned blockSize;
+    unsigned associativity;
 } CacheConfigStruct;
 
 typedef struct BiNBufferRequest_t
 {
-	unsigned int numberOfPoints;
-	unsigned int* bufferSize;
-	unsigned int* bandwidthRequirement;
-	unsigned int* cacheImpact;
-	int nodeID;
-	int bufferID;
-}BiNBufferRequest;
+    unsigned int numberOfPoints;
+    unsigned int* bufferSize;
+    unsigned int* bandwidthRequirement;
+    unsigned int* cacheImpact;
+    int nodeID;
+    int bufferID;
+} BiNBufferRequest;
 
 void scheduleCB(void (*)(void*), void*, uint64_t);
 uint64_t GetSystemTime();
@@ -98,48 +98,50 @@ uint64_t GetSystemTime();
 #define SIM_MEMORY_BIC_READ 4
 #define SIM_MEMORY_BIC_READ_COPY 5
 #define SIM_MEMORY_BIC_WRITE 6
-typedef struct gem5MemoryInterfaceMemRequest_t
+
+typedef struct SimicsMemoryInterfaceMemRequest_t
 {
-        int responseNeeded;//indicates that a response to this message is being solicited.  Not responding to this message is an error.  0 implies 'no', otherwise 'yes'
-        uint64_t requestID;//A unique ID marking this request
-        uint64_t emitTime;//time the request was originated, measured in cycles.  This is the time that a CPU emitted the request
-        int source;//device source.  This is the node ID of the source from enumerated CPUs or accelerators
-        int sourceType;//machine type enum work-around
-	int target;
-	int targetType;
-        uint64_t sourcePC;//program counter
-        int priority;//zero-normalized priority.  priority of zero is 'normal', higher is better.
-        uint64_t logicalAddr;//logical address
-        uint64_t physicalAddr;//physical address
-        uint64_t size;//access size of this request.
-	int bufferID;
-	int bufferSize;
-        int type;//marks the access as a read/write/eviction.
-	int solicitingDeviceID;
-}gem5MemoryInterfaceMemRequest;
-typedef struct gem5MemoryInterfaceMemResponse_t
+    int responseNeeded;//indicates that a response to this message is being solicited.  Not responding to this message is an error.  0 implies 'no', otherwise 'yes'
+    uint64_t requestID;//A unique ID marking this request
+    uint64_t emitTime;//time the request was originated, measured in cycles.  This is the time that a CPU emitted the request
+    int source;//device source.  This is the node ID of the source from enumerated CPUs or accelerators
+    int sourceType;//machine type enum work-around
+    int target;
+    int targetType;
+    uint64_t sourcePC;//program counter
+    int priority;//zero-normalized priority.  priority of zero is 'normal', higher is better.
+    uint64_t logicalAddr;//logical address
+    uint64_t physicalAddr;//physical address
+    uint64_t size;//access size of this request.
+    int bufferID;
+    int bufferSize;
+    int type;//marks the access as a read/write/eviction.
+    int solicitingDeviceID;
+} SimicsMemoryInterfaceMemRequest;
+
+typedef struct SimicsMemoryInterfaceMemResponse_t
 {
-        uint64_t requestID;//relates to an ID associated with MemRequest
-        int priority;
-	int source;
-	int sourceType;
-        int target;
-        int targetType;
-        uint64_t logicalAddr;
-        uint64_t physicalAddr;
-        uint64_t size;
-	int bufferID;
-	int bufferSize;
-        int type;
-}gem5MemoryInterfaceMemResponse;
+    uint64_t requestID;//relates to an ID associated with MemRequest
+    int priority;
+    int source;
+    int sourceType;
+    int target;
+    int targetType;
+    uint64_t logicalAddr;
+    uint64_t physicalAddr;
+    uint64_t size;
+    int bufferID;
+    int bufferSize;
+    int type;
+} SimicsMemoryInterfaceMemResponse;
 
 typedef struct mf_simics_memory_interface_api_x
 {
-  void (*RegisterMemMsgReciever)(void* obj, int controller, void (*handler)(const gem5MemoryInterfaceMemRequest* mReq, void* args), void* args);
-  void (*EmitMemMsgResponse)(void* obj, int controller, const gem5MemoryInterfaceMemResponse* mResp, unsigned int delay);
-  int (*GetControllerCount)(void* obj);
-  uint64_t (*CurrentTime)(void* obj);
-}mf_simics_memory_interface_api;
+    void (*RegisterMemMsgReciever)(void* obj, int controller, void (*handler)(const SimicsMemoryInterfaceMemRequest* mReq, void* args), void* args);
+    void (*EmitMemMsgResponse)(void* obj, int controller, const SimicsMemoryInterfaceMemResponse* mResp, unsigned int delay);
+    int (*GetControllerCount)(void* obj);
+    uint64_t (*CurrentTime)(void* obj);
+} mf_simics_memory_interface_api;
 #endif
 
 #endif //_MF_MEMORY_API_H_

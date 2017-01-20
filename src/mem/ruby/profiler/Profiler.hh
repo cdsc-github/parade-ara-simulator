@@ -164,6 +164,20 @@ class Profiler : public SimObject
     bool m_hot_lines;
     bool m_all_instructions;
 
+    std::vector<Stats::Scalar> m_lcacc_tlb_hits;
+    std::vector<Stats::Scalar> m_lcacc_tlb_misses;
+    std::vector<Stats::Scalar> m_lcacc_tlb_accesses;
+    std::vector<Stats::Scalar> m_lcacc_tlb_flush;
+    std::vector<Stats::Scalar> m_lcacc_tlbCycles;
+
+    Stats::Scalar m_td_tlb_hits;
+    Stats::Scalar m_td_tlb_misses;
+    Stats::Scalar m_td_tlb_mshrhits;
+    Stats::Scalar m_td_tlb_accesses;
+
+    std::vector<Stats::Scalar> m_host_pagetable_walks;
+    std::vector<Stats::Scalar> m_host_pagetable_walk_time;
+
 #ifdef SIM_VISUAL_TRACE
   uint64_t m_L1Cache_read;
   uint64_t m_L1Cache_write;

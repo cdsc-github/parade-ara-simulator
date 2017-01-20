@@ -529,6 +529,7 @@ BaseCPU::takeOverFrom(BaseCPU *oldCPU)
             BaseSlavePort &slavePort = old_dtb_port->getSlavePort();
             old_dtb_port->unbind();
             new_dtb_port->bind(slavePort);
+            std::cout << "dtb port taken over." << endl;
         }
         newTC->getITBPtr()->takeOverFrom(oldTC->getITBPtr());
         newTC->getDTBPtr()->takeOverFrom(oldTC->getDTBPtr());

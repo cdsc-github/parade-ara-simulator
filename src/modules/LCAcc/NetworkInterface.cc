@@ -1,5 +1,5 @@
 #include "NetworkInterface.hh"
-#include "gem5Interface.hh"
+#include "SimicsInterface.hh"
 
 using namespace LCAcc;
 
@@ -27,7 +27,7 @@ namespace LCAcc
 	}
 	void NetworkInterface::SendMessage(int dest, const void* buffer, unsigned int size)
 	{
-		gem5Interface::SendMessage(GetNetworkPort(), dest, size, buffer);
+		SimicsInterface::SendMessage(GetNetworkPort(), dest, size, buffer);
 	}
 	void NetworkInterface::RegisterRecvHandler(Arg3CallbackBase<int, const void*, unsigned int>* handler)
 	{

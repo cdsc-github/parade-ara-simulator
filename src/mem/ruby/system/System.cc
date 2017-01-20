@@ -43,15 +43,35 @@
 #include "modules/Synchronize/Synchronize.hh"
 
 using namespace std;
+//0. SW version
+// #define SIM_SW
 
-//1. Dedicated-ARA version
-#define SIM_DEDICATED_ARA
+//1. ARC version
+//#define SIM_ARC
+
+//2. ARC PLUS version
+#define SIM_ARC_PLUS
+
+//3. CHARM NON-ISLAND version
+//#define SIM_CHARM
+
+//4. CHARM ISLAND version
+//#define SIM_CHARM_ISLAND
+
+//for compiling purpose
+#if defined(SIM_SW)
+#define SIM_ARC
+#endif
+
+#if defined(SIM_ARC_PLUS) || defined(SIM_CHARM) || defined(SIM_CHARM_ISLAND)
+#define SIM_TD
+#endif
 
 #define SIM_NET_PORTS
 #ifdef SIM_NET_PORTS
 #include <iostream>
-#include "gem5NetworkPortInterface.hh"
-#include "gem5NetworkPort.hh"
+#include "SimicsNetworkPortInterface.hh"
+#include "SimicsNetworkPort.hh"
 #include "sim/system.hh"
 #endif
 
@@ -60,12 +80,24 @@ bool RubySystem::m_randomization;
 uint32_t RubySystem::m_block_size_bytes;
 uint32_t RubySystem::m_block_size_bits;
 uint32_t RubySystem::m_memory_size_bits;
+uint32_t RubySystem::m_td_tlb_size;
+uint32_t RubySystem::m_td_tlb_latency;
+uint32_t RubySystem::m_td_tlb_assoc;
+uint32_t RubySystem::m_lcacc_tlb_size;
+uint32_t RubySystem::m_lcacc_tlb_mshr;
+uint32_t RubySystem::m_lcacc_tlb_latency;
+uint32_t RubySystem::m_lcacc_tlb_assoc;
+uint32_t RubySystem::m_dma_issue_width;
 #ifdef SIM_NET_PORTS
 std::vector<std::string> RubySystem::accTypes;
 int RubySystem::m_num_simics_net_ports;
 int RubySystem::m_num_accelerators;
 int RubySystem::m_num_TDs;
 int RubySystem::m_num_acc_instances;
+int RubySystem::m_host_ptw_latency;
+bool RubySystem::m_tlb_hack;
+bool RubySystem::m_ideal_mmu;
+bool RubySystem::m_iommu;
 #endif
 
 RubySystem::RubySystem(const Params *p)
@@ -83,12 +115,27 @@ RubySystem::RubySystem(const Params *p)
     m_block_size_bits = floorLog2(m_block_size_bytes);
     m_memory_size_bits = p->memory_size_bits;
 
+    m_td_tlb_size       = p->td_tlb_size;
+    m_td_tlb_latency    = p->td_tlb_latency;
+    m_lcacc_tlb_size    = p->lcacc_tlb_size;
+    m_lcacc_tlb_latency = p->lcacc_tlb_latency;
+    m_lcacc_tlb_assoc   = p->lcacc_tlb_assoc;
+    m_lcacc_tlb_mshr    = p->lcacc_tlb_mshr;
+
+    m_dma_issue_width   = p->dma_issue_width;
+
 #ifdef SIM_NET_PORTS
     parseAccTypes(p->acc_types);
 
+    m_iommu     = p->iommu;
+    m_tlb_hack  = p->tlb_hack;
+    m_ideal_mmu = p->ideal_mmu;
+
     m_num_simics_net_ports = p->num_simics_net_ports;
+    // m_num_accelerators = p->num_accelerators;
     m_num_TDs = p->num_TDs;
     m_num_acc_instances = p->num_acc_instances;
+    m_host_ptw_latency = p->host_ptw_latency;
 #endif
 
     m_warmup_enabled = false;
@@ -321,11 +368,21 @@ RubySystem::unserialize(Checkpoint *cp, const string &section)
 #ifdef SIM_NET_PORTS
 int RubySystem::threadIDtoDeviceID(int threadID)
 {
+#ifdef SIM_ARC
+  return threadID + 1;
+#endif
+#ifdef SIM_TD
   return threadID + m_num_TDs;
+#endif
 }
 int RubySystem::deviceIDtoThreadID(int deviceID)
 {
+#ifdef SIM_ARC
+  return deviceID - 1;
+#endif
+#ifdef SIM_TD
   return deviceID - m_num_TDs;
+#endif
 }
 int RubySystem::accIDtoDeviceID(int accID)
 {
@@ -333,7 +390,12 @@ int RubySystem::accIDtoDeviceID(int accID)
   System *m5_system = *system_iterator;
   assert(m5_system);
   int num_thread_contexts = m5_system->numContexts();
+#ifdef SIM_ARC
+  return accID + num_thread_contexts + 1;
+#endif
+#ifdef SIM_TD
   return accID + num_thread_contexts + m_num_TDs;
+#endif
 }
 int RubySystem::deviceIDtoAccID(int deviceID)
 {
@@ -341,7 +403,12 @@ int RubySystem::deviceIDtoAccID(int deviceID)
   System *m5_system = *system_iterator;
   assert(m5_system);
   int num_thread_contexts = m5_system->numContexts();
+#ifdef SIM_ARC
+  return deviceID - num_thread_contexts - 1;
+#endif
+#ifdef SIM_TD
   return deviceID - num_thread_contexts - m_num_TDs;
+#endif
 }
 int RubySystem::tdIDtoL1CacheID(int tdID)
 {
@@ -357,7 +424,12 @@ int RubySystem::accIDtoL1CacheID(int accID)
   System *m5_system = *system_iterator;
   assert(m5_system);
   int num_thread_contexts = m5_system->numContexts();
+#ifdef SIM_ARC
+  return accID + num_thread_contexts + 1;
+#endif
+#ifdef SIM_TD
   return accID + num_thread_contexts + m_num_TDs;
+#endif
 }
 #define CENTER_ID 12
 int RubySystem::mapPortID(int port)
@@ -394,12 +466,12 @@ RubySystem::startup()
     memset(g_lwInt_interface, 0, sizeof(lwInt_ifc_t));
     warn("REGISTERING INTERRUPT INTERFACE %p\n", g_lwInt_interface);
     g_lwInt_interface->raiseLightWeightInt = &raiseLightWeightInt;
-    g_lwInt_interface->isReady = &isReady;    
+    g_lwInt_interface->isReady = &isReady;
 
-    g_networkPort_interface = (gem5NetworkPortInterface *)malloc(sizeof(gem5NetworkPortInterface));
-    memset(g_networkPort_interface, 0, sizeof(gem5NetworkPortInterface));
-    Initializegem5NetworkPortInterface(g_networkPort_interface);
-    warn("Initialize gem5NetworkPortInterface\n");//*/
+    g_networkPort_interface = (SimicsNetworkPortInterface *)malloc(sizeof(SimicsNetworkPortInterface));
+    memset(g_networkPort_interface, 0, sizeof(SimicsNetworkPortInterface));
+    InitializeSimicsNetworkPortInterface(g_networkPort_interface);
+    warn("Initialize SimicsNetworkPortInterface\n");//*/
 
     //Zhenman: Currently we initialize one networkInterrupts handler per ThreadContext
     int i;
@@ -452,8 +524,21 @@ RubySystem::startup()
     g_LCAccInterface = LCAcc::CreateLCAccInterface();
     warn("Initialize LCAccInterface\n");//*/
     int portID = RubySystem::accIDtoDeviceID(0);
+
     int TD_portID = num_thread_contexts;
 
+#ifdef SIM_ARC
+    //ARC version, uses GAM
+    int GAM_portID = num_thread_contexts;
+    g_gamObject = CreateGAMInterface();
+    warn("Initialize GAMInterface\n");
+    g_gamObject->SetNetPort(GAM_portID, 0);
+    g_gamObject->SetActivityDelay(0);
+    g_gamObject->SetIntervalLength(10000);
+    g_gamObject->SetMinAllocCount(1);
+#endif
+
+#ifdef SIM_TD
     //uses TD
     g_TdDmaDevice.resize(m_num_TDs);
     for(i = 0; i < g_TdDmaDevice.size(); i++) {
@@ -470,7 +555,8 @@ RubySystem::startup()
     g_TDInterface = CreateTDInterface();
 #endif
 
-#ifdef SIM_DEDICATED_ARA
+#ifdef SIM_ARC_PLUS
+    //ARC PLUS version
     g_TDHandle.resize(m_num_TDs);
     for(i = 0; i < g_TDHandle.size(); i++) {
       g_TDHandle[i] = CreateNewTDHandle();
@@ -480,7 +566,29 @@ RubySystem::startup()
       g_TDInterface->SetCFUAllocationPerIsland(g_TDHandle[i],999999);
       g_TDInterface->Initialize(g_TDHandle[i]);
     }
+    // warn("Initialize TDInterface\n");
+#endif
+
+#ifdef SIM_CHARM
+    //CHARM version
+    g_TDHandle.resize(m_num_TDs);
+    for(i = 0; i < g_TDHandle.size(); i++) {
+      g_TDHandle[i] = CreateNewTDHandle();
+      g_TDInterface->SetNetworkPort(g_TDHandle[i],TD_portID+i,i);
+      //g_TDInterface->SetSelector(g_TDHandle[i],"SmoothMemory");
+      g_TDInterface->SetSelector(g_TDHandle[i],"MinChain");
+      g_TDInterface->SetTaskGrain(g_TDHandle[i],8);
+      g_TDInterface->SetCFUAllocationPerIsland(g_TDHandle[i],999999);
+      g_TDInterface->SetFpgaArea(g_TDHandle[i],0);
+      g_TDInterface->Initialize(g_TDHandle[i]);
+    }
     warn("Initialize TDInterface\n");
+#endif
+
+    //This is the number of applications to run, to synchronize
+    //SetBarrierWidth(1);
+
+#if defined(SIM_ARC) || defined(SIM_ARC_PLUS) && !defined(SIM_SW)
 
     int id = 0;
     for (i = 0; i < accTypes.size(); i++) {
@@ -504,12 +612,259 @@ RubySystem::startup()
         }
     }
 
+    //All benchmarks except for Texture_Synthesis, actually bind to one port
+    //comment this out for Texture_Synthesis case
+    // for (int k = 0; k < m_num_acc_instances; k++) {
+    //     for (i = 0; i < m_num_accelerators; i++) {
+    //         g_LCAccInterface->SetNetPort(
+    //             g_LCAccDeviceHandle[i + k * m_num_accelerators], portID + k,
+    //             RubySystem::accIDtoDeviceID(i + k * m_num_accelerators));
+    //     }
+
+        //vector add
+        //g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[0], "VectorAddSample");
+
+        /*###Medical Imaging(MI) benchmarks##############*/
+        // //deblur
+        // g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[0+k*m_num_accelerators], "denoise1Mega");
+        // g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[1+k*m_num_accelerators], "blur1Mega");
+        // g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[2+k*m_num_accelerators], "deblur1Mega");
+        // g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[3+k*m_num_accelerators], "deblur2Mega");
+
+        //denoise
+        // g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[0+k*m_num_accelerators], "denoise1Mega");
+        // g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[1+k*m_num_accelerators], "denoise2Mega");
+
+        // Denoise
+        // g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[index++],
+        //     "denoise1Mega");
+        // g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[index++],
+        //     "denoise2Mega");
+
+        //registration
+        // g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[0+k*m_num_accelerators], "registration1Mega");
+        // g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[1+k*m_num_accelerators], "blur1Mega");
+
+        //segmentation
+        // g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[0+k*m_num_accelerators], "segmentation1Mega");
+
+        //CS_MR: ignore this benchmark
+        /*g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[0+k*m_num_accelerators], "CSMR_stage1");
+        g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[1+k*m_num_accelerators], "CSMR_stage2");
+        g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[2+k*m_num_accelerators], "CSMR_stage3_1");
+        g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[3+k*m_num_accelerators], "CSMR_stage3_2");
+        g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[4+k*m_num_accelerators], "CSMR_stage_fft");
+        g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[5+k*m_num_accelerators], "CSMR_stage_fft");//*/
+        /*###Medical Imaging(MI) benchmarks##############*/
+
+        /*###CoMmercial(CM) benchmarks###################*/
+        //blackScholes
+        // g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[k], "blackScholes");
+
+        // BlackScholes
+        // g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[index++],
+        //     "blackScholes");
+
+        //streamCluster
+        // g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[0+k*m_num_accelerators], "streamCluster1");
+        // g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[1+k*m_num_accelerators], "streamCluster3");
+        // g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[2+k*m_num_accelerators], "streamCluster4");
+        // g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[3+k*m_num_accelerators], "streamCluster5");
+        // g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[4+k*m_num_accelerators], "streamCluster6");//
+
+        // //swaptions
+        // g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[0+k*m_num_accelerators], "swaptions1");
+        // g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[1+k*m_num_accelerators], "swaptions2");
+        // g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[2+k*m_num_accelerators], "swaptions3");
+        // g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[3+k*m_num_accelerators], "swaptions4");//
+        /*###CoMmercial(CM) benchmarks#######   ############*/
+
+        /*###computer VISion(VIS) benchmarks#############*/
+        //LPCIP
+        // g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[k*m_num_accelerators], "LPCIP");
+
+        // //SURF
+        // g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[0+k*m_num_accelerators], "SURF1Mega");
+        // g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[1+k*m_num_accelerators], "SURF2Mega");
+        // g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[2+k*m_num_accelerators], "SURF3Mega");
+        // g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[3+k*m_num_accelerators], "SURF4Mega");
+        // g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[4+k*m_num_accelerators], "SURF5Mega");//
+
+        //Texture_Synthesis: still suffer from page fault
+        /*g_LCAccInterface->SetNetPort(g_LCAccDeviceHandle[0], portID, RubySystem::accIDtoDeviceID(0));
+        g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[0], "TexSynth1");
+        for(i = 1; i < 10; i++) {
+          g_LCAccInterface->SetNetPort(g_LCAccDeviceHandle[i], portID+i-1, RubySystem::accIDtoDeviceID(i));
+          g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[i], "TexSynth2");
+        }
+        for(i = 10; i < 14; i++) {
+          g_LCAccInterface->SetNetPort(g_LCAccDeviceHandle[i], portID+i-10, RubySystem::accIDtoDeviceID(i));
+          g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[i], "TexSynth3");
+        }
+        for(i = 14; i < 18; i++) {
+          g_LCAccInterface->SetNetPort(g_LCAccDeviceHandle[i], portID+i-14, RubySystem::accIDtoDeviceID(i));
+          g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[i], "TexSynth4");
+        }
+        g_LCAccInterface->SetNetPort(g_LCAccDeviceHandle[18], portID, RubySystem::accIDtoDeviceID(18));
+        g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[18], "TexSynth5");//*/
+        /*###computer VISion(VIS) benchmarks#############*/
+
+        /*###NAVigation(NAV) benchmarks##################*/
+        //robot_localization
+        // g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[k*m_num_accelerators], "RobLoc");
+
+        //disparity_map
+        // g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[0+k*m_num_accelerators], "DispMapCompSAD");
+        // g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[1+k*m_num_accelerators], "DispMapFindDisp");
+        // g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[2+k*m_num_accelerators], "DispMapIntegSum");//
+
+        //ekf_slam
+        // g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[0+k*m_num_accelerators], "Jacobians");
+        // g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[1+k*m_num_accelerators], "SphericalCoords");//
+        /*###NAVigation(NAV) benchmarks##################*/
+    // }
+
     for(i = 0; i < m_num_accelerators * m_num_acc_instances; i++) {
       g_LCAccInterface->SetPrefetchDistance(g_LCAccDeviceHandle[i], 0);
       g_LCAccInterface->SetSPMConfig(g_LCAccDeviceHandle[i], 1, 2048, 2, 1, 1, 1);
       //g_LCAccInterface->SetSPMConfig(g_LCAccDeviceHandle[i], 1, 64, 100000, 0, 100000, 0); //ideal SPM
       g_LCAccInterface->Initialize(g_LCAccDeviceHandle[i], 0);
+    }//*/
+#endif
+
+#if defined(SIM_CHARM)
+    for(i = 0; i < m_num_accelerators; i++) {
+      g_LCAccInterface->SetNetPort(g_LCAccDeviceHandle[i], portID+i%24, RubySystem::accIDtoDeviceID(i));
     }
+
+    /*###Medical Imaging(MI) benchmarks##############*/
+    //deblur, denoise, registration segmentation
+    assert(m_num_accelerators == 176);
+    for(i = 0; i < 124; i++) {
+      g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[i], "poly");
+    }
+    for(; i < 156; i++) {
+      g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[i], "divide");
+    }
+    for(; i < 168; i++) {
+      g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[i], "sqrtf");
+    }
+    for(; i < 176; i++) {
+      g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[i], "powf");
+    } //*/
+    /*###Medical Imaging(MI) benchmarks##############*/
+
+    /*###CoMmercial(CM) benchmarks###################*/
+    //blackScholes, streamCluster, swaptions
+    /*assert(m_num_accelerators == 166);
+    for(i = 0; i < 102; i++) {
+      g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[i], "poly");
+    }
+    for(; i < 114; i++) {
+      g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[i], "divide");
+    }
+    for(; i < 117; i++) {
+      g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[i], "sqrtf");
+    }
+    for(; i < 121; i++) {
+      g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[i], "logf");
+    }
+    for(; i < 130; i++) {
+      g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[i], "powf");
+    }
+    for(; i < 136; i++) {
+      g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[i], "selectfi");
+    }
+    for(; i < 145; i++) {
+      g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[i], "selectif");
+    }
+    for(; i < 151; i++) {
+      g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[i], "selectff");
+    }
+    for(; i < 154; i++) {
+      g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[i], "selectii");
+    }
+    for(; i < 160; i++) {
+      g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[i], "sample1");
+    }
+    for(; i < 163; i++) {
+      g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[i], "sampleWrite1");
+    }
+    for(; i < 166; i++) {
+      g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[i], "Sum");
+    } //*/
+    /*###CoMmercial(CM) benchmarks###################*/
+
+    /*###computer VISion(VIS) benchmarks#############*/
+    //LPCIP, SURF, TextureSynthesis
+    /*assert(m_num_accelerators == 747);
+    for(i = 0; i < 343; i++) {
+      g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[i], "poly");
+    }
+    for(; i < 373; i++) {
+      g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[i], "divide");
+    }
+    for(; i < 378; i++) {
+      g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[i], "sqrtf");
+    }
+    for(; i < 387; i++) {
+      g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[i], "powf");
+    }
+    for(; i < 394; i++) {
+      g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[i], "selectfi");
+    }
+    for(; i < 408; i++) {
+      g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[i], "selectif");
+    }
+    for(; i < 476; i++) {
+      g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[i], "selectff");
+    }
+    for(; i < 490; i++) {
+      g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[i], "Mod");
+    }
+    for(; i < 495; i++) {
+      g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[i], "castif");
+    }
+    for(; i < 557; i++) {
+      g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[i], "castfi");
+    }
+    for(; i < 566; i++) {
+      g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[i], "sample2");
+    }
+    for(; i < 692; i++) {
+      g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[i], "sample3");
+    }
+    for(; i < 732; i++) {
+      g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[i], "Sum");
+    }
+    for(; i < 747; i++) {
+      g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[i], "Min");
+    }//*/
+    /*###computer VISion(VIS) benchmarks#############*/
+
+    /*###NAVigation(NAV) benchmarks##################*/
+    //RobotLocalization, DisparityMap, EKF_SLAM
+    /*assert(m_num_accelerators == 149);
+    for(i = 0; i < 115; i++) {
+      g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[i], "poly");
+    }
+    for(; i < 122; i++) {
+      g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[i], "divide");
+    }
+    for(; i < 125; i++) {
+      g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[i], "sqrtf");
+    }
+    for(; i < 149; i++) {
+      g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[i], "Sum");
+    } //*/
+    /*###NAVigation(NAV) benchmarks##################*/
+
+    for(i = 0; i < m_num_accelerators; i++) {
+      g_LCAccInterface->SetPrefetchDistance(g_LCAccDeviceHandle[i], 0);
+      g_LCAccInterface->SetSPMConfig(g_LCAccDeviceHandle[i], 1, 2048, 2, 1, 1, 1);
+      g_LCAccInterface->Initialize(g_LCAccDeviceHandle[i], 0);
+    }
+#endif
 
     for(int i = 0; i < 30000; i++) {
       cycleCBRing.push_back(std::queue<CBContainer>());

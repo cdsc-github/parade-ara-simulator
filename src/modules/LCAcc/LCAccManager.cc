@@ -26,10 +26,10 @@ namespace LCAcc
 	}
 	void LCAccManager::AddNetworkPort(int deviceHandle, int port, int device)
 	{
-		std::cout << "Establishing network port " << port << " device " << device << std::endl;
+		// std::cout << "Establishing network port " << port << " device " << device << std::endl;
 		assert(deviceSet.find(deviceHandle) != deviceSet.end());
 		assert(netSet.find(device) == netSet.end());
-		//TODO: somehow the port and device meaning in NetworkInterface has been reversed. 
+		//TODO: somehow the port and device meaning in NetworkInterface has been reversed.
 		//so if you want to get port, use device; vice versa.
 		//To fix this in the future.
 		NetworkInterface* netInf = new NetworkInterface(port, device);

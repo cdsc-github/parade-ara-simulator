@@ -108,6 +108,12 @@ class Router_d : public BasicRouter
 
 #ifdef SIM_DSENT
     double getUtilization();
+  /*inline std::string getName() {
+      char suffix[100];
+      sprintf(suffix, "%d", get_id());
+      std::string s = "Router";
+      return s + suffix;
+      }//*/
 #endif
 
   private:

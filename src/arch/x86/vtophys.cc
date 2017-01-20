@@ -64,11 +64,9 @@ namespace X86ISA
         Addr addr = vaddr;
         Fault fault = walker->startFunctional(
                 tc, addr, logBytes, BaseTLB::Read);
-	//std::cout << "[vtophys]: " << std::hex << vaddr << std::endl;
         if (fault != NoFault) {
-	  std::cout << fault->name() << std::endl;
-	  panic("vtophys page walk returned fault %#x\n", vaddr);
-	}
+            panic("vtophys page walk returned fault %#x\n", vaddr);
+        }
         Addr masked_addr = vaddr & mask(logBytes);
         Addr paddr = addr | masked_addr;
         DPRINTF(VtoPhys, "vtophys(%#x) -> %#x\n", vaddr, paddr);

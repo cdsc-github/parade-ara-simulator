@@ -150,6 +150,8 @@ class Request
     /** The request is a page table walk */
     static const FlagsType PT_WALK                     = 0x20000000;
 
+    static const FlagsType BYPASS_CACHE                = 0x40000000;
+
     /** These flags are *not* cleared when a Request object is reused
        (assigned a new address). */
     static const FlagsType STICKY_FLAGS = INST_FETCH;
@@ -254,7 +256,7 @@ class Request
     Addr _pc;
 
   public:
-    /** Minimal constructor.  No fields are initialized. 
+    /** Minimal constructor.  No fields are initialized.
      *  (Note that _flags and privateFlags are cleared by Flags
      *  default constructor.)
      */
@@ -268,7 +270,7 @@ class Request
     /**
      * Constructor for physical (e.g. device) requests.  Initializes
      * just physical address, size, flags, and timestamp (to curTick()).
-     * These fields are adequate to perform a request. 
+     * These fields are adequate to perform a request.
      */
     Request(Addr paddr, int size, Flags flags, MasterID mid)
         : _paddr(0), _size(0), _masterId(invldMasterId), _time(0),
@@ -651,6 +653,7 @@ class Request
     bool isClearLL() const { return _flags.isSet(CLEAR_LL); }
     bool isSecure() const { return _flags.isSet(SECURE); }
     bool isPTWalk() const { return _flags.isSet(PT_WALK); }
+    bool isBypassCache() const { return _flags.isSet(BYPASS_CACHE); }
 };
 
 #endif // __MEM_REQUEST_HH__

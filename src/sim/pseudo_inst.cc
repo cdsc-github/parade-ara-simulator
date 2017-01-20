@@ -612,7 +612,7 @@ switchcpu(ThreadContext *tc)
 }
 
 //
-// This function is executed when annotated work items begin.  Depending on 
+// This function is executed when annotated work items begin.  Depending on
 // what the user specified at the command line, the simulation may exit and/or
 // take a checkpoint when a certain work item begins.
 //
@@ -625,7 +625,7 @@ workbegin(ThreadContext *tc, uint64_t workid, uint64_t threadid)
     const System::Params *params = sys->params();
     sys->workItemBegin(threadid, workid);
 
-    DPRINTF(WorkItems, "Work Begin workid: %d, threadid %d\n", workid, 
+    DPRINTF(WorkItems, "Work Begin workid: %d, threadid %d\n", workid,
             threadid);
 
     //
@@ -670,7 +670,7 @@ workbegin(ThreadContext *tc, uint64_t workid, uint64_t threadid)
 }
 
 //
-// This function is executed when annotated work items end.  Depending on 
+// This function is executed when annotated work items end.  Depending on
 // what the user specified at the command line, the simulation may exit and/or
 // take a checkpoint when a certain work item ends.
 //
@@ -726,9 +726,12 @@ lcacc_message(ThreadContext *tc, uint64_t func, uint64_t arg1, uint64_t arg2,
                   uint64_t arg3, uint64_t arg4, uint64_t arg5, uint64_t arg6,
                   uint64_t arg7)
 {
-  //warn("Lcacc message called with args:\n");
-  //warn("[%d, %d, %d, %d, %d, %d, %d, %d]\n", func, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
-  return LCAccMagicIntercept(NULL, tc, (int32_t)func, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+    if (func == 0xC012)
+        inform("LCAccMagicIntercept from threadcontext %d\n", tc->contextId());
+    // warn("[%d, %d, %d, %d, %d, %d, %d, %d]\n", func,
+    //     arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+    return LCAccMagicIntercept(NULL, tc, (int32_t)func,
+        arg1, arg2, arg3, arg4, arg5, arg6, arg7);
 }
 
 } // namespace PseudoInst

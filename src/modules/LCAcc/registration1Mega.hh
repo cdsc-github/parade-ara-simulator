@@ -291,19 +291,19 @@ namespace LCAcc
 			float du1_dx = (u1_Right - u1_Left) *0.5f;
 			float du2_dx = (u2_Right - u2_Left) *0.5f;
 			float du3_dx = (u3_Right - u3_Left) *0.5f;
-			
+
 			float du1_dy = (u1_Up - u1_Down) *0.5f;
 			float du2_dy = (u2_Up - u2_Down) *0.5f;
 			float du3_dy = (u3_Up - u3_Down) *0.5f;
-			
+
 			float du1_dz = (u1_In - u1_Out) *0.5f;
 			float du2_dz = (u1_In - u1_Out) *0.5f;
 			float du3_dz = (u1_In - u1_Out) *0.5f;
-			
+
 			float r1 = v1 - v1 * du1_dx - v2 * du1_dy - v3 * du1_dz;
 			float r2 = v2 - v1 * du2_dx - v2 * du2_dy - v3 * du2_dz;
 			float r3 = v3 - v1 * du3_dx - v2 * du3_dy - v3 * du3_dz;
-			
+
 			u1_result = r1 * dt;
 			u2_result = r2 * dt;
 			u3_result = r3 * dt;

@@ -76,7 +76,7 @@ public:
 			pb.Write((int32_t)dstSize[x]);
 			pb.Write((uint32_t)dstStride[x]);
 		}
-		pb.Write((uint8_t)elementSize);	
+		pb.Write((uint8_t)elementSize);
 	}
 	void ReadIn(PacketReader& pr)
 	{
@@ -90,30 +90,30 @@ public:
 		unsigned int dstDimensionalityUpper = pr.Read<uint8_t>();
 		srcSplit = srcDimensionalityLower;
 		dstSplit = dstDimensionalityLower;
-std::cout << "Transfer details : " << std::endl;
-std::cout << "src device : " << srcDevice << " src addr : " << srcBaseAddress << " dim : " << srcDimensionalityLower << ":" << srcDimensionalityUpper << "   ";
+// std::cout << "Transfer details : " << std::endl;
+// std::cout << "src device : " << srcDevice << " src addr : " << srcBaseAddress << " dim : " << srcDimensionalityLower << ":" << srcDimensionalityUpper << "   ";
 		for(unsigned int x = 0; x < srcDimensionalityLower + srcDimensionalityUpper; x++)
 		{
 			uint32_t sizeVal = pr.Read<uint32_t>();
 			uint32_t strideVal = pr.Read<int32_t>();
 			srcSize.push_back(sizeVal);
 			srcStride.push_back(strideVal);
-std::cout << "[" << sizeVal << ", " << strideVal << "]";
+// std::cout << "[" << sizeVal << ", " << strideVal << "]";
 		}
-std::cout << std::endl;
-std::cout << "dst device : " << dstDevice << " dst addr : " << dstBaseAddress << " dim : " << dstDimensionalityLower << ":" << dstDimensionalityUpper << "   ";
+// std::cout << std::endl;
+// std::cout << "dst device : " << dstDevice << " dst addr : " << dstBaseAddress << " dim : " << dstDimensionalityLower << ":" << dstDimensionalityUpper << "   ";
 		for(unsigned int x = 0; x < dstDimensionalityLower + dstDimensionalityUpper; x++)
 		{
 			uint32_t sizeVal = pr.Read<uint32_t>();
 			uint32_t strideVal = pr.Read<int32_t>();
 			dstSize.push_back(sizeVal);
 			dstStride.push_back(strideVal);
-std::cout << "[" << sizeVal << ", " << strideVal << "]";
+// std::cout << "[" << sizeVal << ", " << strideVal << "]";
 		}
-std::cout << std::endl;
+// std::cout << std::endl;
 		elementSize = pr.Read<uint8_t>();
 		assert(elementSize > 0);
-std::cout << "Element size: " << elementSize << std::endl;
+// std::cout << "Element size: " << elementSize << std::endl;
 	}
 	TransferDescription()
 	{

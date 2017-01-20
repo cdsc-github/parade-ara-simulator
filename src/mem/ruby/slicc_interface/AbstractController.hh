@@ -106,6 +106,8 @@ class AbstractController : public MemObject, public Consumer
                                   PortID idx = InvalidPortID);
 
     void queueMemoryRead(const MachineID &id, Address addr, Cycles latency);
+    void queueMemoryReadBypass(const MachineID &id, Address addr,
+                               Cycles latency, const MachineID &bypassRequestor);
     void queueMemoryWrite(const MachineID &id, Address addr, Cycles latency,
                           const DataBlock &block);
     void queueMemoryWritePartial(const MachineID &id, Address addr, Cycles latency,

@@ -73,16 +73,23 @@ class RubySystem : public ClockedObject
     // config accessors
 #ifdef SIM_NET_PORTS
     static std::vector<std::string> accTypes;
+    static bool m_iommu;
+    static bool m_tlb_hack;
+    static bool m_ideal_mmu;
     static int m_num_simics_net_ports;
     static int m_num_accelerators;
     static int m_num_acc_instances;
+    static int m_host_ptw_latency;
     static int m_num_TDs;
+    static bool iommu() { return m_iommu; }
+    static bool idealMMU() { return m_ideal_mmu; }
+    static bool TLBHack() { return m_tlb_hack; }
     static int numberOfAccelerators() { return m_num_accelerators; }
-    static int numberOfgem5NetworkPortPerChip() { return m_num_simics_net_ports; }
-    static int numberOfgem5NetworkPortPerChip(NodeID&) {return numberOfgem5NetworkPortPerChip(); }
-    static int numberOfgem5NetworkPort() {return numberOfgem5NetworkPortPerChip(); }
+    static int numberOfSimicsNetworkPortPerChip() { return m_num_simics_net_ports; }
+    static int numberOfSimicsNetworkPortPerChip(NodeID&) {return numberOfSimicsNetworkPortPerChip(); }
+    static int numberOfSimicsNetworkPort() {return numberOfSimicsNetworkPortPerChip(); }
     static int numberOfTDs() { return m_num_TDs; }
-    static int gem5NetworkPortTransitionsPerCycle() { return 10; }
+    static int SimicsNetworkPortTransitionsPerCycle() { return 10; }
     static int threadIDtoDeviceID(int threadID);
     static int deviceIDtoThreadID(int deviceID);
     static int accIDtoDeviceID(int accID);
@@ -91,6 +98,7 @@ class RubySystem : public ClockedObject
     static int accIDtoL1CacheID(int accID);
     static int mapPortID(int port);
     static int numberOfAccInstances() { return m_num_acc_instances; }
+    static int getHostPTWLatency() { return m_host_ptw_latency; }
     Network* getNetwork() {assert(m_network != NULL); return m_network;};
 #endif
 
@@ -99,6 +107,16 @@ class RubySystem : public ClockedObject
     static uint32_t getBlockSizeBytes() { return m_block_size_bytes; }
     static uint32_t getBlockSizeBits() { return m_block_size_bits; }
     static uint32_t getMemorySizeBits() { return m_memory_size_bits; }
+
+    static uint32_t getLCAccTLBSize() { return m_lcacc_tlb_size; }
+    static uint32_t getLCAccTLBLatency() { return m_lcacc_tlb_latency; }
+    static uint32_t getLCAccTLBAssoc() { return m_lcacc_tlb_assoc; }
+    static uint32_t getLCAccTLBMSHR() { return m_lcacc_tlb_mshr; }
+    static uint32_t getTDTLBSize() { return m_td_tlb_size; }
+    static uint32_t getTDTLBLatency() { return m_td_tlb_latency; }
+    static uint32_t getTDTLBAssoc() { return m_td_tlb_assoc; }
+
+    static uint32_t getDMAIssueWidth() { return m_dma_issue_width; }
 
     SimpleMemory *getPhysMem() { return m_phys_mem; }
 
@@ -151,6 +169,14 @@ class RubySystem : public ClockedObject
     static uint32_t m_block_size_bytes;
     static uint32_t m_block_size_bits;
     static uint32_t m_memory_size_bits;
+    static uint32_t m_td_tlb_size;
+    static uint32_t m_td_tlb_latency;
+    static uint32_t m_td_tlb_assoc;
+    static uint32_t m_lcacc_tlb_size;
+    static uint32_t m_lcacc_tlb_mshr;
+    static uint32_t m_lcacc_tlb_latency;
+    static uint32_t m_lcacc_tlb_assoc;
+    static uint32_t m_dma_issue_width;
     SimpleMemory *m_phys_mem;
 
     Network* m_network;

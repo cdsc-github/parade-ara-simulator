@@ -135,16 +135,16 @@ machine(Directory, "MESI Two Level directory protocol")
   AccessPermission getAccessPermission(Address addr) {
     TBE tbe := TBEs[addr];
     if(is_valid(tbe)) {
-      DPRINTF(RubySlicc, "%s\n", Directory_State_to_permission(tbe.TBEState));
+      // DPRINTF(RubySlicc, "%s\n", Directory_State_to_permission(tbe.TBEState));
       return Directory_State_to_permission(tbe.TBEState);
     }
 
     if(directory.isPresent(addr)) {
-      DPRINTF(RubySlicc, "%s\n", Directory_State_to_permission(getDirectoryEntry(addr).DirectoryState));
+      // DPRINTF(RubySlicc, "%s\n", Directory_State_to_permission(getDirectoryEntry(addr).DirectoryState));
       return Directory_State_to_permission(getDirectoryEntry(addr).DirectoryState);
     }
 
-    DPRINTF(RubySlicc, "%s\n", AccessPermission:NotPresent);
+    // DPRINTF(RubySlicc, "%s\n", AccessPermission:NotPresent);
     return AccessPermission:NotPresent;
   }
 
@@ -191,6 +191,13 @@ machine(Directory, "MESI Two Level directory protocol")
   in_port(requestNetwork_in, RequestMsg, requestToDir, rank = 0) {
     if (requestNetwork_in.isReady()) {
       peek(requestNetwork_in, RequestMsg) {
+        if (in_msg.BypassCache) {
+          DPRINTF(RubySlicc, "bypass cache req received.\n");
+          queueMemoryReadBypass(in_msg.Requestor, in_msg.Addr,
+                                to_mem_ctrl_latency, in_msg.BypassRequestor);
+          requestNetwork_in.dequeue();
+        } else {
+
         assert(in_msg.Destination.isElement(machineID));
         if (isGETRequest(in_msg.Type)) {
           trigger(Event:Fetch, in_msg.Addr, TBEs[in_msg.Addr]);
@@ -201,9 +208,9 @@ machine(Directory, "MESI Two Level directory protocol")
           trigger(Event:DMA_WRITE, makeLineAddress(in_msg.Addr),
                   TBEs[makeLineAddress(in_msg.Addr)]);
         } else {
-          DPRINTF(RubySlicc, "%s\n", in_msg);
+          // DPRINTF(RubySlicc, "%s\n", in_msg);
           error("Invalid message");
-        }
+        }}
       }
     }
   }
@@ -217,7 +224,7 @@ machine(Directory, "MESI Two Level directory protocol")
         } else if (in_msg.Type == CoherenceResponseType:ACK) {
           trigger(Event:CleanReplacement, in_msg.Addr, TBEs[in_msg.Addr]);
         } else {
-          DPRINTF(RubySlicc, "%s\n", in_msg.Type);
+          // DPRINTF(RubySlicc, "%s\n", in_msg.Type);
           error("Invalid message");
         }
       }
@@ -228,14 +235,31 @@ machine(Directory, "MESI Two Level directory protocol")
   in_port(memQueue_in, MemoryMsg, responseFromMemory, rank = 2) {
     if (memQueue_in.isReady()) {
       peek(memQueue_in, MemoryMsg) {
+
+        if (in_msg.BypassCache) {
+          DPRINTF(RubySlicc, "bypass cache response received. %s %s\n", in_msg.Addr, in_msg.DataBlk);
+          enqueue(responseNetwork_out, ResponseMsg, to_mem_ctrl_latency) {
+            out_msg.Addr := in_msg.Addr;
+            out_msg.Type := CoherenceResponseType:MEMORY_DATA;
+            out_msg.Sender := machineID;
+            out_msg.Destination.add(in_msg.OriginalRequestorMachId);
+            out_msg.DataBlk := in_msg.DataBlk;
+            out_msg.Dirty := false;
+            out_msg.MessageSize := MessageSizeType:Response_Data;
+            out_msg.BypassCache := in_msg.BypassCache;
+            out_msg.BypassRequestor := in_msg.BypassRequestor;
+          }
+          memQueue_in.dequeue();
+        } else {
+
         if (in_msg.Type == MemoryRequestType:MEMORY_READ) {
           trigger(Event:Memory_Data, in_msg.Addr, TBEs[in_msg.Addr]);
         } else if (in_msg.Type == MemoryRequestType:MEMORY_WB) {
           trigger(Event:Memory_Ack, in_msg.Addr, TBEs[in_msg.Addr]);
         } else {
-          DPRINTF(RubySlicc, "%s\n", in_msg.Type);
+          // DPRINTF(RubySlicc, "%s\n", in_msg.Type);
           error("Invalid message");
-        }
+        }}
       }
     }
   }

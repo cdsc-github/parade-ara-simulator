@@ -451,8 +451,8 @@ public:
 		node_sc.Reset();
 	}
 	inline InstanceData_sig__SphericalCoordsLCacc() :
-		acceleratorSignature__sc(true), 
-		node_sc(802), 
+		acceleratorSignature__sc(true),
+		node_sc(802),
 		threadID(0)
 	{
 		Reset();
@@ -498,7 +498,7 @@ inline void Wait_sig__SphericalCoordsLCacc(InstanceData_sig__SphericalCoordsLCac
 		}
 	}
 }
-inline void (*GAMHandler_sig__SphericalCoordsLCacc(InstanceData_sig__SphericalCoordsLCacc* instance, InterruptArgs* args))(InstanceData_sig__SphericalCoordsLCacc*) 
+inline void (*GAMHandler_sig__SphericalCoordsLCacc(InstanceData_sig__SphericalCoordsLCacc* instance, InterruptArgs* args))(InstanceData_sig__SphericalCoordsLCacc*)
 {
 	int i;
 	int lcaccMode;
@@ -922,7 +922,7 @@ inline void CreateBuffer_SphericalCoordsLCacc_td(uint8_t** buffer, uint32_t* buf
 		void* VNR_vardecl_1(point);
 		void* VNR_vardecl_2(outPoint);
 		void* VNR_vardecl_3(outPose);
-		LCAccNode VNR_vardecl_4(802, (sizeof(float[7]) * (chunk)) + (sizeof(float[3]) * (chunk)) + (sizeof(float[9]) * (chunk)) + (sizeof(float[21]) * (chunk)), 3, 0, 0);
+		LCAccNode VNR_vardecl_4(802, (sizeof(float[7]) * (chunk)) + (sizeof(float[3]) * (chunk)) + (sizeof(float[9]) * (chunk)) + (sizeof(float[21]) * (chunk)), 2, 0, 0);
 		std::vector<uint32_t> VNR_vardecl_5;
 		VNR_vardecl_5.push_back(((chunk) - (0)) / (1));
 		std::vector<int32_t> VNR_vardecl_6;
@@ -980,7 +980,7 @@ inline void CreateBuffer_SphericalCoordsLCacc_td(uint8_t** buffer, uint32_t* buf
 		//See VNR_vardecl_14 for index variable decl
 		//See VNR_vardecl_15 for register set decl
 		mw.AddCompute(VNR_vardecl_4, VNR_vardecl_14, VNR_vardecl_15);
-		
+
 		//transfer from cpose to sc
 		//Search VNR_vardecl_16 for source block size.
 		//Search VNR_vardecl_17 for source block stride.
@@ -989,7 +989,7 @@ inline void CreateBuffer_SphericalCoordsLCacc_td(uint8_t** buffer, uint32_t* buf
 		//Search VNR_vardecl_18 for destination size.
 		//Search VNR_vardecl_19 for destination stride.
 		mw.AddTransfer(VNR_vardecl_0, VNR_vardecl_16, VNR_vardecl_17, VNR_vardecl_18, VNR_vardecl_19, VNR_vardecl_4, (0) + ((((0) * ((sizeof(float[7])))))), VNR_vardecl_18, VNR_vardecl_19, sizeof(float));
-		
+
 		//transfer from point to sc
 		//Search VNR_vardecl_16 for source block size.
 		//Search VNR_vardecl_20 for source block stride.
@@ -998,7 +998,7 @@ inline void CreateBuffer_SphericalCoordsLCacc_td(uint8_t** buffer, uint32_t* buf
 		//Search VNR_vardecl_21 for destination size.
 		//Search VNR_vardecl_22 for destination stride.
 		mw.AddTransfer(VNR_vardecl_1, VNR_vardecl_16, VNR_vardecl_20, VNR_vardecl_21, VNR_vardecl_22, VNR_vardecl_4, ((sizeof(float[7]) * (chunk))) + ((((0) * ((sizeof(float[3])))))), VNR_vardecl_21, VNR_vardecl_22, sizeof(float));
-		
+
 		//transfer from sc to outPoint
 		//Search VNR_vardecl_23 for source size.
 		//Search VNR_vardecl_24 for source stride.
@@ -1007,7 +1007,7 @@ inline void CreateBuffer_SphericalCoordsLCacc_td(uint8_t** buffer, uint32_t* buf
 		//Search VNR_vardecl_23 for destination element size.
 		//Search VNR_vardecl_24 for destination element stride.
 		mw.AddTransfer(VNR_vardecl_4, ((sizeof(float[7]) * (chunk)) + (sizeof(float[3]) * (chunk))) + ((((0) * ((sizeof(float[9])))))), VNR_vardecl_23, VNR_vardecl_24, VNR_vardecl_2, VNR_vardecl_16, VNR_vardecl_25, VNR_vardecl_23, VNR_vardecl_24, sizeof(float));
-		
+
 		//transfer from sc to outPose
 		//Search VNR_vardecl_26 for source size.
 		//Search VNR_vardecl_27 for source stride.
@@ -1016,7 +1016,7 @@ inline void CreateBuffer_SphericalCoordsLCacc_td(uint8_t** buffer, uint32_t* buf
 		//Search VNR_vardecl_26 for destination element size.
 		//Search VNR_vardecl_27 for destination element stride.
 		mw.AddTransfer(VNR_vardecl_4, ((sizeof(float[7]) * (chunk)) + (sizeof(float[3]) * (chunk)) + (sizeof(float[9]) * (chunk))) + ((((0) * ((sizeof(float[21])))))), VNR_vardecl_26, VNR_vardecl_27, VNR_vardecl_3, VNR_vardecl_16, VNR_vardecl_28, VNR_vardecl_26, VNR_vardecl_27, sizeof(float));
-		
+
 		mw.SetTaskGrain(0);
 		mw.Finalize((((totalSize) - (0)) / (chunk)));
 	}

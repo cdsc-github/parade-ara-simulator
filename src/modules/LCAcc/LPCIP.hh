@@ -80,7 +80,7 @@ namespace LCAcc
 			#define LPCIP_center_y     (input_center_y)
 			#define LPCIP_rho_scale    (input_rho)
 			#define CV_PI              3.1415926535897932384626433832795f
-			
+
 			#ifndef opt_sin_f_f     // Functionality: sin x = x - (x^3)/6 + (x^5)/120 - (x^7)/5040
 			#define opt_sin_f_f(FLOAT_IN, FLOAT_OUT) { \
 			    float x2, x3, x5, x7; \
@@ -91,7 +91,7 @@ namespace LCAcc
 			    FLOAT_OUT = (FLOAT_IN - x3/6 + x5/120 - x7/5040); \
 			}
 			#endif
-			
+
 			#ifndef opt_cos_f_f     // Functionality: --> cos x = 1 - (x^2)/2 + (x^4)/24  - (x^6)/720
 			#define opt_cos_f_f(FLOAT_IN, FLOAT_OUT) { \
 			    float x2, x4, x6; \
@@ -101,7 +101,7 @@ namespace LCAcc
 			    FLOAT_OUT = (1 - x2/2 + x4/24  - x6/720); \
 			}
 			#endif
-			
+
 			#ifndef opt_exp_f_f
 			#define opt_exp_f_f(FLOAT_IN, FLOAT_OUT) { \
 			    if (FLOAT_IN <= -4.f) \
@@ -116,15 +116,15 @@ namespace LCAcc
 			    } \
 			}
 			#endif
-			
+
 			int mapx[LPCIP_PATCH_H][LPCIP_PATCH_W];
 			int mapy[LPCIP_PATCH_H][LPCIP_PATCH_W];
-			
+
 			int phi, rho, h, w;
 			float _exp_tab[LPCIP_PATCH_W];
 			float* exp_tab = _exp_tab;
-			
-			for (rho = 0; rho < LPCIP_PATCH_W; rho++) 
+
+			for (rho = 0; rho < LPCIP_PATCH_W; rho++)
 			{
 				// loop_tripcount min=10 max=10 avg=10
 				float exp_in = rho / LPCIP_rho_scale;
@@ -132,7 +132,7 @@ namespace LCAcc
 				opt_exp_f_f(exp_in, exp_out);
 				exp_tab[rho] = exp_out;
 			}
-			
+
 			for (phi = 0; phi < LPCIP_PATCH_H; phi++)
 			{
 				// loop_tripcount min=10 max=10 avg=10
@@ -140,7 +140,7 @@ namespace LCAcc
 				trig_in = (float) (phi*2*CV_PI/LPCIP_PATCH_H);
 				opt_cos_f_f(trig_in, cp);
 				opt_sin_f_f(trig_in, sp);
-				
+
 				for (rho = 0; rho < LPCIP_PATCH_W; rho++)
 				{
 					// loop_tripcount min=10 max=10 avg=10
@@ -151,25 +151,25 @@ namespace LCAcc
 					mapy[phi][rho] = (int) y;
 				}
 			}
-			
-			for (h = 0; h < LPCIP_PATCH_H; h++) 
+
+			for (h = 0; h < LPCIP_PATCH_H; h++)
 			{
 				// loop_tripcount min=10 max=10 avg=10
-				for (w = 0; w < LPCIP_PATCH_W; w++) 
+				for (w = 0; w < LPCIP_PATCH_W; w++)
 				{
 					// loop_tripcount min=10 max=10 avg=10
 					int y_mapping = mapy[h][w];
 					if (y_mapping < 0) y_mapping = 0;
 					else if (y_mapping >= LPCIP_IMGH) y_mapping = LPCIP_IMGH-1;
-			
+
 					int x_mapping = mapx[h][w];
 					if (x_mapping < 0) x_mapping = 0;
 					else if (x_mapping >= LPCIP_IMGW) x_mapping = LPCIP_IMGW-1;
-			
+
 					AddRead((uint64_t)LPCIP_img(y_mapping, x_mapping), spmSampleTarget + iteration * LPCIP_PATCH_W * LPCIP_PATCH_H + (h * LPCIP_PATCH_W + w), sizeof(uint8_t));
 				}
 			}
-			
+
 			#undef LPCIP_img
 			#undef LPCIP_center_x
 			#undef LPCIP_center_y

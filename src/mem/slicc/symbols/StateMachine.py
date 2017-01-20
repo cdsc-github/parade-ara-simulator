@@ -225,7 +225,7 @@ class $py_ident(RubyController):
                            "in StateMachine.py", param.type_ast.type.c_ident)
         code.dedent()
         code.write(path, '%s.py' % py_ident)
-        
+
 
     def printControllerHH(self, path):
         '''Output the method declarations for the class declaration'''
@@ -440,6 +440,7 @@ void unset_tbe(${{self.TBEType.c_ident}}*& m_tbe_ptr);
 #include "mem/protocol/Types.hh"
 #include "mem/ruby/common/Global.hh"
 #include "mem/ruby/system/System.hh"
+
 ''')
         for include_path in includes:
             code('#include "${{include_path}}"')
@@ -509,7 +510,7 @@ $c_ident::$c_ident(const Params *p)
 
             if re.compile("sequencer").search(param.ident):
                 code('m_${{param.ident}}_ptr->setController(this);')
-            
+
         for var in self.objects:
             if var.ident.find("mandatoryQueue") >= 0:
                 code('''
@@ -929,7 +930,22 @@ $c_ident::recordCacheTrace(int cntrl, CacheRecorder* tr)
                 if "c_code" not in action:
                  continue
 
-                code('''
+                if action.ident == "uu_profileDataMiss" or \
+                   action.ident == "uu_profileDataHit" or \
+                   action.ident == "uu_profileHit" or \
+                   action.ident == "uu_profileMiss":
+                    code('''
+                        /** \\brief ${{action.desc}} */
+void
+$c_ident::${{action.ident}}(${{self.TBEType.c_ident}}*& m_tbe_ptr, ${{self.EntryType.c_ident}}*& m_cache_entry_ptr, const Address& addr)
+{
+    DPRINTF(RubyGenerated, "executing ${{action.ident}}\\n");
+    ${{action["c_code"]}}
+}
+
+''')
+                else:
+                    code('''
 /** \\brief ${{action.desc}} */
 void
 $c_ident::${{action.ident}}(${{self.TBEType.c_ident}}*& m_tbe_ptr, ${{self.EntryType.c_ident}}*& m_cache_entry_ptr, const Address& addr)
@@ -1502,7 +1518,7 @@ if (!checkResourceAvailable(%s_RequestType_%s, addr)) {
 </TR>
 ''')
         code('''
-<!- Column footer->     
+<!- Column footer->
 <TR>
   <TH> </TH>
 ''')

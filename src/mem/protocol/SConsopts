@@ -41,7 +41,7 @@ all_protocols.extend([
     'MOESI_CMP_token',
     'MOESI_hammer',
     'Network_test',
-    'gem5NetworkPort.sm'
+    'SimicsNetworkPort.sm'
     'None'
     ])
 

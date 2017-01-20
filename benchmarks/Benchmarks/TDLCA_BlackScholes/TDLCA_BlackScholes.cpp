@@ -49,10 +49,10 @@ void TDCLA_BlackScholes::Initialize(int threadID, int procID)
 	Touch(thread, strike, dataSize * sizeof(float));
 	Touch(thread, rate, dataSize * sizeof(float));
 	Touch(thread, volatility, dataSize * sizeof(float));
-	Touch(thread, otime, dataSize * sizeof(int));
-	Touch(thread, otype, dataSize * sizeof(float));
+	Touch(thread, otime, dataSize * sizeof(float));
+	Touch(thread, otype, dataSize * sizeof(int));
 	Touch(thread, price, dataSize * sizeof(float));
-	Touch(thread, buf, bufSize);
+	// Touch(thread, buf, bufSize);
 }
 void TDCLA_BlackScholes::Run()
 {

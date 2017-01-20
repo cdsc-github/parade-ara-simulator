@@ -455,8 +455,8 @@ public:
 		node_b.Reset();
 	}
 	inline InstanceData_sig__Blur2LCacc() :
-		acceleratorSignature__b(true), 
-		node_b(105), 
+		acceleratorSignature__b(true),
+		node_b(105),
 		threadID(0)
 	{
 		Reset();
@@ -502,7 +502,7 @@ inline void Wait_sig__Blur2LCacc(InstanceData_sig__Blur2LCacc* instance)
 		}
 	}
 }
-inline void (*GAMHandler_sig__Blur2LCacc(InstanceData_sig__Blur2LCacc* instance, InterruptArgs* args))(InstanceData_sig__Blur2LCacc*) 
+inline void (*GAMHandler_sig__Blur2LCacc(InstanceData_sig__Blur2LCacc* instance, InterruptArgs* args))(InstanceData_sig__Blur2LCacc*)
 {
 	int i;
 	int lcaccMode;
@@ -922,7 +922,7 @@ inline void CreateBuffer_Blur2LCacc_td(uint8_t** buffer, uint32_t* bufferSize, u
 	{
 		void* VNR_vardecl_0(in);
 		void* VNR_vardecl_1(out);
-		LCAccNode VNR_vardecl_2(105, (sizeof(float) * (1) * (chunkX) * (chunkY) * (chunkZ)) + (sizeof(float) * (1) * (chunkX) * (chunkY) * (chunkZ - 1)), 3, 0, 0);
+		LCAccNode VNR_vardecl_2(105, (sizeof(float) * (1) * (chunkX) * (chunkY) * (chunkZ)) + (sizeof(float) * (1) * (chunkX) * (chunkY) * (chunkZ - 1)), 2, 0, 0);
 		std::vector<uint32_t> VNR_vardecl_3;
 		VNR_vardecl_3.push_back(((1) - (0)) / (1));
 		VNR_vardecl_3.push_back(((chunkX) - (0)) / (1));
@@ -980,7 +980,7 @@ inline void CreateBuffer_Blur2LCacc_td(uint8_t** buffer, uint32_t* bufferSize, u
 		//See VNR_vardecl_8 for index variable decl
 		//See VNR_vardecl_9 for register set decl
 		mw.AddCompute(VNR_vardecl_2, VNR_vardecl_8, VNR_vardecl_9);
-		
+
 		//transfer from in to b
 		//Search VNR_vardecl_10 for source block size.
 		//Search VNR_vardecl_11 for source block stride.
@@ -989,7 +989,7 @@ inline void CreateBuffer_Blur2LCacc_td(uint8_t** buffer, uint32_t* bufferSize, u
 		//Search VNR_vardecl_12 for destination size.
 		//Search VNR_vardecl_14 for destination stride.
 		mw.AddTransfer(VNR_vardecl_0, VNR_vardecl_10, VNR_vardecl_11, VNR_vardecl_12, VNR_vardecl_13, VNR_vardecl_2, (0) + ((((0) * ((sizeof(float)) * (chunkX) * (chunkY) * (chunkZ))) + ((0) * ((sizeof(float)) * (chunkY) * (chunkZ))) + ((0) * ((sizeof(float)) * (chunkZ))) + ((0) * ((sizeof(float)))))), VNR_vardecl_12, VNR_vardecl_14, sizeof(float));
-		
+
 		//transfer from b to out
 		//Search VNR_vardecl_3 for source size.
 		//Search VNR_vardecl_15 for source stride.
@@ -998,7 +998,7 @@ inline void CreateBuffer_Blur2LCacc_td(uint8_t** buffer, uint32_t* bufferSize, u
 		//Search VNR_vardecl_3 for destination element size.
 		//Search VNR_vardecl_13 for destination element stride.
 		mw.AddTransfer(VNR_vardecl_2, ((sizeof(float) * (1) * (chunkX) * (chunkY) * (chunkZ))) + ((((0) * ((sizeof(float)) * (chunkX) * (chunkY) * (chunkZ - 1))) + ((0) * ((sizeof(float)) * (chunkY) * (chunkZ - 1))) + ((0) * ((sizeof(float)) * (chunkZ - 1))) + ((0) * ((sizeof(float)))))), VNR_vardecl_3, VNR_vardecl_15, VNR_vardecl_1, VNR_vardecl_10, VNR_vardecl_11, VNR_vardecl_3, VNR_vardecl_13, sizeof(float));
-		
+
 		mw.SetTaskGrain(0);
 		mw.Finalize((((channelCount) - (0)) / (1)) * (((sizeX) - (0)) / (chunkX)) * (((sizeY) - (0)) / (chunkY)) * (((sizeZ) - (1)) / ((chunkZ - 1))));
 	}

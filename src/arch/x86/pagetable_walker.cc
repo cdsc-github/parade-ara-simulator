@@ -252,6 +252,8 @@ Walker::WalkerState::startFunctional(Addr &addr, unsigned &logBytes)
     started = true;
     setupWalk(addr);
 
+    DPRINTF(PageTableWalker, "Doing functional page table walk.\n");
+
     do {
         walker->port.sendFunctional(read);
         // On a functional access (page table lookup), writes should
@@ -582,6 +584,9 @@ Walker::WalkerState::setupWalk(Addr vaddr)
     Request::Flags flags = Request::PHYSICAL;
     if (cr3.pcd)
         flags.set(Request::UNCACHEABLE);
+    if (timing && req->isBypassCache()) {
+        flags.set(Request::BYPASS_CACHE);
+    }
     RequestPtr request = new Request(topAddr, dataSize, flags,
                                      walker->masterId);
     read = new Packet(request, MemCmd::ReadReq);

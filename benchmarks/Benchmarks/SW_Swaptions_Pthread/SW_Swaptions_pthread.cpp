@@ -10,9 +10,11 @@
 #define FTYPE double
 #define BLOCK_SIZE 16 // Blocking to allow better caching
 
+
 #define NUM_THREADS 4
 
 void* Swaptions_thread(void* thread_arg);
+
 
 class SW_Swaptions : public BenchmarkNode
 {
@@ -28,8 +30,8 @@ class SW_Swaptions : public BenchmarkNode
   FTYPE *pdTotalDrift;     //Vector containing total drift corrections for different maturities
   FTYPE ***ppdFactors;      //Factor volatilities
   long lRndSeed;          //Random number seed
-  FTYPE ***pdZ; //vector to store random normals
-  FTYPE ***randZ; //vector to store random normals
+  FTYPE **pdZ; //vector to store random normals
+  FTYPE **randZ; //vector to store random normals
   FTYPE **factors;
 
 public:
@@ -55,10 +57,11 @@ public:
 BENCH_DECL(SW_Swaptions);
 
 struct thread_arg1_t {
+
   int tid;
   int dataSize;
 
-  FTYPE **ppdHJMPath;      //Matrix that stores generated HJM path (Output)
+  FTYPE ***ppdHJMPath;      //Matrix that stores generated HJM path (Output)
   int iN;                  //Number of time-steps
   int iFactors;            //Number of factors in the HJM framework
   FTYPE dYears;            //Number of years
@@ -69,8 +72,13 @@ struct thread_arg1_t {
   FTYPE **pdZ; //vector to store random normals
   FTYPE **randZ; //vector to store random normals
   FTYPE **factors;
+
   SW_Swaptions* benchmark;
 };
+
+
+
+
 
 void SW_Swaptions::Initialize(int threadID, int procID)
 {
@@ -80,17 +88,13 @@ void SW_Swaptions::Initialize(int threadID, int procID)
   iFactors = 3; 
   lRndSeed = 100;	
   int nSwaptions = dataSize;
+  pdZ   = dmatrix(0, iFactors-1, 0, iN*BLOCK_SIZE -1); //assigning memory
+  randZ = dmatrix(0, iFactors-1, 0, iN*BLOCK_SIZE -1); //assigning memory
 
-  pdZ = (FTYPE ***) malloc(sizeof(FTYPE**)*NUM_THREADS);
-  randZ = (FTYPE***) malloc(sizeof(FTYPE**)*NUM_THREADS);
   ppdHJMPath = (FTYPE***) malloc(sizeof(FTYPE**)*NUM_THREADS);
 	
-  for(int i=0;i<NUM_THREADS;i++) {
-    pdZ[i]   = dmatrix(0, iFactors-1, 0, iN*BLOCK_SIZE -1); //assigning memory
-    randZ[i] = dmatrix(0, iFactors-1, 0, iN*BLOCK_SIZE -1); //assigning memory
+  for(int i=0;i<NUM_THREADS;i++)    
     ppdHJMPath[i] = dmatrix(0,iN-1,0,iN*BLOCK_SIZE-1);      
-  }
-
   pdForward = dvector(0, iN-1);;        
   pdTotalDrift = dvector(0, iN-2);   
 
@@ -108,18 +112,14 @@ void SW_Swaptions::Initialize(int threadID, int procID)
 
 void SW_Swaptions::Shutdown()
 {
-  for (int i = 0; i < NUM_THREADS; i++) {
-    free_dmatrix(pdZ[i], 0, iFactors -1, 0, iN*BLOCK_SIZE -1);
-    free_dmatrix(randZ[i], 0, iFactors -1, 0, iN*BLOCK_SIZE -1);
-    free_dmatrix(ppdHJMPath[i], 0,iN-1,0,iN*BLOCK_SIZE-1);
-  }
-  free(pdZ);
-  free(randZ);
-  free(ppdHJMPath);
+  free_dmatrix(pdZ, 0, iFactors -1, 0, iN*BLOCK_SIZE -1);
+  free_dmatrix(randZ, 0, iFactors -1, 0, iN*BLOCK_SIZE -1);
 
   for (int i = 0; i < dataSize; i++) 
     free_dmatrix(ppdFactors[i], 0, iFactors-1, 0, iN-2);
   free(ppdFactors);
+  for (int i=0;i<NUM_THREADS;i++)
+    free_dmatrix(ppdHJMPath[i], 0,iN-1,0,iN*BLOCK_SIZE-1);
   free_dmatrix(factors, 0, iFactors-1, 0, iN-2);
   free_dvector(pdForward, 0, iN-1);
   free_dvector(pdTotalDrift, 0, iN-2);
@@ -129,13 +129,15 @@ void SW_Swaptions::Shutdown()
 
 void SW_Swaptions::Run()
 {
+  HJM_SimPath_Forward_Blocking();
+  std::cout << "Blocking done" << std::endl;
   pthread_t thread_id[NUM_THREADS];
   struct thread_arg1_t thread1_arg[NUM_THREADS];
   for(int it= 0; it< ITER_COUNT; it++) {
     for(int p = 0; p < NUM_THREADS; p++) {
       thread1_arg[p].tid = p;
       thread1_arg[p].dataSize = dataSize;
-      thread1_arg[p].ppdHJMPath = ppdHJMPath[p];
+      thread1_arg[p].ppdHJMPath = ppdHJMPath;
       thread1_arg[p].iN= iN;
       thread1_arg[p].iFactors = iFactors;
       thread1_arg[p].dYears = dYears;
@@ -143,8 +145,8 @@ void SW_Swaptions::Run()
       thread1_arg[p].pdTotalDrift = pdTotalDrift;
       thread1_arg[p].ppdFactors=ppdFactors;
       thread1_arg[p].lRndSeed=lRndSeed;
-      thread1_arg[p].pdZ=pdZ[p];
-      thread1_arg[p].randZ=randZ[p];
+      thread1_arg[p].pdZ=pdZ;
+      thread1_arg[p].randZ=randZ;
       thread1_arg[p].factors=factors;
       thread1_arg[p].benchmark = this;
       pthread_create(&thread_id[p], NULL, Swaptions_thread, (void *)&thread1_arg[p]);
@@ -152,6 +154,7 @@ void SW_Swaptions::Run()
     for(int p = 0; p < NUM_THREADS; p++) {
       pthread_join(thread_id[p], NULL);
     }
+    std::cout << "Blocking2, " << "iter " << it << " done" << std::endl;
   }
 }
 
@@ -161,7 +164,7 @@ void* Swaptions_thread(void* thread_arg) {
   int tid = my_thread_arg->tid;
   set_cpu(tid);
   int dataSize = my_thread_arg->dataSize;
-  FTYPE **ppdHJMPath = my_thread_arg->ppdHJMPath;
+  FTYPE ***ppdHJMPath = my_thread_arg->ppdHJMPath;
   int iN = my_thread_arg->iN;
   int iFactors = my_thread_arg->iFactors;
   FTYPE dYears = my_thread_arg->dYears;
@@ -175,8 +178,8 @@ void* Swaptions_thread(void* thread_arg) {
   SW_Swaptions* benchmark = my_thread_arg->benchmark;
 
   int PP = dataSize/NUM_THREADS;
+  std::cout << "thread " << tid << " init done" << std::endl;
   for(int sw = tid*PP; sw < (tid+1)*PP; sw++) {
-    int iSuccess = 0;
     int i,j,l; //looping variables
     int BLOCKSIZE = BLOCK_SIZE;
     FTYPE dTotalShock; //total shock by which the forward curve is hit at (t, T-t)
@@ -186,62 +189,26 @@ void* Swaptions_thread(void* thread_arg) {
     sqrt_ddelt = sqrt(ddelt);
 
     // =====================================================
-    // t=0 forward curve stored iN first row of ppdHJMPath
-    // At time step 0: insert expected drift
-    // rest reset to 0
-    for(int b=0; b<BLOCKSIZE; b++){
-      for(j=0;j<=iN-1;j++){
-	ppdHJMPath[0][BLOCKSIZE*j + b] = pdForward[j];
-	for(i=1;i<=iN-1;++i) { 
-	  ppdHJMPath[i][BLOCKSIZE*j + b]=0; 
-	} //initializing HJMPath to zero
-      }
-    }
-    // -----------------------------------------------------
-
-    // =====================================================
-    // sequentially generating random numbers
-
-    for(int b=0; b<BLOCKSIZE; b++){
-      for(int s=0; s<1; s++){
-	for (j=1;j<=iN-1;++j){
-	  for (l=0;l<=iFactors-1;++l){
-	    //compute random number in exact same sequence
-	    randZ[l][BLOCKSIZE*j + b + s] = benchmark->RanUnif(&lRndSeed);  /* 10% of the total executition time */
-	  }
-	}
-      }
-    }
-
-    // =====================================================
-    // shocks to hit various factors for forward curve at t
-
-    /* 18% of the total executition time */
-    benchmark->serialB(pdZ, randZ, BLOCKSIZE, iN, iFactors);
-
-    // =====================================================
     // Generation of HJM Path1
     for(int b=0; b<BLOCKSIZE; b++){ // b is the blocks
-      for (j=1;j<=iN-1;++j) {// j is the timestep
-
-	for (l=0;l<=iN-(j+1);++l){ // l is the future steps
+      for (int j=1;j<=iN-1;++j) {// j is the timestep
+	for (int l=0;l<=iN-(j+1);++l){ // l is the future steps
 	  dTotalShock = 0;
-
-	  for (i=0;i<=iFactors-1;++i){// i steps through the stochastic factors
-	    dTotalShock += ppdFactors[sw][i][l]* pdZ[i][BLOCKSIZE*j + b];
+	  for (int i=0;i<=iFactors-1;++i){// i steps through the stochastic factors
+	    dTotalShock += ppdFactors[sw][i][l] * pdZ[i][BLOCKSIZE*j + b];
 	  }
 
-	  ppdHJMPath[j][BLOCKSIZE*l+b] = ppdHJMPath[j-1][BLOCKSIZE*(l+1)+b]+ pdTotalDrift[l]*ddelt + sqrt_ddelt*dTotalShock;
+	  ppdHJMPath[tid][j][BLOCKSIZE*l+b] = ppdHJMPath[tid][j-1][BLOCKSIZE*(l+1)+b]+ pdTotalDrift[l]*ddelt + sqrt_ddelt*dTotalShock;
 	  //as per formula
 	}
       }
     } // end Blocks
-    // -----------------------------------------------------
 
-    //free_dmatrix(pdZ, 0, iFactors -1, 0, iN*BLOCKSIZE -1);
-    //free_dmatrix(randZ, 0, iFactors -1, 0, iN*BLOCKSIZE -1);
-    iSuccess = 1;
   }
+
+  std::cout << "thread " << tid << "finished computing" << std::endl;
+
+    //benchmark->HJM_SimPath_Forward_Blocking_2(tid,sw); //ppdHJMPath, iN, iFactors, dYears, pdForward, pdTotalDrift, ppdFactors, lRndSeed, BLOCK_SIZE);
 }
 
 void SW_Swaptions::serialB(FTYPE **pdZ, FTYPE **randZ, int BLOCKSIZE, int iN, int iFactors)
@@ -330,14 +297,119 @@ FTYPE SW_Swaptions::RanUnif( long *s )
 
 } // end of RanUnif
 
+int SW_Swaptions::HJM_SimPath_Forward_Blocking()
+/*
+  FTYPE **ppdHJMPath,	//Matrix that stores generated HJM path (Output)
+  int iN,					//Number of time-steps
+  int iFactors,			//Number of factors in the HJM framework
+  FTYPE dYears,			//Number of years
+  FTYPE *pdForward,		//t=0 Forward curve
+  FTYPE *pdTotalDrift,	//Vector containing total drift corrections for different maturities
+  FTYPE **ppdFactors,	//Factor volatilities
+  long *lRndSeed,			//Random number seed
+  int BLOCKSIZE)*/
+{
+  //This function computes and stores an HJM Path for given inputs
+
+  int iSuccess = 0;
+  int i,j,l; //looping variables
+  int BLOCKSIZE = BLOCK_SIZE;
+  //	FTYPE **pdZ; //vector to store random normals
+  //	FTYPE **randZ; //vector to store random normals
+  //FTYPE dTotalShock; //total shock by which the forward curve is hit at (t, T-t)
+  //FTYPE ddelt, sqrt_ddelt; //length of time steps
+
+  //ddelt = (FTYPE)(dYears/iN);
+  //sqrt_ddelt = sqrt(ddelt);
+
+  //	pdZ   = dmatrix(0, iFactors-1, 0, iN*BLOCKSIZE -1); //assigning memory
+  //	randZ = dmatrix(0, iFactors-1, 0, iN*BLOCKSIZE -1); //assigning memory
+
+  // =====================================================
+  // t=0 forward curve stored iN first row of ppdHJMPath
+  // At time step 0: insert expected drift
+  // rest reset to 0
+  for(int k=0;k<NUM_THREADS;k++){
+    for(int b=0; b<BLOCKSIZE; b++){
+      for(j=0;j<=iN-1;j++){
+	ppdHJMPath[k][0][BLOCKSIZE*j + b] = pdForward[j];
+	
+	for(i=1;i<=iN-1;++i)
+	  { ppdHJMPath[k][i][BLOCKSIZE*j + b]=0; } //initializing HJMPath to zero
+      }
+    }
+  }
+  // -----------------------------------------------------
+
+  // =====================================================
+  // sequentially generating random numbers
+
+  for(int b=0; b<BLOCKSIZE; b++){
+    for(int s=0; s<1; s++){
+      for (j=1;j<=iN-1;++j){
+	for (l=0;l<=iFactors-1;++l){
+	  //compute random number in exact same sequence
+	  randZ[l][BLOCKSIZE*j + b + s] = RanUnif(&lRndSeed);  /* 10% of the total executition time */
+	}
+      }
+    }
+  }
+
+  // =====================================================
+  // shocks to hit various factors for forward curve at t
+
+  /* 18% of the total executition time */
+  serialB(pdZ, randZ, BLOCKSIZE, iN, iFactors);
+}
+
+
+int SW_Swaptions::HJM_SimPath_Forward_Blocking_2(int number,int sw){
+
+  int i,j,l; //looping variables
+  int BLOCKSIZE = BLOCK_SIZE;
+  //      FTYPE **pdZ; //vector to store random normals
+  //      FTYPE **randZ; //vector to store random normals
+  FTYPE dTotalShock; //total shock by which the forward curve is hit at (t, T-t)
+  FTYPE ddelt, sqrt_ddelt; //length of time steps
+
+  ddelt = (FTYPE)(dYears/iN);
+  sqrt_ddelt = sqrt(ddelt);
+
+  // =====================================================
+  // Generation of HJM Path1
+  for(int b=0; b<BLOCKSIZE; b++){ // b is the blocks
+    for (int j=1;j<=iN-1;++j) {// j is the timestep
+
+      for (int l=0;l<=iN-(j+1);++l){ // l is the future steps
+	dTotalShock = 0;
+
+	for (int i=0;i<=iFactors-1;++i){// i steps through the stochastic factors
+	  dTotalShock += ppdFactors[sw][i][l] * pdZ[i][BLOCKSIZE*j + b];
+	}
+
+	ppdHJMPath[number][j][BLOCKSIZE*l+b] = ppdHJMPath[number][j-1][BLOCKSIZE*(l+1)+b]+ pdTotalDrift[l]*ddelt + sqrt_ddelt*dTotalShock;
+	//as per formula
+      }
+    }
+  } // end Blocks
+  // -----------------------------------------------------
+
+  //free_dmatrix(pdZ, 0, iFactors -1, 0, iN*BLOCKSIZE -1);
+  //free_dmatrix(randZ, 0, iFactors -1, 0, iN*BLOCKSIZE -1);
+  int iSuccess = 1;
+  return iSuccess;
+}
+
 FTYPE** SW_Swaptions::dmatrix( long nrl, long nrh, long ncl, long nch )
 {
   // allocate a FTYPE matrix with subscript range m[nrl..nrh][ncl..nch]
+
   long i, nrow=nrh-nrl+1,ncol=nch-ncl+1;
   FTYPE **m;
 
   // allocate pointers to rows
   m=(FTYPE **) malloc((size_t)((nrow+1)*sizeof(FTYPE*)));
+  //Touch(thread, (void *)m, (size_t)((nrow+1)*sizeof(FTYPE*)));	
   memset(m, 0, ((nrow+1)*sizeof(FTYPE*)));	
   if (!m) nrerror("allocation failure 1 in dmatrix()");
   m += 1;
@@ -345,6 +417,7 @@ FTYPE** SW_Swaptions::dmatrix( long nrl, long nrh, long ncl, long nch )
 
   // allocate rows and set pointers to them
   m[nrl]=(FTYPE *) malloc((size_t)((nrow*ncol+1)*sizeof(FTYPE)));
+  //Touch(thread, (void *)m[nrl], (size_t)((nrow*ncol+1)*sizeof(FTYPE)));
   memset(m[nrl], 0, (nrow*ncol+1)*sizeof(FTYPE));
 
   if (!m[nrl]) nrerror("allocation failure 2 in dmatrix()");
@@ -361,6 +434,7 @@ FTYPE** SW_Swaptions::dmatrix( long nrl, long nrh, long ncl, long nch )
 void SW_Swaptions::free_dmatrix( FTYPE **m, long nrl, long nrh, long ncl, long nch )
 {
   // free a FTYPE matrix allocated by dmatrix()
+
   free((char*) (m[nrl]+ncl-1));
   free((char*) (m+nrl-1));
 
@@ -373,6 +447,7 @@ void SW_Swaptions::nrerror( char error_text[] )
   fprintf( stderr,"%s\n",error_text );
   fprintf( stderr,"...now exiting to system...\n" );
   exit(1);
+
 } // end of nrerror
 
 FTYPE *SW_Swaptions::dvector( long nl, long nh )
@@ -380,6 +455,7 @@ FTYPE *SW_Swaptions::dvector( long nl, long nh )
   // allocate a FTYPE vector with subscript range v[nl..nh] 
   FTYPE *v;
   v=(FTYPE *)malloc((size_t) ((nh-nl+2)*sizeof(FTYPE)));
+  //Touch(thread, v, (size_t) ((nh-nl+2)*sizeof(FTYPE)));
   memset(v, 0, ((nh-nl+2)*sizeof(FTYPE)));
   if (!v) nrerror("allocation failure in dvector()");
   return v-nl+1;

@@ -450,8 +450,8 @@ public:
 		node_x.Reset();
 	}
 	inline InstanceData_sig__Swaptions3LCacc() :
-		acceleratorSignature__x(true), 
-		node_x(1303), 
+		acceleratorSignature__x(true),
+		node_x(1303),
 		threadID(0)
 	{
 		Reset();
@@ -497,7 +497,7 @@ inline void Wait_sig__Swaptions3LCacc(InstanceData_sig__Swaptions3LCacc* instanc
 		}
 	}
 }
-inline void (*GAMHandler_sig__Swaptions3LCacc(InstanceData_sig__Swaptions3LCacc* instance, InterruptArgs* args))(InstanceData_sig__Swaptions3LCacc*) 
+inline void (*GAMHandler_sig__Swaptions3LCacc(InstanceData_sig__Swaptions3LCacc* instance, InterruptArgs* args))(InstanceData_sig__Swaptions3LCacc*)
 {
 	int i;
 	int lcaccMode;
@@ -881,7 +881,7 @@ inline void CreateBuffer_Swaptions3LCacc_td(uint8_t** buffer, uint32_t* bufferSi
 		void* VNR_vardecl_0(ppdFactors);
 		void* VNR_vardecl_1(pdZ);
 		void* VNR_vardecl_2(shockVals);
-		LCAccNode VNR_vardecl_3(1303, (sizeof(float[3][11]) * (chunk)) + (sizeof(float[3][11]) * (chunk)) + (sizeof(float[55]) * (chunk)), 3, 0, 0);
+		LCAccNode VNR_vardecl_3(1303, (sizeof(float[3][11]) * (chunk)) + (sizeof(float[3][11]) * (chunk)) + (sizeof(float[55]) * (chunk)), 2, 0, 0);
 		std::vector<uint32_t> VNR_vardecl_4;
 		VNR_vardecl_4.push_back(((chunk) - (0)) / (1));
 		std::vector<int32_t> VNR_vardecl_5;
@@ -917,7 +917,7 @@ inline void CreateBuffer_Swaptions3LCacc_td(uint8_t** buffer, uint32_t* bufferSi
 		//See VNR_vardecl_10 for index variable decl
 		//See VNR_vardecl_11 for register set decl
 		mw.AddCompute(VNR_vardecl_3, VNR_vardecl_10, VNR_vardecl_11);
-		
+
 		//transfer from ppdFactors to x
 		//Search VNR_vardecl_12 for source block size.
 		//Search VNR_vardecl_13 for source block stride.
@@ -926,7 +926,7 @@ inline void CreateBuffer_Swaptions3LCacc_td(uint8_t** buffer, uint32_t* bufferSi
 		//Search VNR_vardecl_14 for destination size.
 		//Search VNR_vardecl_15 for destination stride.
 		mw.AddTransfer(VNR_vardecl_0, VNR_vardecl_12, VNR_vardecl_13, VNR_vardecl_14, VNR_vardecl_15, VNR_vardecl_3, (0) + ((((0) * ((sizeof(float[3][11])))))), VNR_vardecl_14, VNR_vardecl_15, sizeof(float));
-		
+
 		//transfer from pdZ to x
 		//Search VNR_vardecl_12 for source block size.
 		//Search VNR_vardecl_13 for source block stride.
@@ -935,7 +935,7 @@ inline void CreateBuffer_Swaptions3LCacc_td(uint8_t** buffer, uint32_t* bufferSi
 		//Search VNR_vardecl_14 for destination size.
 		//Search VNR_vardecl_15 for destination stride.
 		mw.AddTransfer(VNR_vardecl_1, VNR_vardecl_12, VNR_vardecl_13, VNR_vardecl_14, VNR_vardecl_15, VNR_vardecl_3, ((sizeof(float[3][11]) * (chunk))) + ((((0) * ((sizeof(float[3][11])))))), VNR_vardecl_14, VNR_vardecl_15, sizeof(float));
-		
+
 		//transfer from x to shockVals
 		//Search VNR_vardecl_16 for source size.
 		//Search VNR_vardecl_17 for source stride.
@@ -944,7 +944,7 @@ inline void CreateBuffer_Swaptions3LCacc_td(uint8_t** buffer, uint32_t* bufferSi
 		//Search VNR_vardecl_16 for destination element size.
 		//Search VNR_vardecl_17 for destination element stride.
 		mw.AddTransfer(VNR_vardecl_3, ((sizeof(float[3][11]) * (chunk)) + (sizeof(float[3][11]) * (chunk))) + ((((0) * ((sizeof(float[55])))))), VNR_vardecl_16, VNR_vardecl_17, VNR_vardecl_2, VNR_vardecl_12, VNR_vardecl_18, VNR_vardecl_16, VNR_vardecl_17, sizeof(float));
-		
+
 		mw.SetTaskGrain(0);
 		mw.Finalize((((size) - (0)) / (chunk)));
 	}

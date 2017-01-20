@@ -9,7 +9,12 @@ import SCons
 
 Import('*')
 
-Source('gem5Interface.cc')
+
+#if env[] == :
+
+#SimObject('AcceleratorInterface.py')
+
+Source('SimicsInterface.cc')
 Source('DMAEngine.cc')
 Source('prefetcher-tile.cc')
 

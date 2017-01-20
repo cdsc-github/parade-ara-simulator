@@ -50,6 +50,7 @@ class RubyRequest : public Message
     uint8_t* data;
     PacketPtr pkt;
     unsigned m_contextId;
+    bool m_BypassCache;
 
     RubyRequest(Tick curTime, uint64_t _paddr, uint8_t* _data, int _len,
         uint64_t _pc, RubyRequestType _type, RubyAccessMode _access_mode,
@@ -68,6 +69,7 @@ class RubyRequest : public Message
     {
       m_LineAddress = m_PhysicalAddress;
       m_LineAddress.makeLineAddress();
+      m_BypassCache = false;
     }
 
     RubyRequest(Tick curTime) : Message(curTime) {}

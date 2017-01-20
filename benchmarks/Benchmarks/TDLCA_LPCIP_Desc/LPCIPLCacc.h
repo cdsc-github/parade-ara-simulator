@@ -452,8 +452,8 @@ public:
 		node_lpcip.Reset();
 	}
 	inline InstanceData_sig__LPCIPLCacc() :
-		acceleratorSignature__lpcip(true), 
-		node_lpcip(806), 
+		acceleratorSignature__lpcip(true),
+		node_lpcip(806),
 		threadID(0)
 	{
 		Reset();
@@ -499,7 +499,7 @@ inline void Wait_sig__LPCIPLCacc(InstanceData_sig__LPCIPLCacc* instance)
 		}
 	}
 }
-inline void (*GAMHandler_sig__LPCIPLCacc(InstanceData_sig__LPCIPLCacc* instance, InterruptArgs* args))(InstanceData_sig__LPCIPLCacc*) 
+inline void (*GAMHandler_sig__LPCIPLCacc(InstanceData_sig__LPCIPLCacc* instance, InterruptArgs* args))(InstanceData_sig__LPCIPLCacc*)
 {
 	int i;
 	int lcaccMode;
@@ -920,7 +920,7 @@ inline void CreateBuffer_LPCIPLCacc_td(uint8_t** buffer, uint32_t* bufferSize, u
 		void* VNR_vardecl_2(y);
 		void* VNR_vardecl_3(rho);
 		void* VNR_vardecl_4(sample);
-		LCAccNode VNR_vardecl_5(806, (sizeof(uint64_t) * (chunk)) + (sizeof(float) * (chunk)) + (sizeof(float) * (chunk)) + (sizeof(float) * (chunk)) + (sizeof(uint8_t[100]) * (chunk)), 3, 0, 0);
+		LCAccNode VNR_vardecl_5(806, (sizeof(uint64_t) * (chunk)) + (sizeof(float) * (chunk)) + (sizeof(float) * (chunk)) + (sizeof(float) * (chunk)) + (sizeof(uint8_t[100]) * (chunk)), 2, 0, 0);
 		std::vector<uint32_t> VNR_vardecl_6;
 		VNR_vardecl_6.push_back(((chunk) - (0)) / (1));
 		std::vector<int32_t> VNR_vardecl_7;
@@ -963,7 +963,7 @@ inline void CreateBuffer_LPCIPLCacc_td(uint8_t** buffer, uint32_t* bufferSize, u
 		//See VNR_vardecl_13 for index variable decl
 		//See VNR_vardecl_14 for register set decl
 		mw.AddCompute(VNR_vardecl_5, VNR_vardecl_13, VNR_vardecl_14);
-		
+
 		//transfer from imgStart to lpcip
 		//Search VNR_vardecl_15 for source block size.
 		//Search VNR_vardecl_16 for source block stride.
@@ -972,7 +972,7 @@ inline void CreateBuffer_LPCIPLCacc_td(uint8_t** buffer, uint32_t* bufferSize, u
 		//Search VNR_vardecl_6 for destination size.
 		//Search VNR_vardecl_17 for destination stride.
 		mw.AddTransfer(VNR_vardecl_0, VNR_vardecl_15, VNR_vardecl_16, VNR_vardecl_6, VNR_vardecl_17, VNR_vardecl_5, (0) + ((((0) * ((sizeof(uint64_t)))))), VNR_vardecl_6, VNR_vardecl_17, sizeof(uint64_t));
-		
+
 		//transfer from x to lpcip
 		//Search VNR_vardecl_15 for source block size.
 		//Search VNR_vardecl_18 for source block stride.
@@ -981,7 +981,7 @@ inline void CreateBuffer_LPCIPLCacc_td(uint8_t** buffer, uint32_t* bufferSize, u
 		//Search VNR_vardecl_6 for destination size.
 		//Search VNR_vardecl_19 for destination stride.
 		mw.AddTransfer(VNR_vardecl_1, VNR_vardecl_15, VNR_vardecl_18, VNR_vardecl_6, VNR_vardecl_19, VNR_vardecl_5, ((sizeof(uint64_t) * (chunk))) + ((((0) * ((sizeof(float)))))), VNR_vardecl_6, VNR_vardecl_19, sizeof(float));
-		
+
 		//transfer from y to lpcip
 		//Search VNR_vardecl_15 for source block size.
 		//Search VNR_vardecl_18 for source block stride.
@@ -990,7 +990,7 @@ inline void CreateBuffer_LPCIPLCacc_td(uint8_t** buffer, uint32_t* bufferSize, u
 		//Search VNR_vardecl_6 for destination size.
 		//Search VNR_vardecl_19 for destination stride.
 		mw.AddTransfer(VNR_vardecl_2, VNR_vardecl_15, VNR_vardecl_18, VNR_vardecl_6, VNR_vardecl_19, VNR_vardecl_5, ((sizeof(uint64_t) * (chunk)) + (sizeof(float) * (chunk))) + ((((0) * ((sizeof(float)))))), VNR_vardecl_6, VNR_vardecl_19, sizeof(float));
-		
+
 		//transfer from rho to lpcip
 		//Search VNR_vardecl_15 for source block size.
 		//Search VNR_vardecl_18 for source block stride.
@@ -999,7 +999,7 @@ inline void CreateBuffer_LPCIPLCacc_td(uint8_t** buffer, uint32_t* bufferSize, u
 		//Search VNR_vardecl_6 for destination size.
 		//Search VNR_vardecl_19 for destination stride.
 		mw.AddTransfer(VNR_vardecl_3, VNR_vardecl_15, VNR_vardecl_18, VNR_vardecl_6, VNR_vardecl_19, VNR_vardecl_5, ((sizeof(uint64_t) * (chunk)) + (sizeof(float) * (chunk)) + (sizeof(float) * (chunk))) + ((((0) * ((sizeof(float)))))), VNR_vardecl_6, VNR_vardecl_19, sizeof(float));
-		
+
 		//transfer from lpcip to sample
 		//Search VNR_vardecl_20 for source size.
 		//Search VNR_vardecl_21 for source stride.
@@ -1008,7 +1008,7 @@ inline void CreateBuffer_LPCIPLCacc_td(uint8_t** buffer, uint32_t* bufferSize, u
 		//Search VNR_vardecl_20 for destination element size.
 		//Search VNR_vardecl_21 for destination element stride.
 		mw.AddTransfer(VNR_vardecl_5, ((sizeof(uint64_t) * (chunk)) + (sizeof(float) * (chunk)) + (sizeof(float) * (chunk)) + (sizeof(float) * (chunk))) + ((((0) * ((sizeof(uint8_t[100])))))), VNR_vardecl_20, VNR_vardecl_21, VNR_vardecl_4, VNR_vardecl_15, VNR_vardecl_22, VNR_vardecl_20, VNR_vardecl_21, sizeof(uint8_t));
-		
+
 		mw.SetTaskGrain(0);
 		mw.Finalize((((totalSize) - (0)) / (chunk)));
 	}
