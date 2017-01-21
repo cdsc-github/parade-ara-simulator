@@ -42,8 +42,8 @@
 
 //#define BUFFER_IN_CACHE
 #include "../Common/mf_api.hh"
-#include "../GlobalAcceleratorManager/GAM.hh"
-//#include "../TaskDistributor/Interface.hh"
+// #include "../GlobalAcceleratorManager/GAM.hh"
+// #include "../TaskDistributor/Interface.hh"
 #include "../../mem/ruby/system/SimicsNetworkPortInterface.hh"
 #include "../NetworkInterrupt/NetworkInterrupts.hh"
 //#include "../../mem/ruby/common/Global.hh"
@@ -53,7 +53,8 @@
 
 using namespace LCAcc;
 
-namespace LCAcc {
+namespace LCAcc
+{
 
 LCAcc::LCAccManager SimicsInterface::manager;
 std::map<int, std::vector<Arg3CallbackBase<int, const void*, unsigned int>*> > SimicsInterface::netHandlers;
@@ -96,75 +97,75 @@ mf_ruby_api_t* QueryRubyInterface()
 //static conf_object_t* CreateNewDeviceHandle(parse_object_t* po)
 LCAccDeviceHandle* CreateNewLCAccDeviceHandle()
 {
-	static int id = 0;
-	LCAccDeviceHandle* handle = (LCAccDeviceHandle *)malloc(sizeof(LCAccDeviceHandle)); //MM_ZALLOC(1, LCAccDeviceHandle);
-	bzero(handle, sizeof(LCAccDeviceHandle));
-	assert(handle);
-	handle->handleID = id++;
-	//SIM_object_constructor(&handle->base, po);
-	SimicsInterface::manager.RegisterDevice(handle->handleID);
-	//return &(handle->base);
-	return handle;
+  static int id = 0;
+  LCAccDeviceHandle* handle = (LCAccDeviceHandle *)malloc(sizeof(LCAccDeviceHandle)); //MM_ZALLOC(1, LCAccDeviceHandle);
+  bzero(handle, sizeof(LCAccDeviceHandle));
+  assert(handle);
+  handle->handleID = id++;
+  //SIM_object_constructor(&handle->base, po);
+  SimicsInterface::manager.RegisterDevice(handle->handleID);
+  //return &(handle->base);
+  return handle;
 }
 //static int DeleteDeviceHandle(conf_object_t* obj)
 int DeleteLCAccDeviceHandle(LCAccDeviceHandle* handle)
 {
-	assert(handle);
-	SimicsInterface::manager.UnregisterDevice(handle->handleID);
-	snpi->UnregisterRecvHandler(handle->netHandle);
-	snpi->UnbindDevice(handle->deviceID);
-	return 0;
+  assert(handle);
+  SimicsInterface::manager.UnregisterDevice(handle->handleID);
+  snpi->UnregisterRecvHandler(handle->netHandle);
+  snpi->UnbindDevice(handle->deviceID);
+  return 0;
 }
 //void Interface_AddOperatingModeHandler(conf_object_t* handle, const char* name)
 void Interface_AddOperatingModeHandler(LCAccDeviceHandle* handle, const char* name)
 {
-	assert(handle);
-	SimicsInterface::manager.AddOperatingMode(handle->handleID, name);
+  assert(handle);
+  SimicsInterface::manager.AddOperatingMode(handle->handleID, name);
 }
 //void Interface_SetNePortHandler(conf_object_t* handle, int port, int device)
 void Interface_SetNetPortHandler(LCAccDeviceHandle* handle, int port, int device)
 {
-	assert(snpi);
-	assert(handle);
-	handle->deviceID = device;
-	snpi->BindDeviceToPort(port, device);
-	// warn("bind accelerator device %d to port %d\n", device, port);
-	handle->netHandle = snpi->RegisterRecvHandlerOnDevice(device, Interface_ProcessMessageHandler, handle);
-	SimicsInterface::manager.AddNetworkPort(handle->handleID, port, device);
+  assert(snpi);
+  assert(handle);
+  handle->deviceID = device;
+  snpi->BindDeviceToPort(port, device);
+  // warn("bind accelerator device %d to port %d\n", device, port);
+  handle->netHandle = snpi->RegisterRecvHandlerOnDevice(device, Interface_ProcessMessageHandler, handle);
+  SimicsInterface::manager.AddNetworkPort(handle->handleID, port, device);
 }
 //void Interface_SetTimingHandler(conf_object_t* handle, unsigned int cycleTime, unsigned int pipelineDepth, unsigned int initiationInterval)
 void Interface_SetTimingHandler(LCAccDeviceHandle* handle, unsigned int cycleTime, unsigned int pipelineDepth, unsigned int initiationInterval)
 {
-	assert(handle);
-	SimicsInterface::manager.SetTiming(handle->handleID, initiationInterval, pipelineDepth, cycleTime);
+  assert(handle);
+  SimicsInterface::manager.SetTiming(handle->handleID, initiationInterval, pipelineDepth, cycleTime);
 }
 //void Interface_SetPrefetchDistanceHandler(conf_object_t* handle, int distance)
 void Interface_SetPrefetchDistanceHandler(LCAccDeviceHandle* handle, int distance)
 {
-	assert(handle);
-	SimicsInterface::manager.SetPrefetchDistance(handle->handleID, distance);
+  assert(handle);
+  SimicsInterface::manager.SetPrefetchDistance(handle->handleID, distance);
 }
 //void Interface_SetSMConfigHandler(conf_object_t* handle, int banks, int bankMod, int readPorts, int readLatency, int writePorts, int writeLatency)
 void Interface_SetSPMConfigHandler(LCAccDeviceHandle* handle, int banks, int bankMod, int readPorts, int readLatency, int writePorts, int writeLatency)
 {
-	assert(handle);
-	assert(readPorts > 0 && writePorts > 0 && readLatency >= 0 && writeLatency >= 0);
-	assert(bankMod > 0);
-	assert(banks > 0);
-	SimicsInterface::manager.SetSPMConfig(handle->handleID, banks, bankMod, readPorts, readLatency, writePorts, writeLatency);
+  assert(handle);
+  assert(readPorts > 0 && writePorts > 0 && readLatency >= 0 && writeLatency >= 0);
+  assert(bankMod > 0);
+  assert(banks > 0);
+  SimicsInterface::manager.SetSPMConfig(handle->handleID, banks, bankMod, readPorts, readLatency, writePorts, writeLatency);
 }
 
 //void Interface_InitializeHandler(conf_object_t* handle, uint32_t thread)
 void Interface_InitializeHandler(LCAccDeviceHandle* handle, uint32_t thread)
 {
-	assert(handle);
-	SimicsInterface::manager.FinalizeDeviceCreation(handle->handleID, thread);
+  assert(handle);
+  SimicsInterface::manager.FinalizeDeviceCreation(handle->handleID, thread);
 }
 //bool Interface_IsIdleHandler(conf_object_t* handle)
 bool Interface_IsIdleHandler(LCAccDeviceHandle* handle)
 {
-	assert(handle);
-	return SimicsInterface::manager.IsIdle(handle->handleID);
+  assert(handle);
+  return SimicsInterface::manager.IsIdle(handle->handleID);
 }
 /*attr_value_t AddOperatingModeHandler(void*, conf_object_t* handle, attr_value_t* val)
 {
@@ -189,29 +190,29 @@ attr_value_t InitializeHandler(void*, conf_object_t* handle, attr_value_t* val)
 }//*/
 void Interface_ProcessMessageHandler(void* handle, int src, int destination, const char* msgBody, int msgLength)
 {
-        SimicsInterface::manager.ProcessMessage(src, destination, (unsigned int)msgLength, msgBody);
+  SimicsInterface::manager.ProcessMessage(src, destination, (unsigned int)msgLength, msgBody);
 }
 int Interface_GetOpCodeHandler(const char* opname)
 {
-	return LCAcc::LCAccDevice::GetOpCode(std::string(opname));
+  return LCAcc::LCAccDevice::GetOpCode(std::string(opname));
 }
 const char* Interface_GetOpNameHandler(int opCode)
 {
-	return LCAcc::LCAccDevice::GetOpName(opCode);
+  return LCAcc::LCAccDevice::GetOpName(opCode);
 }
 void Interface_GetOpTimingHandler(int opcode, unsigned int* ii, unsigned int* pipeDepth, unsigned int* cycleMult)
 {
-	assert(ii);
-	assert(pipeDepth);
-	assert(cycleMult);
-	LCAcc::LCAccDevice::GetOpTiming(opcode, *ii, *pipeDepth, *cycleMult);
+  assert(ii);
+  assert(pipeDepth);
+  assert(cycleMult);
+  LCAcc::LCAccDevice::GetOpTiming(opcode, *ii, *pipeDepth, *cycleMult);
 }
 //void Interface_HookToMemoryDeviceHandler(conf_object_t* handle, const char* deviceName)
 void Interface_HookToMemoryDeviceHandler(LCAccDeviceHandle* handle, const char* deviceName)
 {
-	assert(handle);
-	assert(deviceName);
-	SimicsInterface::manager.HookToMemoryDevice(handle->handleID, deviceName);
+  assert(handle);
+  assert(deviceName);
+  SimicsInterface::manager.HookToMemoryDevice(handle->handleID, deviceName);
 }
 /*attr_value_t SetNetworkPortHandler(void*, conf_object_t* handle, attr_value_t* val)
 {
@@ -335,111 +336,109 @@ void init_local()
 //*/
 LCAccInterface* CreateLCAccInterface()
 {
-        snpi = g_networkPort_interface;
+  snpi = g_networkPort_interface;
 
-	LCAccInterface* interface = (LCAccInterface*)malloc(sizeof(LCAccInterface));
-	interface->ProcessMessage = Interface_ProcessMessageHandler;
-	interface->GetOpCode = Interface_GetOpCodeHandler;
-	interface->GetOpName = Interface_GetOpNameHandler;
-	interface->GetOpTiming = Interface_GetOpTimingHandler;
-	interface->AddOperatingMode = Interface_AddOperatingModeHandler;
-	interface->SetNetPort = Interface_SetNetPortHandler;
-	interface->SetTiming = Interface_SetTimingHandler;
-	interface->SetPrefetchDistance = Interface_SetPrefetchDistanceHandler;
-	interface->SetSPMConfig = Interface_SetSPMConfigHandler;
-	interface->Initialize = Interface_InitializeHandler;
-	interface->IsIdle = Interface_IsIdleHandler;
-	interface->HookToMemoryDevice = Interface_HookToMemoryDeviceHandler;
+  LCAccInterface* interface = (LCAccInterface*)malloc(sizeof(LCAccInterface));
+  interface->ProcessMessage = Interface_ProcessMessageHandler;
+  interface->GetOpCode = Interface_GetOpCodeHandler;
+  interface->GetOpName = Interface_GetOpNameHandler;
+  interface->GetOpTiming = Interface_GetOpTimingHandler;
+  interface->AddOperatingMode = Interface_AddOperatingModeHandler;
+  interface->SetNetPort = Interface_SetNetPortHandler;
+  interface->SetTiming = Interface_SetTimingHandler;
+  interface->SetPrefetchDistance = Interface_SetPrefetchDistanceHandler;
+  interface->SetSPMConfig = Interface_SetSPMConfigHandler;
+  interface->Initialize = Interface_InitializeHandler;
+  interface->IsIdle = Interface_IsIdleHandler;
+  interface->HookToMemoryDevice = Interface_HookToMemoryDeviceHandler;
 
-	return interface;
+  return interface;
 }
 void SNPIRecvHandler(void*, int src, int dst, const char* buffer, int size)
 {
-	SimicsInterface::HandleMessage(src, dst, (const void*) buffer, size);
+  SimicsInterface::HandleMessage(src, dst, (const void*) buffer, size);
 }
 static void ExecuteCB(void* cbArg)
 {
-	CallbackBase* cb = (CallbackBase*)cbArg;
-	cb->Call();
-	cb->Dispose();
+  CallbackBase* cb = (CallbackBase*)cbArg;
+  cb->Call();
+  cb->Dispose();
 }
 bool SimicsInterface::SendMessage(int source, int destination, unsigned int msgSize, const void* buffer)
 {
-	assert(snpi);
-	snpi->SendMessageOnDevice(source, destination, (const char*)buffer, msgSize);
-	return true;
+  assert(snpi);
+  snpi->SendMessageOnDevice(source, destination, (const char*)buffer, msgSize);
+  return true;
 }
 void SimicsInterface::RegisterCallback(CallbackBase* cb, int delay)
 {
-	assert(cb);
-	assert(delay >= 0);
-	//QueryOpalInterface()->scheduleCB(ExecuteCB, cb, delay);
-	scheduleCB(ExecuteCB, cb, delay);
+  assert(cb);
+  assert(delay >= 0);
+  //QueryOpalInterface()->scheduleCB(ExecuteCB, cb, delay);
+  scheduleCB(ExecuteCB, cb, delay);
 }
 unsigned long long SimicsInterface::GetSystemTime()
 {
-        //return QueryOpalInterface()->getOpalTime(0);
-        return (unsigned long long)uint64_t(g_system_ptr->curCycle());
+  //return QueryOpalInterface()->getOpalTime(0);
+  return (unsigned long long)uint64_t(g_system_ptr->curCycle());
 }
 void SimicsInterface::ReadPhysical(uint64_t addr, void* buffer, size_t size)
 {
-	//TODO: Assumption: this is a functional (non-timing) read: therefore,
-	//location the read is sent from does not matter.
-	MemoryInterface::Instance()->functionalRead(addr, (uint8_t*) buffer, size);
-	/*uinteger_t x;
-	for(size_t i = 0; i < size; i++)
-	{
-		//std::cout << "SIM_read_phys_memory " << addr + i << std::endl;
-		x = SIM_read_phys_memory(SIM_get_processor(0), addr + i, 1);
-		((uint8_t*)buffer)[i] = (uint8_t)x;
-	}*/
+  //TODO: Assumption: this is a functional (non-timing) read: therefore,
+  //location the read is sent from does not matter.
+  MemoryInterface::Instance()->functionalRead(addr, (uint8_t*) buffer, size);
+  /*uinteger_t x;
+  for(size_t i = 0; i < size; i++)
+  {
+  	//std::cout << "SIM_read_phys_memory " << addr + i << std::endl;
+  	x = SIM_read_phys_memory(SIM_get_processor(0), addr + i, 1);
+  	((uint8_t*)buffer)[i] = (uint8_t)x;
+  }*/
 }
 void SimicsInterface::WritePhysical(uint64_t addr, const void* buffer, size_t size)
 {
-	//TODO: Assumption: this is a functional (non-timing) write: therefore,
-	//location the write is sent from does not matter.
-	MemoryInterface::Instance()->functionalWrite(addr, (uint8_t*) buffer, size);
-	/*uinteger_t x;
-	for(size_t i = 0; i < size; i++)
-	{
-		x = ((const uint8_t*)buffer)[i];
-		//std::cout << "SIM_write_phys_memory " << addr + i << std::endl;
-		SIM_write_phys_memory(SIM_get_processor(0), addr + i, x, 1);
-	}*/
+  //TODO: Assumption: this is a functional (non-timing) write: therefore,
+  //location the write is sent from does not matter.
+  MemoryInterface::Instance()->functionalWrite(addr, (uint8_t*) buffer, size);
+  /*uinteger_t x;
+  for(size_t i = 0; i < size; i++)
+  {
+  	x = ((const uint8_t*)buffer)[i];
+  	//std::cout << "SIM_write_phys_memory " << addr + i << std::endl;
+  	SIM_write_phys_memory(SIM_get_processor(0), addr + i, x, 1);
+  }*/
 }
 void SimicsInterface::HandleMessage(int src, int dst, const void* buffer, int bufferSize)
 {
-	if(netHandlers.find(dst) != netHandlers.end())
-	{
-		for(size_t i = 0; i < netHandlers[dst].size(); i++)
-		{
-			netHandlers[dst][i]->Call(src,buffer,bufferSize);
-		}
-	}
+  if (netHandlers.find(dst) != netHandlers.end()) {
+    for (size_t i = 0; i < netHandlers[dst].size(); i++) {
+      netHandlers[dst][i]->Call(src, buffer, bufferSize);
+    }
+  }
 }
 void CallCBWrapper(void* args)
 {
-	CallbackBase* cb = (CallbackBase*)args;
-	assert(cb);
-	cb->Call();
-	cb->Dispose();
+  CallbackBase* cb = (CallbackBase*)args;
+  assert(cb);
+  cb->Call();
+  cb->Dispose();
 }
 void SimicsInterface::TimedBufferRead(int cpu, uint64_t addr, size_t size, int buffer, CallbackBase* cb)
 {
-	//TODO: Not accurate for multiple accelerators:
-	// Currently, all requests are sent from a single accelerator.
-	// One way to fix is to make a mapping from cpu to memory interface,
-	// if there is at most one accelerator per cpu.
-	MemoryInterface::Instance()->sendReadRequest(addr, (uint8_t*) &buffer, size, CallCBWrapper, (void *)cb);
+  //TODO: Not accurate for multiple accelerators:
+  // Currently, all requests are sent from a single accelerator.
+  // One way to fix is to make a mapping from cpu to memory interface,
+  // if there is at most one accelerator per cpu.
+  MemoryInterface::Instance()->sendReadRequest(addr, (uint8_t*) &buffer, size, CallCBWrapper, (void *)cb);
   //SimicsInterface::makeBufferRequestCB(cpu, addr, buffer, RubyRequestType_LD, CallCBWrapper, cb);
 }
 void SimicsInterface::TimedBufferWrite(int cpu, uint64_t addr, size_t size, int buffer, CallbackBase* cb)
 {
-	//TODO: Not accurate for multiple accelerators:
-	// Currently, all requests are sent from a single accelerator.
-	// One way to fix is to make a mapping from cpu to memory interface,
-	// if there is at most one accelerator per cpu.
-	MemoryInterface::Instance()->sendWriteRequest(addr, (uint8_t*) &buffer, size, CallCBWrapper, (void *)cb);
+  //TODO: Not accurate for multiple accelerators:
+  // Currently, all requests are sent from a single accelerator.
+  // One way to fix is to make a mapping from cpu to memory interface,
+  // if there is at most one accelerator per cpu.
+  MemoryInterface::Instance()->sendWriteRequest(addr, (uint8_t*) &buffer, size, CallCBWrapper, (void *)cb);
   //SimicsInterface::makeBufferRequestCB(cpu, addr, buffer, RubyRequestType_ST, CallCBWrapper, cb);
 }
 
@@ -489,84 +488,46 @@ void SimicsInterface::DeleteDMA(int id)
 } //*/
 void SimicsInterface::RegisterLCAcc(int id, int node, std::vector<int> opmodes, uint32_t threadID)
 {
-	bool foundGam = false;
-	bool foundTD = false;
+  bool foundGam = false;
+  bool foundTD = false;
 
-        #ifdef SIM_ARC
-	//conf_object_t* gamObject = SIM_get_object("GAM0");
-	GAMInterface* gam = g_gamObject;
-	//if(gamObject)
-	if(gam)
-	{
-		assert(threadID == 0);
-		foundGam = true;
-		// std::cout << "Registering lcacc " << id << " with GAM" << std::endl;
-		//GAMInterface* gam = (GAMInterface*)SIM_get_interface(gamObject, "GAMInterface");
-		//assert(gam);
-		gam->RegisterLCAcc(id, node);
-		for(size_t i = 0; i < opmodes.size(); i++)
-		{
-			gam->RegisterLCAccOpMode(id, opmodes[i]);
-		}
-	}
-        #endif
+#ifdef SIM_TD
+  /*SIM_clear_exception();
+    conf_object_t* tdObject = SIM_get_object("td0");//*/
+  //TODO: Currently only support 1 TD
+  TDHandle* tdObject = g_TDHandle[0];
 
-        #ifdef SIM_TD
-	/*SIM_clear_exception();
-	  conf_object_t* tdObject = SIM_get_object("td0");//*/
-	//TODO: Currently only support 1 TD
-	TDHandle* tdObject = g_TDHandle[0];
-	if(tdObject)
-	{
-		foundTD = true;
-		// std::cout << "Registering lcacc " << id << " with TD" << std::endl;
-		/*TaskDistributorInterface* td = (TaskDistributorInterface*)SIM_get_interface(tdObject, "TaskDistributorInterface");
-		  assert(td);//*/
-		TaskDistributorInterface* td = g_TDInterface;
-		if(threadID != 0)
-		{
-			td->AddCFUFilter(tdObject, threadID, id);
-		}
-		for(size_t i = 0; i < opmodes.size(); i++)
-		{
-			td->AddCFU(tdObject, id, node, LCAcc::LCAccDevice::GetOpName(opmodes[i]));
-		}
-	}
-        #endif
-	//SIM_clear_exception();
-	assert(foundGam || foundTD);
-	assert(!foundGam || !foundTD);
+  if (tdObject) {
+    foundTD = true;
+    // std::cout << "Registering lcacc " << id << " with TD" << std::endl;
+    /*TaskDistributorInterface* td = (TaskDistributorInterface*)SIM_get_interface(tdObject, "TaskDistributorInterface");
+      assert(td);//*/
+    TaskDistributorInterface* td = g_TDInterface;
+
+    if (threadID != 0) {
+      td->AddCFUFilter(tdObject, threadID, id);
+    }
+
+    for (size_t i = 0; i < opmodes.size(); i++) {
+      td->AddCFU(tdObject, id, node, LCAcc::LCAccDevice::GetOpName(opmodes[i]));
+    }
+  }
+
+#endif
+  //SIM_clear_exception();
+  assert(foundGam || foundTD);
+  assert(!foundGam || !foundTD);
 }
 void SimicsInterface::UnregisterLCAcc(int id)
 {
-        GAMInterface* gam = g_gamObject;
-	if(gam) {
-	  gam->UnregisterLCAcc(id);
-	}
-	//TODO: Currently only support 1 TD
-	TDHandle* tdObject = g_TDHandle[0];
-	if(tdObject)
-	{
-	  TaskDistributorInterface* td = g_TDInterface;
-	  assert(td);
-	  td->RemoveCFU(tdObject, id);
-	}
-        /*conf_object_t* gamObject = SIM_get_object("GAM0");
-	if(gamObject)
-	{
-		GAMInterface* gam = (GAMInterface*)SIM_get_interface(gamObject, "GAMInterface");
-		assert(gam);
-		gam->UnregisterLCAcc(id);
-	}//*/
-	/*SIM_clear_exception();
-	conf_object_t* tdObject = SIM_get_object("td0");
-	if(tdObject)
-	{
-		TaskDistributorInterface* td = (TaskDistributorInterface*)SIM_get_interface(tdObject, "TaskDistributorInterface");
-		assert(td);
-		td->RemoveCFU(tdObject, id);
-	}
-	SIM_clear_exception(); //*/
+  //TODO: Currently only support 1 TD
+  TDHandle* tdObject = g_TDHandle[0];
+
+  if (tdObject) {
+    TaskDistributorInterface* td = g_TDInterface;
+    assert(td);
+    td->RemoveCFU(tdObject, id);
+  }
 }
 
 }

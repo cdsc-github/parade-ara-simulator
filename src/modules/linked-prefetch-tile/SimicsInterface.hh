@@ -11,7 +11,7 @@
 
 void RubyExecuteCB(void* arg);
 void ScheduleCB(int delay, CallbackBase* cb);
-//uint64_t GetSystemTime();
+uint64_t GetSystemTime();
 void WriteMemory(uint64_t memAddr, uint8_t* data, size_t size);
 void ReadMemory(uint64_t memAddr, uint8_t* data, size_t size);
 #endif

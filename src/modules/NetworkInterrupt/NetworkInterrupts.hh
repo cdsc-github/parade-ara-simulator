@@ -21,146 +21,157 @@
 #include "arch/x86/pagetable.hh"
 #include "base/trie.hh"
 
-typedef struct NetworkInterruptHandle_t
-{
-    SimicsNetworkPortInterface* snpi;
-    int portID;
-    int deviceID;
-    ThreadContext *attachedCPU;
-    int procID;
-}NetworkInterruptHandle;
+typedef struct NetworkInterruptHandle_t {
+  SimicsNetworkPortInterface* snpi;
+  int portID;
+  int deviceID;
+  ThreadContext *attachedCPU;
+  int procID;
+} NetworkInterruptHandle;
 
 class NetworkInterrupts
 {
+public:
+  class Msg
+  {
   public:
-    class Msg
+    std::vector<uint8_t> packet;
+    int thread;
+    int lcacc;
+    int priority;
+    inline bool operator <(const Msg& m) const
     {
-      public:
-        std::vector<uint8_t> packet;
-        int thread;
-        int lcacc;
-        int priority;
-        inline bool operator <(const Msg& m) const
-        {
-          return priority < m.priority;
-        }
-    };
+      return priority < m.priority;
+    }
+  };
 
-    class BiNPerformancePoint
-    {
-      public:
-        uint32_t bufferSize;
-        uint32_t performance;
-        uint32_t cacheImpact;
-    };
-
-    class AcceleratorDeclaration
-    {
-      public:
-        int type;
-        int count;
-    };
-  private:
-    static std::map<int, NetworkInterrupts*> cpuMap; //key cpu simics object
-    NetworkInterruptHandle* nih;
-    std::map<int, std::priority_queue<Msg> > pendingMsgs; //key thread
-    std::map<int, std::queue<int> > pendingSignals;
-    void TryRaise(int thread);
-    int CalcPriority(int source, int threadID, const std::vector<uint8_t>& packet);
-
-    uint32_t hostPTWLatency;
-
-    uint64_t hostPTWalks;
-    uint64_t hostPTWalkTick;
-    uint64_t hostPTWalkTime;
-
-    std::list<RequestPtr> pendingTranslations;
-
-    enum State {
-        Ready,
-        Waiting
-    };
-
-    State currState;
-
-    int interval;
-
-  protected:
-    uint32_t tlbSize;
-
-    typedef std::list<X86ISA::TlbEntry *> EntryList;
-
-    X86ISA::TlbEntry * tlb;
-
-    EntryList freeList;
-
-    TlbEntryTrie trie;
-
-    uint64_t lruSeq;
-
+  class BiNPerformancePoint
+  {
   public:
-    static std::map<int, std::vector<BiNPerformancePoint> > BiNCurveInfo; //key thread, value bin point
-    static std::map<int, std::vector<AcceleratorDeclaration> > accDeclInfo; //key thread, value declaration
-    static std::map<int, std::vector<int> > pendingReservation; //key threadID, vector of lcaccID's
-    static NetworkInterrupts* LookupNIByCpu(int cpu);
+    uint32_t bufferSize;
+    uint32_t performance;
+    uint32_t cacheImpact;
+  };
 
-    std::vector<int> queueLen;
+  class AcceleratorDeclaration
+  {
+  public:
+    int type;
+    int count;
+  };
+private:
+  static std::map<int, NetworkInterrupts*> cpuMap; //key cpu simics object
+  NetworkInterruptHandle* nih;
+  std::map<int, std::priority_queue<Msg> > pendingMsgs; //key thread
+  std::map<int, std::queue<int> > pendingSignals;
+  void TryRaise(int thread);
+  int CalcPriority(int source, int threadID, const std::vector<uint8_t>& packet);
 
-    // typedef NetworkInterruptsParams Params;
-    // NetworkInterrupts(const Params *p);
+  uint32_t hostPTWLatency;
 
-    NetworkInterrupts(NetworkInterruptHandle* x);
-    ~NetworkInterrupts();
+  uint64_t hostPTWalks;
+  uint64_t hostPTWalkTick;
+  uint64_t hostPTWalkTime;
 
-    NetworkInterruptHandle* GetHandle() {return nih;}
-    int GetSignal(int thread);
-    void RaiseInterrupt(int source, int threadID, const void* buffer, int bufferSize);
-    void PutOffInterrupt(int source, int threadID, const void* buffer, int bufferSize, int delay);
-    void RecvMessage(int source, const char* buffer, int size);
-    void HostPTWalk(RequestPtr req);
-    void sampleQueueLen();
-    typedef MemberCallback4<NetworkInterrupts, int, int, const void*, int, &NetworkInterrupts::RaiseInterrupt> RaiseInterruptCB;
-    typedef Arg3MemberCallback<NetworkInterrupts, int, const char*, int, &NetworkInterrupts::RecvMessage> RecvMessageCB;
-    typedef MemberCallback1<NetworkInterrupts, int, &NetworkInterrupts::TryRaise> TryRaiseCB;
-    typedef MemberCallback1<NetworkInterrupts, RequestPtr, &NetworkInterrupts::HostPTWalk> HostPTWalkCB;
-    typedef MemberCallback0<NetworkInterrupts, &NetworkInterrupts::sampleQueueLen> sampleQueueLenCB;
+  std::list<RequestPtr> pendingTranslations;
 
-    inline std::string GetDeviceName()
-    {
-      char s[20];
-      sprintf(s, "netinterrupts.%02d", nih->portID);
-      return s;
-    }
+  enum State {
+    Ready,
+    Waiting
+  };
 
-    void finishTranslation(WholeTranslationState *state);
+  State currState;
 
-    void startWalk();
+  int interval;
 
-    void setupWalk(int thread, uint64_t vAddr);
+protected:
+  uint32_t tlbSize;
 
-    /** This function is used by the page table walker to determin if it could
-    * translate a pending request or if the underlying request has been
-    * squashed. This always returns false for the accelerater as it never
-    * executes any instructions speculatively.
-    */
-    bool isSquashed() const { return false; }
+  typedef std::list<X86ISA::TlbEntry *> EntryList;
 
-    uint64_t getHostPTWalks() { return hostPTWalks; }
+  X86ISA::TlbEntry * tlb;
 
-    uint64_t getHostPTWalkTime() { return hostPTWalkTime; }
+  EntryList freeList;
 
-    X86ISA::TlbEntry *lookup(uint64_t va, bool update_lru = true);
+  TlbEntryTrie trie;
 
-    void flushAll();
+  uint64_t lruSeq;
 
-    void evictLRU();
+public:
+  static std::map<int, std::vector<BiNPerformancePoint> > BiNCurveInfo; //key thread, value bin point
+  static std::map<int, std::vector<AcceleratorDeclaration> > accDeclInfo; //key thread, value declaration
+  static std::map<int, std::vector<int> > pendingReservation; //key threadID, vector of lcaccID's
+  static NetworkInterrupts* LookupNIByCpu(int cpu);
 
-    uint64_t nextSeq()
-    {
-        return ++lruSeq;
-    }
+  std::vector<int> queueLen;
 
-    X86ISA::TlbEntry * insert(uint64_t vpn, X86ISA::TlbEntry &entry);
+  // typedef NetworkInterruptsParams Params;
+  // NetworkInterrupts(const Params *p);
+
+  NetworkInterrupts(NetworkInterruptHandle* x);
+  ~NetworkInterrupts();
+
+  NetworkInterruptHandle* GetHandle()
+  {
+    return nih;
+  }
+  int GetSignal(int thread);
+  void RaiseInterrupt(int source, int threadID, const void* buffer, int bufferSize);
+  void PutOffInterrupt(int source, int threadID, const void* buffer, int bufferSize, int delay);
+  void RecvMessage(int source, const char* buffer, int size);
+  void HostPTWalk(RequestPtr req);
+  void sampleQueueLen();
+  typedef MemberCallback4<NetworkInterrupts, int, int, const void*, int, &NetworkInterrupts::RaiseInterrupt> RaiseInterruptCB;
+  typedef Arg3MemberCallback<NetworkInterrupts, int, const char*, int, &NetworkInterrupts::RecvMessage> RecvMessageCB;
+  typedef MemberCallback1<NetworkInterrupts, int, &NetworkInterrupts::TryRaise> TryRaiseCB;
+  typedef MemberCallback1<NetworkInterrupts, RequestPtr, &NetworkInterrupts::HostPTWalk> HostPTWalkCB;
+  typedef MemberCallback0<NetworkInterrupts, &NetworkInterrupts::sampleQueueLen> sampleQueueLenCB;
+
+  inline std::string GetDeviceName()
+  {
+    char s[20];
+    sprintf(s, "netinterrupts.%02d", nih->portID);
+    return s;
+  }
+
+  void finishTranslation(WholeTranslationState *state);
+
+  void startWalk();
+
+  void setupWalk(int thread, uint64_t vAddr);
+
+  /** This function is used by the page table walker to determin if it could
+  * translate a pending request or if the underlying request has been
+  * squashed. This always returns false for the accelerater as it never
+  * executes any instructions speculatively.
+  */
+  bool isSquashed() const
+  {
+    return false;
+  }
+
+  uint64_t getHostPTWalks()
+  {
+    return hostPTWalks;
+  }
+
+  uint64_t getHostPTWalkTime()
+  {
+    return hostPTWalkTime;
+  }
+
+  X86ISA::TlbEntry *lookup(uint64_t va, bool update_lru = true);
+
+  void flushAll();
+
+  void evictLRU();
+
+  uint64_t nextSeq()
+  {
+    return ++lruSeq;
+  }
+
+  X86ISA::TlbEntry * insert(uint64_t vpn, X86ISA::TlbEntry &entry);
 };
 
 void HandleNetworkMessage(void*, int, int, const char*, int);

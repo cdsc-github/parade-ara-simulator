@@ -3,14 +3,15 @@
 #run it using atomic cpu until the end of initilization, then take checkpoint and exit
 
 # Common configurations in the script
-GEM5=gem5.opt
-TARGET_DIR=./result/
-BOOT_DIR=./configs/boot
+GEM5=./gem5.opt
+TARGET_DIR=./result
+CONFIG_DIR=./configs
+BOOT_DIR=${CONFIG_DIR}/boot
 START_CKPT_DIR=ckpt-1core
 PREFIX=TDLCA
 SUFFIX=td
 DEBUG_FLAG="--debug-flags=PageTableWalker"
-COMMON_CONFIG="../configs/example/fs_tlb.py --checkpoint-dir=${START_CKPT_DIR} \
+COMMON_CONFIG="${CONFIG_DIR}/example/fs_tlb.py --checkpoint-dir=${START_CKPT_DIR} \
     --restore-with-cpu=detailed -r 1 -n 1 --l2_size=64kB --num-l2caches=32 \
     --mem-size=2GB --num-dirs=4 --ruby --lcacc --garnet=fixed --topology=Mesh \
     --mesh-rows=4 --num_accinstances=4 --td_tlb_size=1024 --lcacc_tlb_size=1024 \

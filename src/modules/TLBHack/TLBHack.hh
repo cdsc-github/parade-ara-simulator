@@ -6,18 +6,18 @@
 
 class TLBHackInterface
 {
-  public:
-    bool (*PageKnown)(int thread, logical_address_t addr);
-    physical_address_t (*Lookup)(int thread, logical_address_t addr);
-    void (*AddEntry)(int thread, logical_address_t lAddr,
-            physical_address_t pAddr);
+public:
+  bool (*PageKnown)(int thread, logical_address_t addr);
+  physical_address_t (*Lookup)(int thread, logical_address_t addr);
+  void (*AddEntry)(int thread, logical_address_t lAddr,
+                   physical_address_t pAddr);
 };
 
 void MagicHandler(void*, ThreadContext* cpu, integer_t op, int thread,
-        logical_address_t lAddr);
+                  logical_address_t lAddr);
 bool PageKnownHandler(int thread, logical_address_t addr);
 physical_address_t LookupHandler(int thread, logical_address_t addr);
 void AddEntryHandler(int thread, logical_address_t lAddr,
-        physical_address_t pAddr);
+                     physical_address_t pAddr);
 
 #endif

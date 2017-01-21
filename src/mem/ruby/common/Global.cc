@@ -39,7 +39,7 @@ SimicsNetworkPortInterface* g_networkPort_interface;
 vector<NetworkInterruptHandle*> g_network_interrupt_handle;
 vector<NetworkInterrupts*> g_network_interrupts;
 TLBHackInterface* g_TLBHack_interface;
-GAMInterface* g_gamObject;
+// GAMInterface* g_gamObject;
 TaskDistributorInterface* g_TDInterface;
 vector<TDHandle*> g_TDHandle;
 MeteredMemory_Interface::SimicsInterface* g_memObject;

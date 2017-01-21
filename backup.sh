@@ -1,26 +1,25 @@
 ################################################################################################################
 #Common configurations in the script
-PREFIX=$1
+NAME=$1
 VERSION=$2
 FROM_DIR=./parade-test/
-TO_DIR=./parade-${PREFIX}-${VERSION}/
+TO_DIR=./${NAME}-${VERSION}/
 
 BENCHS=(
-###Medical Imaging(MI) benchmarks##############
+#### Medical Imaging #####
     'Deblur_Modified'
     'Denoise'
     'Registration_Modified'
     'Segmentation'
-###CoMmercial(CM) benchmarks###################
+#### Commercial ##########
     'BlackScholes'
     'StreamCluster'
     'Swaptions'
-###computer VISion(VIS) benchmarks#############
-    'LPCIP_Desc'
-    'Texture_Synthesis'
-###NAVigation(NAV) benchmarks##################
-    'Robot_Localization'
+#### Computer vision #####
     'Disparity_Map'
+    'LPCIP_Desc'
+#### Navigation ##########
+    'Robot_Localization'
     'EKF_SLAM'
 )
 
@@ -28,6 +27,8 @@ echo "rm -rf ${TO_DIR}"
 rm -rf ${TO_DIR}
 echo "mkdir ${TO_DIR}"
 mkdir ${TO_DIR}
+
+PREFIX=TDLCA
 
 for bench in ${BENCHS[@]}; do
     FROM_BENCH_DIR=${FROM_DIR}/${PREFIX}_${bench}/

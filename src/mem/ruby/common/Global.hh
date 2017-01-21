@@ -51,7 +51,7 @@ extern Cycles g_ruby_start;
 #include "../../../modules/NetworkInterrupt/NetworkInterrupts.hh"
 #include "../system/SimicsNetworkPortInterface.hh"
 #include "../../../modules/TLBHack/TLBHack.hh"
-#include "../../../modules/GlobalAcceleratorManager/GAM.hh"
+// #include "../../../modules/GlobalAcceleratorManager/GAM.hh"
 #include "../../../modules/Common/MemoryDeviceInterface.hh"
 #include "../../../modules/linked-prefetch-tile/DMAEngine.hh"
 #include "../../../modules/linked-prefetch-tile/prefetcher-tile.hh"
@@ -64,7 +64,7 @@ extern SimicsNetworkPortInterface* g_networkPort_interface;
 extern std::vector<NetworkInterruptHandle*> g_network_interrupt_handle;
 extern std::vector<NetworkInterrupts*> g_network_interrupts;
 extern TLBHackInterface* g_TLBHack_interface;
-extern GAMInterface* g_gamObject;
+// extern GAMInterface* g_gamObject;
 extern std::vector<TDHandle*> g_TDHandle;
 extern TaskDistributorInterface* g_TDInterface;
 extern MeteredMemory_Interface::SimicsInterface* g_memObject;
