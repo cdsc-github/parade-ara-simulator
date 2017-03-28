@@ -14,7 +14,7 @@ acc_types = [
     'Swaptions',
     'LPCIP_Desc',
     # 'SURF_Desc',
-    # 'Texture_Synthesis',
+    'Texture_Synthesis',
     'Robot_Localization',
     'Disparity_Map',
     'EKF_SLAM'

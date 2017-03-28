@@ -166,7 +166,11 @@ class RubySystem : public ClockedObject
         {"Swaptions", {"swaptions1", "swaptions2", "swaptions3", "swaptions4"}},
         {"LPCIP_Desc", {"LPCIP"}},
         {"SURF_Desc", {"SURF1Mega", "SURF2Mega", "SURF3Mega", "SURF4Mega", "SURF5Mega"}},
-        {"Texture_Synthesis", {"TexSynth1", "TexSynth2", "TexSynth3", "TexSynth4", "TexSynth5"}},
+        {"Texture_Synthesis", {"TexSynth1", 
+                               "TexSynth2", "TexSynth2", "TexSynth2", "TexSynth2", "TexSynth2", "TexSynth2", "TexSynth2", "TexSynth2", "TexSynth2", 
+                               "TexSynth3", "TexSynth3", "TexSynth3", "TexSynth3", 
+                               "TexSynth4", "TexSynth4", "TexSynth4", "TexSynth4", 
+                               "TexSynth5"}},
         {"Robot_Localization", {"RobLoc"}},
         {"Disparity_Map", {"DispMapCompSAD", "DispMapFindDisp", "DispMapIntegSum"}},
         {"EKF_SLAM", {"Jacobians", "SphericalCoords"}}
