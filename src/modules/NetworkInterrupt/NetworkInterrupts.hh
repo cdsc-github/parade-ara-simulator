@@ -13,65 +13,74 @@
 #include "../Common/BaseCallbacks.hh"
 #include "../../cpu/thread_context.hh"
 
-typedef struct NetworkInterruptHandle_t
-{
-	gem5NetworkPortInterface* snpi;
-	int portID;
-	int deviceID;
-	ThreadContext *attachedCPU;
-	int procID;
-}NetworkInterruptHandle;
+typedef struct NetworkInterruptHandle_t {
+  gem5NetworkPortInterface* snpi;
+  int portID;
+  int deviceID;
+  ThreadContext *attachedCPU;
+  int procID;
+} NetworkInterruptHandle;
 class NetworkInterrupts
 {
 public:
-	class Msg
-	{
-	public:
-		std::vector<uint8_t> packet;
-		int thread;
-		int lcacc;
-		int priority;
-		inline bool operator <(const Msg& m) const
-		{
-			return priority < m.priority;
-		}
-	};
-	class BiNPerformancePoint
-	{
-	public:
-		uint32_t bufferSize;
-		uint32_t performance;
-		uint32_t cacheImpact;
-	};
-	class AcceleratorDeclaration
-	{
-	public:
-		int type;
-		int count;
-	};
+  class Msg
+  {
+  public:
+    std::vector<uint8_t> packet;
+    int thread;
+    int lcacc;
+    int priority;
+    inline bool operator <(const Msg& m) const
+    {
+      return priority < m.priority;
+    }
+  };
+  class BiNPerformancePoint
+  {
+  public:
+    uint32_t bufferSize;
+    uint32_t performance;
+    uint32_t cacheImpact;
+  };
+  class AcceleratorDeclaration
+  {
+  public:
+    int type;
+    int count;
+  };
 private:
-	static std::map<int, NetworkInterrupts*> cpuMap; //key cpu simics object
-	NetworkInterruptHandle* nih;
-	std::map<int, std::priority_queue<Msg> > pendingMsgs; //key thread
-	std::map<int, std::queue<int> > pendingSignals;
-	void TryRaise(int thread);
-	int CalcPriority(int source, int threadID, const std::vector<uint8_t>& packet);
+  static std::map<int, NetworkInterrupts*> cpuMap; //key cpu simics object
+  NetworkInterruptHandle* nih;
+  std::map<int, std::priority_queue<Msg> > pendingMsgs; //key thread
+  std::map<int, std::queue<int> > pendingSignals;
+  void TryRaise(int thread);
+  int CalcPriority(int source, int threadID, const std::vector<uint8_t>& packet);
 public:
-	static std::map<int, std::vector<BiNPerformancePoint> > BiNCurveInfo; //key thread, value bin point
-	static std::map<int, std::vector<AcceleratorDeclaration> > accDeclInfo; //key thread, value declaration
-	static std::map<int, std::vector<int> > pendingReservation; //key threadID, vector of lcaccID's
-	static NetworkInterrupts* LookupNIByCpu(int cpu);
-	NetworkInterrupts(NetworkInterruptHandle* x);
-	~NetworkInterrupts();
+  static std::map<int, std::vector<BiNPerformancePoint> > BiNCurveInfo; //key thread, value bin point
+  static std::map<int, std::vector<AcceleratorDeclaration> > accDeclInfo; //key thread, value declaration
+  static std::map<int, std::vector<int> > pendingReservation; //key threadID, vector of lcaccID's
+  static NetworkInterrupts* LookupNIByCpu(int cpu);
+  NetworkInterrupts(NetworkInterruptHandle* x);
+  ~NetworkInterrupts();
 
-	NetworkInterruptHandle* GetHandle() {return nih;}
-	int GetSignal(int thread);
-	void RaiseInterrupt(int source, int threadID, const void* buffer, int bufferSize);
-	void PutOffInterrupt(int source, int threadID, const void* buffer, int bufferSize, int delay);
-	void RecvMessage(int source, const char* buffer, int size);
-	typedef MemberCallback4<NetworkInterrupts, int, int, const void*, int, &NetworkInterrupts::RaiseInterrupt> RaiseInterruptCB;
-	typedef Arg3MemberCallback<NetworkInterrupts, int, const char*, int, &NetworkInterrupts::RecvMessage> RecvMessageCB;
-	typedef MemberCallback1<NetworkInterrupts, int, &NetworkInterrupts::TryRaise> TryRaiseCB;
+  NetworkInterruptHandle* GetHandle()
+  {
+    return nih;
+  }
+  int GetSignal(int thread);
+  void RaiseInterrupt(int source, int threadID, const void* buffer, int bufferSize);
+  void PutOffInterrupt(int source, int threadID, const void* buffer, int bufferSize, int delay);
+  void RecvMessage(int source, const char* buffer, int size);
+  typedef MemberCallback4<NetworkInterrupts, int, int, const void*, int, &NetworkInterrupts::RaiseInterrupt> RaiseInterruptCB;
+  typedef Arg3MemberCallback<NetworkInterrupts, int, const char*, int, &NetworkInterrupts::RecvMessage> RecvMessageCB;
+  typedef MemberCallback1<NetworkInterrupts, int, &NetworkInterrupts::TryRaise> TryRaiseCB;
+
+  inline std::string GetDeviceName()
+  {
+    char s[20];
+    sprintf(s, "netinterrupts.%02d", nih->portID);
+    return s;
+  }
 };
 
 void HandleNetworkMessage(void*, int, int, const char*, int);

@@ -45,7 +45,7 @@
 #include "sim/stat_control.hh"
 
 // 1. Dedicated-ARA version
-// #define SIM_DEDICATED_ARA
+#define SIM_DEDICATED_ARA
 
 #define SIM_NET_PORTS
 #ifdef SIM_NET_PORTS
