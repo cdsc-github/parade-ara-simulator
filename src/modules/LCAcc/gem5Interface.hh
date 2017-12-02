@@ -10,23 +10,24 @@
 #include "mem/protocol/RubyRequestType.hh"
 #include "Interface.hh"
 
-namespace LCAcc {
+namespace LCAcc
+{
 
 class gem5Interface
 {
-	static std::map<int, std::vector<Arg3CallbackBase<int, const void*, unsigned int>*> > netHandlers;
+  static std::map<int, std::vector<Arg3CallbackBase<int, const void*, unsigned int>*> > netHandlers;
 public:
-	static LCAcc::LCAccManager manager;
-	static unsigned long long GetSystemTime();
-	static bool SendMessage(int source, int destination, unsigned int msgSize, const void* buffer);
-	static void RegisterCallback(CallbackBase* cb, int delay);
-        static void ReadPhysical(uint64_t address, void* storage, size_t size);
-        static void WritePhysical(uint64_t address, const void* storage, size_t size);
-	static void HandleMessage(int src, int dst, const void* buffer, int bufferSize);
-        static void TimedBufferRead(int cpu, uint64_t addr, size_t size, int buffer, CallbackBase* cb);
-	static void TimedBufferWrite(int cpu, uint64_t addr, size_t size, int buffer, CallbackBase* cb);
-	static void RegisterLCAcc(int id, int node, std::vector<int> opmodes, uint32_t threadID);
-	static void UnregisterLCAcc(int id);
+  static LCAcc::LCAccManager manager;
+  static unsigned long long GetSystemTime();
+  static bool SendMessage(int source, int destination, unsigned int msgSize, const void* buffer);
+  static void RegisterCallback(CallbackBase* cb, int delay);
+  static void ReadPhysical(uint64_t address, void* storage, size_t size);
+  static void WritePhysical(uint64_t address, const void* storage, size_t size);
+  static void HandleMessage(int src, int dst, const void* buffer, int bufferSize);
+  static void TimedBufferRead(int cpu, uint64_t addr, size_t size, int buffer, CallbackBase* cb);
+  static void TimedBufferWrite(int cpu, uint64_t addr, size_t size, int buffer, CallbackBase* cb);
+  static void RegisterLCAcc(int id, int node, std::vector<int> opmodes, uint32_t threadID);
+  static void UnregisterLCAcc(int id);
 };
 
 LCAccDeviceHandle* CreateNewLCAccDeviceHandle();

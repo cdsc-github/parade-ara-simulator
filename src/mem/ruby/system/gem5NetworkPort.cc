@@ -60,7 +60,7 @@ int Getgem5PortID(int deviceID)
 #ifdef SIM_NET_PORTS
 	assert(deviceToPortMap.find(deviceID) != deviceToPortMap.end());
 	return deviceToPortMap[deviceID];
-#else 
+#else
 	DEBUG_OUT("System was not compiled with SIM_NET_PORTS\n");
 	ASSERT(0);
 	return 0;
@@ -76,7 +76,7 @@ gem5NetworkPort* Getgem5Port(int nodeID)
 	}
 	assert(portSet[nodeID]);
 	return portSet[nodeID];
-#else 
+#else
 	DEBUG_OUT("System was not compiled with SIM_NET_PORTS\n");
 	ASSERT(0);
 	return NULL;
@@ -212,7 +212,7 @@ void gem5NetworkPort::SendPortMessage(const char* buffer, int length, int destin
 	m->id = nextMsgID++;
 	m->refCount = 1;
 	m->src = port;
-	m->dst = -1;	
+	m->dst = -1;
 	for(int i = 0; i < length; i++)
 	{
 		m->msg.push_back(buffer[i]);
@@ -234,12 +234,6 @@ void gem5NetworkPort::SendPortMessage(const char* buffer, int length, int destin
 }
 void gem5NetworkPort::SendDeviceMessage(int source, const char* buffer, int length, int destinationID)
 {
-  std::cout << "SendDeviceMessage: source " << source << " destination " << destinationID << " port " << port << " message length " << std::hex << length << " buffer content";
-  int buffer_int_length = length/4;
-  int* buffer_int = (int *)buffer;
-  for(int i = 0; i < buffer_int_length; i++)
-    std::cout << "[" << buffer_int[i] << "]";
-  std::cout << std::dec << std::endl;
 	assert(buffer);
 	assert(length > 0);
 	assert(deviceToPortMap.find(source) != deviceToPortMap.end());
@@ -256,7 +250,7 @@ void gem5NetworkPort::SendDeviceMessage(int source, const char* buffer, int leng
 		eol->buffer = new char[length];
 		memcpy(eol->buffer, buffer, length);
 		scheduleCB(EndOfLineMessageDeliver, eol, 0);
-		return;	
+		return;
 	}
 	SNPMsg* m;
 	m = new SNPMsg();
@@ -295,7 +289,7 @@ void gem5NetworkPort::HandleMessage(int msgHandle)
 			std::vector<int>& recvSet = deviceToRecvHandlerMap[m->dst];
 			assert(deviceToPortMap.find(m->dst) != deviceToPortMap.end());
 			assert(deviceToPortMap.find(m->src) != deviceToPortMap.end());
-			 
+
 			for(size_t i = 0; i < recvSet.size(); i++)
 			{
 				assert(recvHandlerSet.find(recvSet[i]) != recvHandlerSet.end());
