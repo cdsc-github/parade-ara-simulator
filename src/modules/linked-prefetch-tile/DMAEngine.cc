@@ -118,13 +118,13 @@ bool DMAEngine::IsReady(uint64_t lAddr, uint64_t pAddr, RubyRequestType directio
 {
   if (!IsRedirectingToMemory()) {
     int L1CacheID;
-    if(nodeID < RubySystem::numberOfTDs())
+    if (nodeID < RubySystem::numberOfTDs())
       L1CacheID = RubySystem::tdIDtoL1CacheID(nodeID);
     else
       L1CacheID = RubySystem::accIDtoL1CacheID(RubySystem::deviceIDtoAccID(nodeID));
     AbstractController* L1Controller = g_abs_controls[MachineType_L1Cache][L1CacheID];
     Sequencer* seq = L1Controller->getSequencer();
-          return seq->isReady(pAddr);
+    return seq->isReady(pAddr);
   } else {
     assert(memInterface);
     assert(memObject);
@@ -218,6 +218,7 @@ DMAEngine::ReEnqueueTransfer(TransferData* td)
 {
   EnqueueTransfer(td);
 }
+
 void
 DMAEngine::WriteBlock(uint64_t spmAddr, uint64_t pMemAddr, uint64_t lMemAddr,
   size_t size)
@@ -440,10 +441,16 @@ DMAEngine::EnqueueTransfer(TransferData* td)
     (!isRead) ? pendingReads : pendingWrites;
 
   if (pendingType.find(pBlockAddr) != pendingType.end()) {
-    pendingType[pBlockAddr] = SpliceCB::Create(this, pendingType[pBlockAddr],
-      (isRead ? (CallbackBase*)ReadBlockCB::Create(this, pAddr, lAddr, td->dstLAddr, td->elementSize) : (CallbackBase*)WriteBlockCB::Create(this, td->srcLAddr, pAddr, lAddr, td->elementSize)));
-    pendingType[pBlockAddr] = SpliceCB::Create(this, pendingType[pBlockAddr],
-      td->onFinish);
+    pendingType[pBlockAddr] =
+      SpliceCB::Create(this, pendingType[pBlockAddr],
+        (isRead ? (CallbackBase*)ReadBlockCB::Create(
+                    this, pAddr, lAddr, td->dstLAddr, td->elementSize) :
+                  (CallbackBase*)WriteBlockCB::Create(
+                    this, td->srcLAddr, pAddr, lAddr, td->elementSize)));
+
+    pendingType[pBlockAddr] =
+      SpliceCB::Create(this, pendingType[pBlockAddr], td->onFinish);
+
     delete td;
     return true;
   }
@@ -478,7 +485,11 @@ DMAEngine::EnqueueTransfer(TransferData* td)
   lastEmit = GetSystemTime();
 
   pendingType[pBlockAddr] = SpliceCB::Create(this,
-    (isRead ? (CallbackBase*)ReadBlockCB::Create(this, pAddr, lAddr, td->dstLAddr, td->elementSize) : (CallbackBase*)WriteBlockCB::Create(this, td->srcLAddr, pAddr, lAddr, td->elementSize)), td->onFinish);
+    (isRead ? (CallbackBase*)ReadBlockCB::Create(
+                this, pAddr, lAddr, td->dstLAddr, td->elementSize) :
+              (CallbackBase*)WriteBlockCB::Create(
+                this, td->srcLAddr, pAddr, lAddr, td->elementSize)),
+    td->onFinish);
 
   if (td->buffer == -1) {
     // this is the no buffer case
@@ -490,8 +501,9 @@ DMAEngine::EnqueueTransfer(TransferData* td)
     // a shared buffer is being used. access that instead
     assert(emitTime.find(pBlockAddr) == emitTime.end());
     emitTime[pBlockAddr] = GetSystemTime();
-    MakeBufferCopy(pBlockAddr, (isRead) ? td->dstLAddr : td->srcLAddr,
-      td->buffer, requestType, OnMemoryResponseCB::Create(this, pBlockAddr, lastEmit));
+    MakeBufferCopy(pBlockAddr,
+      (isRead) ? td->dstLAddr : td->srcLAddr, td->buffer, requestType,
+      OnMemoryResponseCB::Create(this, pBlockAddr, lastEmit));
   }
   delete td;
   return true;  // keep accesses coming

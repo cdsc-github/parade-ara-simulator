@@ -48,6 +48,8 @@ class RubySystem(ClockedObject):
         "file name for visualization trace");
     acc_types = Param.String("BlackScholes",
         "accelerator type to be instantiated in the system");
+    aim = Param.Bool(False,
+        "modeling Accelerator-Interposed Memory")
 
     # Profiler related configuration variables
     hot_lines = Param.Bool(False, "")

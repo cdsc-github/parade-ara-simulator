@@ -26,11 +26,15 @@ const int DMAController::AccessType::ReadLock = 3;
 const int DMAController::AccessType::WriteLock = 4;
 const int DMAController::AccessType::WriteUnlock = 5;
 const int DMAController::AccessType::Unlock = 6;
-uint64_t DMAController::GetPageAddr(uint64_t addr) const
+
+uint64_t
+DMAController::GetPageAddr(uint64_t addr) const
 {
   return addr - (addr % tlbPageSize);
 }
-uint64_t DMAController::OnAddressTranslate(uint64_t logicalAddr)
+
+uint64_t
+DMAController::OnAddressTranslate(uint64_t logicalAddr)
 {
   uint64_t pageAddr = GetPageAddr(logicalAddr);
   assert(logicalAddr >= pageAddr);
@@ -42,7 +46,9 @@ uint64_t DMAController::OnAddressTranslate(uint64_t logicalAddr)
 
   return 0;
 }
-void DMAController::OnTLBMiss(uint64_t logicalAddr)
+
+void
+DMAController::OnTLBMiss(uint64_t logicalAddr)
 {
   uint64_t pageAddr = GetPageAddr(logicalAddr);
 
@@ -51,11 +57,15 @@ void DMAController::OnTLBMiss(uint64_t logicalAddr)
     onTLBMiss->Call(pageAddr);
   }
 }
-void DMAController::OnAccessError(uint64_t logicalAddr)
+
+void
+DMAController::OnAccessError(uint64_t logicalAddr)
 {
   onAccViolation->Call(logicalAddr);
 }
-void DMAController::OnNetworkMsg(int src, const void* buf, unsigned int bufSize)
+
+void
+DMAController::OnNetworkMsg(int src, const void* buf, unsigned int bufSize)
 {
   assert(bufSize >= 4);
   assert(buf);
@@ -135,25 +145,28 @@ void DMAController::OnNetworkMsg(int src, const void* buf, unsigned int bufSize)
     assert(0);
   }
 }
-DMAController::DMAController(NetworkInterface* ni, SPMInterface* spm, Arg1CallbackBase<uint64_t>* TLBMiss, Arg1CallbackBase<uint64_t>* accessViolation)
+
+DMAController::DMAController(NetworkInterface* ni, SPMInterface* spm,
+  Arg1CallbackBase<uint64_t>* TLBMiss,
+  Arg1CallbackBase<uint64_t>* accessViolation)
 {
-  assert(ni);
-  assert(spm);
-  std::cout << "LCAcc:DMAController using g_dmaDevice " << RubySystem::deviceIDtoAccID(spm->GetID()) << std::endl;
   dmaDevice = g_dmaDevice[RubySystem::deviceIDtoAccID(spm->GetID())];
-  assert(dmaDevice);
   dmaInterface = g_dmaInterface;
-  assert(dmaInterface);
   network = ni;
   onAccViolation = accessViolation;
   onTLBMiss = TLBMiss;
   buffer = -1;
   this->spm = spm;
-  std::cout << "Configurate DMA Controller, NodeID: " << ni->GetNodeID() << std::endl;
-  dmaInterface->Configure(dmaDevice, ni->GetNodeID(), spm->GetID(), OnTLBMissCB::Create(this), OnAddressTranslateCB::Create(this), OnAccessErrorCB::Create(this));
+
+  dmaInterface->Configure(dmaDevice, ni->GetNodeID(), spm->GetID(),
+    OnTLBMissCB::Create(this), OnAddressTranslateCB::Create(this),
+    OnAccessErrorCB::Create(this));
+
   ni->RegisterRecvHandler(OnNetworkMsgCB::Create(this));
+
   isHookedToMemory = false;
 }
+
 DMAController::~DMAController()
 {
   if (isHookedToMemory) {
@@ -162,13 +175,24 @@ DMAController::~DMAController()
     dmaInterface->UnhookMemoryPort(dmaDevice);
   }
 }
-void DMAController::BeginTransfer(int srcSpm, uint64_t srcAddr, const std::vector<unsigned int>& srcSize, const std::vector<int>& srcStride, int dstSpm, uint64_t dstAddr, const std::vector<unsigned int>& dstSize, const std::vector<int>& dstStride, size_t elementSize, CallbackBase* finishCB)
+
+void
+DMAController::BeginTransfer(int srcSpm, uint64_t srcAddr,
+  const std::vector<unsigned int>& srcSize, const std::vector<int>& srcStride,
+  int dstSpm, uint64_t dstAddr, const std::vector<unsigned int>& dstSize,
+  const std::vector<int>& dstStride, size_t elementSize, CallbackBase* finishCB)
 {
-  BeginTransfer(srcSpm, srcAddr, srcSize, srcStride, dstSpm, dstAddr, dstSize, dstStride, elementSize, 0, finishCB);
+  BeginTransfer(srcSpm, srcAddr, srcSize, srcStride,
+    dstSpm, dstAddr, dstSize, dstStride, elementSize, 0, finishCB);
 }
-void DMAController::BeginTransfer(int srcSpm, uint64_t srcAddr, const std::vector<unsigned int>& srcSize, const std::vector<int>& srcStride, int dstSpm, uint64_t dstAddr, const std::vector<unsigned int>& dstSize, const std::vector<int>& dstStride, size_t elementSize, int priority, CallbackBase* finishCB)
+
+void
+DMAController::BeginTransfer(int srcSpm, uint64_t srcAddr,
+  const std::vector<unsigned int>& srcSize, const std::vector<int>& srcStride,
+  int dstSpm, uint64_t dstAddr, const std::vector<unsigned int>& dstSize,
+  const std::vector<int>& dstStride, size_t elementSize, int priority,
+  CallbackBase* finishCB)
 {
-  //std::cout << "Begin DMAController::BeginTransfer" << std::endl;
   assert(finishCB);
   assert(srcSize.size() == srcStride.size());
   assert(dstSize.size() == dstStride.size());
@@ -180,7 +204,9 @@ void DMAController::BeginTransfer(int srcSpm, uint64_t srcAddr, const std::vecto
   assert(srcSpm == spm->GetID() || dstSpm == spm->GetID());
 
   if (srcSpm == -1 || dstSpm == -1) {
-    dmaInterface->StartTransferPrio(dmaDevice, srcSpm, srcAddr, srcSize.size(), &(srcSize[0]), &(srcStride[0]), dstSpm, dstAddr, dstSize.size(), &(dstSize[0]), &(dstStride[0]), elementSize, priority, buffer, finishCB);
+    dmaInterface->StartTransferPrio(dmaDevice, srcSpm, srcAddr, srcSize.size(),
+      &(srcSize[0]), &(srcStride[0]), dstSpm, dstAddr, dstSize.size(),
+      &(dstSize[0]), &(dstStride[0]), elementSize, priority, buffer, finishCB);
   } else if (dstSpm == spm->GetID()) {
     uint32_t msg[6];
     msg[0] = DMA_MEMORY_REQUEST;
@@ -255,23 +281,31 @@ void DMAController::BeginTransfer(int srcSpm, uint64_t srcAddr, const std::vecto
 
     localSignals.push_back(target);
   }
-
-  //std::cout << "End DMAController::BeginTransfer" << std::endl;
-
 }
-void DMAController::PrefetchMemory(uint64_t baseAddr, const std::vector<unsigned int>& size, const std::vector<int>& stride, size_t elementSize)
+
+void
+DMAController::PrefetchMemory(uint64_t baseAddr,
+  const std::vector<unsigned int>& size, const std::vector<int>& stride,
+  size_t elementSize)
 {
-  dmaInterface->Prefetch(dmaDevice, baseAddr, size.size(), &(size[0]), &(stride[0]), elementSize);
+  dmaInterface->Prefetch(dmaDevice, baseAddr, size.size(),
+    &(size[0]), &(stride[0]), elementSize);
 }
-void DMAController::SetBuffer(int buf)
+
+void
+DMAController::SetBuffer(int buf)
 {
   buffer = buf;
 }
-void DMAController::FlushTLB()
+
+void
+DMAController::FlushTLB()
 {
   tlbMap.clear();
 }
-void DMAController::AddTLBEntry(uint64_t logical, uint64_t physical)
+
+void
+DMAController::AddTLBEntry(uint64_t logical, uint64_t physical)
 {
   uint64_t lPageAddr = GetPageAddr(logical);
   uint64_t pPageAddr = GetPageAddr(physical);
@@ -288,7 +322,9 @@ void DMAController::AddTLBEntry(uint64_t logical, uint64_t physical)
     dmaInterface->Restart(dmaDevice);
   }
 }
-void DMAController::HookToMemoryController(const std::string& deviceName)
+
+void
+DMAController::HookToMemoryController(const std::string& deviceName)
 {
   assert(dmaInterface);
   assert(dmaDevice);
@@ -299,7 +335,10 @@ void DMAController::HookToMemoryController(const std::string& deviceName)
 
   dmaInterface->HookToMemoryPort(dmaDevice, deviceName.c_str());
 }
-void DMAController::BeginSingleElementTransfer(int mySPM, uint64_t spmAddr, uint64_t memAddr, uint32_t size, int type, CallbackBase* finishedCB)
+
+void
+DMAController::BeginSingleElementTransfer(int mySPM, uint64_t spmAddr,
+  uint64_t memAddr, uint32_t size, int type, CallbackBase* finishedCB)
 {
   //std::cout << "Accessing single element " << spmAddr << std::endl;
   bool isRead = (type == AccessType::Read || type == AccessType::ReadLock);
@@ -308,6 +347,10 @@ void DMAController::BeginSingleElementTransfer(int mySPM, uint64_t spmAddr, uint
   assert(!isLock || !isUnlock);
   assert(!isLock);//for now, since locking is disabled
   assert(!isUnlock);//for now, since locking is disabled
-  dmaInterface->StartSingleTransferPrio(dmaDevice, isRead ? -1 : mySPM, isRead ? memAddr : spmAddr, isRead ? mySPM : -1, isRead ? spmAddr : memAddr, size, 0, buffer, finishedCB);
+
+  dmaInterface->StartSingleTransferPrio(dmaDevice,
+    isRead ? -1 : mySPM, isRead ? memAddr : spmAddr,
+    isRead ? mySPM : -1, isRead ? spmAddr : memAddr,
+    size, 0, buffer, finishedCB);
 }
 }

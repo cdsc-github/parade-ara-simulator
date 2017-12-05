@@ -58,6 +58,7 @@ def create_system(options, full_system, system, dma_ports, ruby_system):
     if buildEnv['PROTOCOL'] != 'MESI_Two_Level_Trace':
         fatal("This script requires the MESI_Two_Level_Trace protocol to be built.")
 
+    ruby_system.aim = options.aim
     ruby_system.num_simics_net_ports = options.num_networkports
     ruby_system.num_TDs = options.num_tds
     ruby_system.num_acc_instances = options.num_accinstances

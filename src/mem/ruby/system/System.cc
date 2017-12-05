@@ -549,7 +549,7 @@ RubySystem::RubyEvent::process()
 {
     if (ruby_system->m_warmup_enabled) {
         ruby_system->m_cache_recorder->enqueueNextFetchRequest();
-    }  else if (ruby_system->m_cooldown_enabled) {
+    } else if (ruby_system->m_cooldown_enabled) {
         ruby_system->m_cache_recorder->enqueueNextFlushRequest();
     }
 }
@@ -619,14 +619,16 @@ RubySystem::functionalRead(PacketPtr pkt)
         DPRINTF(RubySystem, "only copy in Backing_Store memory, read from it\n");
         for (unsigned int i = 0; i < num_controllers; ++i) {
             access_perm = m_abs_cntrl_vec[i]->getAccessPermission(line_address);
+
             if (access_perm == AccessPermission_Backing_Store) {
-	        #ifdef SIM_NET_PORTS
- 	        MachineID id = m_abs_cntrl_vec[i]->getMachineID();
-	        if( !( (id.getType() == MachineType_L1Cache) && (id.getNum() >= (num_thread_contexts+m_num_accelerators*m_num_acc_instances+m_num_TDs)) ) )
-		  m_abs_cntrl_vec[i]->functionalRead(line_address, pkt);
-                #else
-	        m_abs_cntrl_vec[i]->functionalRead(line_address, pkt);
-                #endif
+#ifdef SIM_NET_PORTS
+            MachineID id = m_abs_cntrl_vec[i]->getMachineID();
+            if (!((id.getType() == MachineType_L1Cache) &&
+                  (id.getNum() >= (num_thread_contexts + m_num_accelerators*m_num_acc_instances + m_num_TDs))))
+                m_abs_cntrl_vec[i]->functionalRead(line_address, pkt);
+#else
+                m_abs_cntrl_vec[i]->functionalRead(line_address, pkt);
+#endif
                 return true;
             }
         }
@@ -644,13 +646,14 @@ RubySystem::functionalRead(PacketPtr pkt)
             access_perm = m_abs_cntrl_vec[i]->getAccessPermission(line_address);
             if (access_perm == AccessPermission_Read_Only ||
                 access_perm == AccessPermission_Read_Write) {
-	        #ifdef SIM_NET_PORTS
- 	        MachineID id = m_abs_cntrl_vec[i]->getMachineID();
-	        if( !( (id.getType() == MachineType_L1Cache) && (id.getNum() >= (num_thread_contexts+m_num_accelerators*m_num_acc_instances+m_num_TDs)) ) )
-		  m_abs_cntrl_vec[i]->functionalRead(line_address, pkt);
-                #else
-	        m_abs_cntrl_vec[i]->functionalRead(line_address, pkt);
-                #endif
+#ifdef SIM_NET_PORTS
+            MachineID id = m_abs_cntrl_vec[i]->getMachineID();
+            if (!((id.getType() == MachineType_L1Cache) &&
+                  (id.getNum() >= (num_thread_contexts + m_num_accelerators * m_num_acc_instances+m_num_TDs))))
+                m_abs_cntrl_vec[i]->functionalRead(line_address, pkt);
+#else
+                m_abs_cntrl_vec[i]->functionalRead(line_address, pkt);
+#endif
                 return true;
             }
         }
@@ -682,10 +685,11 @@ RubySystem::functionalWrite(PacketPtr pkt)
     int num_thread_contexts = m5_system->numContexts();
 #endif
 
-    for (unsigned int i = 0; i < num_controllers;++i) {
+    for (unsigned int i = 0; i < num_controllers; ++i) {
 #ifdef SIM_NET_PORTS
-      MachineID id = m_abs_cntrl_vec[i]->getMachineID();
-      if( !( (id.getType() == MachineType_L1Cache) && (id.getNum() >= (num_thread_contexts+m_num_accelerators*m_num_acc_instances+m_num_TDs)) ) )
+        MachineID id = m_abs_cntrl_vec[i]->getMachineID();
+      if (!((id.getType() == MachineType_L1Cache) &&
+            (id.getNum() >= (num_thread_contexts+m_num_accelerators*m_num_acc_instances+m_num_TDs))))
         num_functional_writes +=
             m_abs_cntrl_vec[i]->functionalWriteBuffers(pkt);
 #else
@@ -697,13 +701,14 @@ RubySystem::functionalWrite(PacketPtr pkt)
         if (access_perm != AccessPermission_Invalid &&
             access_perm != AccessPermission_NotPresent) {
 #ifdef SIM_NET_PORTS
-	  MachineID id = m_abs_cntrl_vec[i]->getMachineID();
-	  if( !( (id.getType() == MachineType_L1Cache) && (id.getNum() >= (num_thread_contexts+m_num_accelerators*m_num_acc_instances+m_num_TDs)) ) )
-            num_functional_writes +=
-                m_abs_cntrl_vec[i]->functionalWrite(line_addr, pkt);
+            MachineID id = m_abs_cntrl_vec[i]->getMachineID();
+            if(!((id.getType() == MachineType_L1Cache) &&
+                 (id.getNum() >= (num_thread_contexts+m_num_accelerators*m_num_acc_instances+m_num_TDs)) ) )
+                num_functional_writes +=
+                    m_abs_cntrl_vec[i]->functionalWrite(line_addr, pkt);
 #else
-            num_functional_writes +=
-                m_abs_cntrl_vec[i]->functionalWrite(line_addr, pkt);
+                num_functional_writes +=
+                    m_abs_cntrl_vec[i]->functionalWrite(line_addr, pkt);
 #endif
         }
     }

@@ -40,6 +40,8 @@ def define_options(parser):
     parser.add_option("--acc_types", metavar="ACC[,ACC]", action="store",
                       type="string", default="BlackScholes",
                       help="accelerator types to be instantiated in the system")
+    parser.add_option("--aim", action="store_true",
+                      help="modeling accelerator-interposed memory")
 
 def create_accelerators(options, system):
     # For now, use same clock as cpus.
