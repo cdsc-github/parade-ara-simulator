@@ -394,7 +394,7 @@ RubySystem::startup()
     memset(g_lwInt_interface, 0, sizeof(lwInt_ifc_t));
     warn("REGISTERING INTERRUPT INTERFACE %p\n", g_lwInt_interface);
     g_lwInt_interface->raiseLightWeightInt = &raiseLightWeightInt;
-    g_lwInt_interface->isReady = &isReady;    
+    g_lwInt_interface->isReady = &isReady;
 
     g_networkPort_interface = (gem5NetworkPortInterface *)malloc(sizeof(gem5NetworkPortInterface));
     memset(g_networkPort_interface, 0, sizeof(gem5NetworkPortInterface));
@@ -414,18 +414,18 @@ RubySystem::startup()
     for(i = 0; i < g_network_interrupt_handle.size(); i++) {
       g_network_interrupt_handle[i] = createNetworkInterruptHandle(i, RubySystem::threadIDtoDeviceID(i), i);
     }
-    warn("Initialize network_interrupt_handle\n");//*/
+    warn("Initialize network_interrupt_handle\n");
 
     g_network_interrupts.resize(num_thread_contexts);
     for(i = 0; i < g_network_interrupts.size(); i++) {
       g_network_interrupts[i] = new NetworkInterrupts(g_network_interrupt_handle[i]);
     }
-    warn("Initialize network_interrupts\n");//*/
+    warn("Initialize network_interrupts\n");
 
     g_LCAccDeviceHandle.resize(m_num_accelerators * m_num_acc_instances);
     for(i = 0; i < g_LCAccDeviceHandle.size(); i++) {
       g_LCAccDeviceHandle[i] = LCAcc::CreateNewLCAccDeviceHandle();
-    }//*/
+    }
 
     //Let's first test non AIM
     g_memObject = NULL;
@@ -450,7 +450,7 @@ RubySystem::startup()
     warn("Initialize spmInterface\n");
 
     g_LCAccInterface = LCAcc::CreateLCAccInterface();
-    warn("Initialize LCAccInterface\n");//*/
+    warn("Initialize LCAccInterface\n");
     int portID = RubySystem::accIDtoDeviceID(0);
     int TD_portID = num_thread_contexts;
 
