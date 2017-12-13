@@ -1,0 +1,13 @@
+# -*- mode:python -*-
+
+import os
+import sys
+
+from os.path import basename, isdir, join as joinpath
+
+import SCons
+
+import('*')
+
+Source('gem5Interface.cc')
+Source('MeteredMemory.cc')
