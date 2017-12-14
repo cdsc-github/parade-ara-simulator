@@ -8,10 +8,10 @@
 #include <vector>
 #include <queue>
 #include "gem5Interface.hh"
-#include "../Common/BaseCallbacks.hh"
-#include "../Common/PolyhedralAddresser.hh"
-#include "../Common/MemoryDeviceInterface.hh"
-#include "../scratch-pad/scratch-pad.hh"
+#include "modules/Common/BaseCallbacks.hh"
+#include "modules/Common/PolyhedralAddresser.hh"
+#include "modules/MeteredMemory/MemoryDeviceInterface.hh"
+#include "modules/scratch-pad/scratch-pad.hh"
 #include "mem/protocol/RubyRequestType.hh"
 
 class TransferEndPointDescription
@@ -93,7 +93,7 @@ class DMAEngine
     }
   };
   uint64_t lastEmit;
-  MeteredMemory_Interface::gem5Interface* memObject;
+  MeteredMemoryHandle* memObject;
   MemoryDeviceInterface* memInterface;
   Arg1CallbackBase<uint64_t>* onTLBMiss;
   Arg1CallbackFunctionBase<uint64_t, uint64_t>* translateAddress;
@@ -155,8 +155,6 @@ public:
     uint64_t dstAddr, size_t transferSize, int priority, int buffer,
     CallbackBase* onFinish);
 
-  void HookToMemoryPort(const char* deviceName);
-
   void UnhookMemoryPort();
 
   DMAEngine();
@@ -167,6 +165,13 @@ public:
     Arg1CallbackBase<uint64_t>* onError);
 
   void Restart();
+
+  inline std::string GetDeviceName()
+  {
+    char s[20];
+    sprintf(s, "dmaengine.%02d", nodeID);
+    return s;
+  }
 };
 
 #endif

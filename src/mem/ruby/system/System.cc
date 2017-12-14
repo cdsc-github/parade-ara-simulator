@@ -66,6 +66,7 @@ int RubySystem::m_num_simics_net_ports;
 int RubySystem::m_num_accelerators;
 int RubySystem::m_num_TDs;
 int RubySystem::m_num_acc_instances;
+bool RubySystem::m_aim;
 #endif
 
 RubySystem::RubySystem(const Params *p)
@@ -89,6 +90,8 @@ RubySystem::RubySystem(const Params *p)
     m_num_simics_net_ports = p->num_simics_net_ports;
     m_num_TDs = p->num_TDs;
     m_num_acc_instances = p->num_acc_instances;
+    // accelerator-interposed memory
+    m_aim = p->aim;
 #endif
 
     m_warmup_enabled = false;
@@ -427,9 +430,17 @@ RubySystem::startup()
       g_LCAccDeviceHandle[i] = LCAcc::CreateNewLCAccDeviceHandle();
     }
 
-    //Let's first test non AIM
-    g_memObject = NULL;
-    g_memInterface = NULL;
+    if (RubySystem::aim()) {
+        // accelerator-interposed memory
+        g_memObject.resize(m_num_acc_instances);
+        for (i = 0; i < g_memObject.size(); i++) {
+            g_memObject[i] = CreateMeteredMemoryHandle(i);
+        }
+        warn("Initialize meteredmemory object vector");
+
+        g_memInterface = CreateMemoryDeviceInterface();
+        warn("Initialize memory device interface");
+    }
 
     g_dmaDevice.resize(m_num_accelerators * m_num_acc_instances);
     for(i = 0; i < g_dmaDevice.size(); i++) {

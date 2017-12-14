@@ -114,7 +114,8 @@ DMAEngine::IsRedirectingToMemory() const
   return memObject != NULL;
 }
 
-bool DMAEngine::IsReady(uint64_t lAddr, uint64_t pAddr, RubyRequestType direction)
+bool
+DMAEngine::IsReady(uint64_t lAddr, uint64_t pAddr, RubyRequestType direction)
 {
   if (!IsRedirectingToMemory()) {
     int L1CacheID;
@@ -176,8 +177,7 @@ DMAEngine::MakeRequest(uint64_t lAddr, uint64_t pAddr,
     assert(direction == RubyRequestType_LD || direction == RubyRequestType_ST);
 
     if (direction == RubyRequestType_LD) {
-      memInterface->IssueRead(memObject, pAddr, BLOCK_SIZE,
-        MemDevInterfaceInterceptCB::Create(this, cb));
+      memInterface->IssueRead(memObject, pAddr, BLOCK_SIZE, cb);
     } else {
       memInterface->IssueWrite(memObject, pAddr, BLOCK_SIZE, NULL, cb);
     }
@@ -225,7 +225,7 @@ DMAEngine::WriteBlock(uint64_t spmAddr, uint64_t pMemAddr, uint64_t lMemAddr,
 {
   uint64_t d;
   spmInterface->read(spm, spmAddr, &d, size);
-  WriteMemory(pMemAddr, d, size);//*/
+  WriteMemory(pMemAddr, d, size);
 }
 
 void
@@ -369,10 +369,22 @@ DMAEngine::Configure(int node, int spm, Arg1CallbackBase<uint64_t>* onTLBMiss,
 
   spmID = spm;
   nodeID = node;
+
+  int AccID = RubySystem::deviceIDtoAccID(spm);
+
   if (nodeID < RubySystem::numberOfTDs()) {
     this->spm = g_TdSpmObject[spm];
   } else {
-    this->spm = g_spmObject[RubySystem::deviceIDtoAccID(spm)];
+    this->spm = g_spmObject[AccID];
+
+    // accelerator-interposed memory
+    if (RubySystem::aim()) {
+      memObject = g_memObject[nodeID - RubySystem::numberOfTDs() - 1];
+      memInterface = g_memInterface;
+
+      ML_LOG(GetDeviceName(), "hook to meteredmemory." << std::setfill('0')
+        << std::setw(2) << nodeID - RubySystem::numberOfTDs() - 1);
+    }
   }
 
   spmInterface = g_spmInterface;
@@ -554,18 +566,6 @@ DMAEngine::OnMemoryResponse(uint64_t addr, uint64_t calledTime)
     pendingWrites.erase(addr);
   }
   ScheduleCB(0, TryTransfersCB::Create(this));
-}
-
-void
-DMAEngine::HookToMemoryPort(const char* deviceName)
-{
-  assert(memObject == NULL);
-  assert(memInterface == NULL);
-  assert(deviceName);
-  memObject = g_memObject;
-  assert(memObject);
-  memInterface = g_memInterface;
-  assert(memInterface);
 }
 
 void

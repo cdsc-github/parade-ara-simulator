@@ -128,11 +128,9 @@ DMAController::OnNetworkMsg(int src, const void* buf, unsigned int bufSize)
     r.requestedAddr = bc_request.u64[0];
     r.size = args[4];
     assert(bufSize == sizeof(uint32_t) * 6 + r.size);
-    bool resolved = false;
 
     for (std::vector<SignalEntry>::iterator i = localSignals.begin(); i != localSignals.end(); i++) {
       if (i->Matches(r)) {
-        resolved = true;
         assert(i->onFinish);
         gem5Interface::RegisterCallback(i->onFinish, 0);
         spm->Write(r.dstAddr, r.size, &(args[5]));

@@ -122,7 +122,6 @@ HookToMemoryPort(DMAEngineHandle* dma, const char* deviceName)
   DMAEngineHandle* x = (DMAEngineHandle*)dma;
   assert(x);
   assert(x->ptd);
-  x->ptd->HookToMemoryPort(deviceName);
 }
 
 void

@@ -7,7 +7,7 @@ from os.path import basename, isdir, join as joinpath
 
 import SCons
 
-import('*')
+Import('*')
 
-Source('gem5Interface.cc')
+Source('MemoryDeviceInterface.cc')
 Source('MeteredMemory.cc')

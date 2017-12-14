@@ -41,7 +41,7 @@ vector<NetworkInterrupts*> g_network_interrupts;
 TLBHackInterface* g_TLBHack_interface;
 TaskDistributorInterface* g_TDInterface;
 vector<TDHandle*> g_TDHandle;
-MeteredMemory_Interface::gem5Interface* g_memObject;
+vector<MeteredMemoryHandle*> g_memObject;
 MemoryDeviceInterface* g_memInterface;
 vector<DMAEngineHandle*> g_dmaDevice;
 vector<DMAEngineHandle*> g_TdDmaDevice;

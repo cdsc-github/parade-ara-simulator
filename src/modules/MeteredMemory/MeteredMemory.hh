@@ -1,25 +1,19 @@
 #ifndef METERED_MEMORY_INTERFACE_H
 #define METERED_MEMORY_INTERFACE_H
 
-#include "Global.hh"
 #include <string>
 #include <map>
-
-namespace MeteredMemory_Interface
-{
-class gem5Interface;
-}
+#include "MemoryDeviceInterface.hh"
+#include "modules/Common/BaseCallbacks.hh"
 
 class MeteredMemory
 {
-  MeteredMemory_Interface::gem5Interface* interface;
-
   uint64_t currentOverflow;
 
-  void SendResponse(gem5MemoryInterfaceMemResponse mResp, int port, int deviceID);
+  // void SendResponse(gem5MemoryInterfaceMemResponse mResp, int port, int deviceID);
 
-  typedef MemberCallback3<MeteredMemory, SimicsMemoryInterfaceMemResponse,
-    int, int, &MeteredMemory::SendResponse> SendResponseCB;
+  // typedef MemberCallback3<MeteredMemory, gem5MemoryInterfaceMemResponse,
+  //   int, int, &MeteredMemory::SendResponse> SendResponseCB;
 
   uint64_t bytesPerSec;
   uint64_t clock;
@@ -28,12 +22,13 @@ class MeteredMemory
   int currentOccupancy;
   int tick;
 
-  std::string deviceName;
+  uint64_t nextTransfer;
+
+  int portID;
   std::map<int, int> accessesByDevice;
 
 public:
-  MeteredMemory(MeteredMemory_Interface::gem5Interface* interface,
-    const std::string& deviceName);
+  MeteredMemory(int portID);
 
   void Tick();
 
@@ -47,17 +42,24 @@ public:
 
   void SetBytesPerSec(uint64_t x);
 
-  void RecvRequest(const SimicsMemoryInterfaceMemRequest& mReq, int port);
+  // void RecvRequest(const gem5MemoryInterfaceMemRequest& mReq, int port);
 
-  std::string TypeToString(int type)
+  // std::string TypeToString(int type)
+  // {
+  //   if (type == SIM_MEMORY_READ) {
+  //     return "Read";
+  //   } else if(type == SIM_MEMORY_WRITE) {
+  //     return "Write";
+  //   } else {
+  //     return "Access";
+  //   }
+  // }
+
+  inline std::string GetDeviceName()
   {
-    if (type == SIM_MEMORY_READ) {
-      return "Read";
-    } else if(type == SIM_MEMORY_WRITE) {
-      return "Write";
-    } else {
-      return "Access";
-    }
+    char s[20];
+    sprintf(s, "meteredmemory.%02d", portID);
+    return s;
   }
 };
 

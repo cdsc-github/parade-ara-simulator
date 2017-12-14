@@ -73,10 +73,12 @@ class RubySystem : public ClockedObject
     // config accessors
 #ifdef SIM_NET_PORTS
     static std::vector<std::string> accTypes;
+    static bool m_aim;
     static int m_num_simics_net_ports;
     static int m_num_accelerators;
     static int m_num_acc_instances;
     static int m_num_TDs;
+    static int aim() { return m_aim; }
     static int numberOfAccelerators() { return m_num_accelerators; }
     static int numberOfgem5NetworkPortPerChip() { return m_num_simics_net_ports; }
     static int numberOfgem5NetworkPortPerChip(NodeID&) {return numberOfgem5NetworkPortPerChip(); }
@@ -166,10 +168,10 @@ class RubySystem : public ClockedObject
         {"Swaptions", {"swaptions1", "swaptions2", "swaptions3", "swaptions4"}},
         {"LPCIP_Desc", {"LPCIP"}},
         {"SURF_Desc", {"SURF1Mega", "SURF2Mega", "SURF3Mega", "SURF4Mega", "SURF5Mega"}},
-        {"Texture_Synthesis", {"TexSynth1", 
-                               "TexSynth2", "TexSynth2", "TexSynth2", "TexSynth2", "TexSynth2", "TexSynth2", "TexSynth2", "TexSynth2", "TexSynth2", 
-                               "TexSynth3", "TexSynth3", "TexSynth3", "TexSynth3", 
-                               "TexSynth4", "TexSynth4", "TexSynth4", "TexSynth4", 
+        {"Texture_Synthesis", {"TexSynth1",
+                               "TexSynth2", "TexSynth2", "TexSynth2", "TexSynth2", "TexSynth2", "TexSynth2", "TexSynth2", "TexSynth2", "TexSynth2",
+                               "TexSynth3", "TexSynth3", "TexSynth3", "TexSynth3",
+                               "TexSynth4", "TexSynth4", "TexSynth4", "TexSynth4",
                                "TexSynth5"}},
         {"Robot_Localization", {"RobLoc"}},
         {"Disparity_Map", {"DispMapCompSAD", "DispMapFindDisp", "DispMapIntegSum"}},
