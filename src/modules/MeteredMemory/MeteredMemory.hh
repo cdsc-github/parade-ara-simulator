@@ -36,12 +36,6 @@ public:
 
   void IssueWrite(uint64_t addr, size_t size, CallbackBase* cb);
 
-  void SetLatency(uint64_t x);
-
-  void SetClock(uint64_t x);
-
-  void SetBytesPerSec(uint64_t x);
-
   // void RecvRequest(const gem5MemoryInterfaceMemRequest& mReq, int port);
 
   // std::string TypeToString(int type)

@@ -67,6 +67,9 @@ int RubySystem::m_num_accelerators;
 int RubySystem::m_num_TDs;
 int RubySystem::m_num_acc_instances;
 bool RubySystem::m_aim;
+int RubySystem::m_mem_bandwidth;
+int RubySystem::m_mem_clock;
+int RubySystem::m_mem_latency;
 #endif
 
 RubySystem::RubySystem(const Params *p)
@@ -92,6 +95,9 @@ RubySystem::RubySystem(const Params *p)
     m_num_acc_instances = p->num_acc_instances;
     // accelerator-interposed memory
     m_aim = p->aim;
+    m_mem_bandwidth = p->mem_bandwidth;
+    m_mem_clock = p->mem_clock;
+    m_mem_latency = p->mem_latency;
 #endif
 
     m_warmup_enabled = false;

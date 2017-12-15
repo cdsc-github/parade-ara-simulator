@@ -42,6 +42,12 @@ def define_options(parser):
                       help="accelerator types to be instantiated in the system")
     parser.add_option("--aim", action="store_true",
                       help="modeling accelerator-interposed memory")
+    parser.add_option("--aim_mem_bandwidth", action="store", type="int", default=100,
+                      help="aim memory object bandwidth in bytes per second")
+    parser.add_option("--aim_mem_clock", action="store", type="int", default=100,
+                      help="aim memory object clock normalized to cpu clock")
+    parser.add_option("--aim_mem_latency", action="store", type="int", default=100,
+                      help="aim memory object latency in cpu cycles")
 
 def create_accelerators(options, system):
     # For now, use same clock as cpus.

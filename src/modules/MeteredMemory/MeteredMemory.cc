@@ -20,9 +20,9 @@ MeteredMemory::MeteredMemory(int portID)
 {
   this->portID = portID;
   currentOverflow = 0;
-  bytesPerSec = 100;
-  clock = 100;
-  latency = 100;
+  bytesPerSec = RubySystem::memBandwidth();
+  clock = RubySystem::memClock();
+  latency = RubySystem::memLatency();
   currentOccupancy = 0;
   tick = 0;
   nextTransfer = 0;
@@ -52,11 +52,12 @@ void
 MeteredMemory::IssueRead(uint64_t addr, size_t size, CallbackBase* cb)
 {
   uint64_t delay = (size * clock) / bytesPerSec;
+  uint64_t curTick = GetSystemTime();
 
-  if (nextTransfer > GetSystemTime()) {
-    delay += nextTransfer - GetSystemTime();
-    nextTransfer = GetSystemTime() + delay;
+  if (nextTransfer > curTick) {
+    delay += nextTransfer - curTick;
   }
+  nextTransfer = curTick + delay;
 
   ScheduleCB(cb, (latency + delay));
 
@@ -68,34 +69,17 @@ void
 MeteredMemory::IssueWrite(uint64_t addr, size_t size, CallbackBase* cb)
 {
   uint64_t delay = (size * clock ) / bytesPerSec;
+  uint64_t curTick = GetSystemTime();
 
-  if (nextTransfer > GetSystemTime()) {
-    delay += nextTransfer - GetSystemTime();
-    nextTransfer = GetSystemTime() + delay;
+  if (nextTransfer > curTick) {
+    delay += nextTransfer - curTick;
   }
+  nextTransfer = curTick + delay;
 
   ScheduleCB(cb, (latency + delay));
 
   ML_LOG(GetDeviceName(), "write " << size << " bytes from 0x"
     << std::hex << addr << "delay = " << std::dec << delay);
-}
-
-void
-MeteredMemory::SetLatency(uint64_t x)
-{
-  latency = x;
-}
-
-void
-MeteredMemory::SetClock(uint64_t x)
-{
-  clock = x;
-}
-
-void
-MeteredMemory::SetBytesPerSec(uint64_t x)
-{
-  bytesPerSec = x;
 }
 
 // void
