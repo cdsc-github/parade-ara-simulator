@@ -10,12 +10,14 @@ acc_types = [
     'Registration_Modified',
     'Segmentation',
     'BlackScholes',
+    'BlackScholes_DIMM',
     'StreamCluster',
     'Swaptions',
     'LPCIP_Desc',
     # 'SURF_Desc',
     'Texture_Synthesis',
     'Robot_Localization',
+    'Robot_Localization_DIMM',
     'Disparity_Map',
     'EKF_SLAM'
 ]

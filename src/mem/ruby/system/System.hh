@@ -170,6 +170,7 @@ class RubySystem : public ClockedObject
         {"Registration_Modified", {"registration1Mega", "blur1Mega"}},
         {"Segmentation", {"segmentation1Mega"}},
         {"BlackScholes", {"blackScholes"}},
+        {"BlackScholes_DIMM", {"blackScholes_dimm"}},
         {"StreamCluster", {"streamCluster1", "streamCluster3", "streamCluster4", "streamCluster5", "streamCluster6"}},
         {"Swaptions", {"swaptions1", "swaptions2", "swaptions3", "swaptions4"}},
         {"LPCIP_Desc", {"LPCIP"}},
@@ -180,6 +181,7 @@ class RubySystem : public ClockedObject
                                "TexSynth4", "TexSynth4", "TexSynth4", "TexSynth4",
                                "TexSynth5"}},
         {"Robot_Localization", {"RobLoc"}},
+        {"Robot_Localization_DIMM", {"RobLoc_dimm"}},
         {"Disparity_Map", {"DispMapCompSAD", "DispMapFindDisp", "DispMapIntegSum"}},
         {"EKF_SLAM", {"Jacobians", "SphericalCoords"}}
     };

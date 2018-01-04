@@ -361,7 +361,6 @@ TD::MsgHandler(int src, const void* packet, unsigned int packetSize)
 
     assert(pendingJobSet.find(userProcess) != pendingJobSet.end());
     bool allDone = false;
-    ML_LOG(GetDeviceName(), "END CFU Allocation " << src << " to " << userProcess);
 
     if (pendingJobSet[userProcess].size() == 0) {
       //whole task is done
@@ -382,7 +381,7 @@ TD::MsgHandler(int src, const void* packet, unsigned int packetSize)
       assert(lastKnownCore.find(userProcess) != lastKnownCore.end());
       assert(requiredBufferSize.find(userProcess) != requiredBufferSize.end());
 
-      ML_LOG(GetDeviceName(), "END Program Execute for userthread"
+      ML_LOG(GetDeviceName(), "END Program Execute for userthread "
         << userProcess);
       netPort->SendMessage(lastKnownCore[userProcess], endMsg, sizeof(endMsg));
 

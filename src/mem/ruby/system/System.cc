@@ -123,14 +123,24 @@ RubySystem::parseAccTypes(std::string acc_types)
     size_t pos = 0;
     std::string token;
     std::vector<std::string> typeDeviceNames;
+
+    // multiple accelerator types
     while ((pos = acc_types.find(delimiter)) != std::string::npos) {
         token = acc_types.substr(0, pos);
         accTypes.push_back(token);
+
+        if (m_acc_dict.find(token) == m_acc_dict.end()) {
+          fatal("Unknown accelerator type '%s'\n", token);
+        }
         typeDeviceNames = m_acc_dict[token];
         m_num_accelerators += typeDeviceNames.size();
         acc_types.erase(0, pos + delimiter.length());
     }
 
+    // single accelerator type
+    if (m_acc_dict.find(acc_types) == m_acc_dict.end()) {
+      fatal("Unknown accelerator type '%s'\n", acc_types);
+    }
     accTypes.push_back(acc_types);
     typeDeviceNames = m_acc_dict[acc_types];
     m_num_accelerators += typeDeviceNames.size();

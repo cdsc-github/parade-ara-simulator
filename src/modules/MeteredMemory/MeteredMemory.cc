@@ -61,7 +61,7 @@ MeteredMemory::IssueRead(uint64_t addr, size_t size, CallbackBase* cb)
 
   ScheduleCB(cb, (latency + delay));
 
-  ML_LOG(GetDeviceName(), "read " << size << " bytes from 0x"
+  ML_LOG(GetDeviceName(), "read " << size << " bytes at 0x"
     << std::hex << addr << " delay = " << std::dec << delay);
 }
 
@@ -78,8 +78,8 @@ MeteredMemory::IssueWrite(uint64_t addr, size_t size, CallbackBase* cb)
 
   ScheduleCB(cb, (latency + delay));
 
-  ML_LOG(GetDeviceName(), "write " << size << " bytes from 0x"
-    << std::hex << addr << "delay = " << std::dec << delay);
+  ML_LOG(GetDeviceName(), "write " << size << " bytes at 0x"
+    << std::hex << addr << " delay = " << std::dec << delay);
 }
 
 // void
