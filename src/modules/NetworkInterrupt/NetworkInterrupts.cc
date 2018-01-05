@@ -454,6 +454,7 @@ uint64_t LCAccMagicIntercept(void*, ThreadContext* cpu, int32_t op, uint64_t arg
     break;
 
     case (0xC012): { //MAGIC_LCACC_COMMAND
+      ML_LOG("magicintercept", "LCAcc command received with opcode " << (uint32_t)arg3);
       uint32_t buffer[9];
       int target = (int)arg2;
       buffer[0] = (uint32_t)arg3;
@@ -489,8 +490,10 @@ uint64_t LCAccMagicIntercept(void*, ThreadContext* cpu, int32_t op, uint64_t arg
       buffer[7] = (uint32_t)arg6;
       buffer[8] = (uint32_t)arg7;
 
-      std::cout << "Sending a Command to " << target << ", " << buffer[0] << " [addr=" << bc_vAddr.u64[0] << "->" << bc.u64[0] << "], " << buffer[6] << " " << buffer[7] << " " << buffer[8] << std::endl;
-      std::cout << " " << buffer[1] << " " << target << " " << buffer[0] << " " << bc_vAddr.u64[0] << " " << buffer[6] << " " << buffer[7] << " " << buffer[8] << std::endl;
+      ML_LOG("magicintercept", "sending command " << buffer[0] << " to "
+          << target << " [addr=" << bc_vAddr.u64[0] << "->" << bc.u64[0]
+          << "], " << buffer[6] << " " << buffer[7] << " " << buffer[8]);
+
       retVal = 1;
       nih->snpi->SendMessageOnDevice(nih->deviceID, target, buffer, sizeof(buffer));
     }
@@ -545,8 +548,7 @@ uint64_t LCAccMagicIntercept(void*, ThreadContext* cpu, int32_t op, uint64_t arg
       int i;
       int max = (int32_t)arg5;
 
-      for (i = (int32_t)arg4;
-           i < max; i++) {
+      for (i = (int32_t)arg4; i < max; i++) {
         logical_address_t logicalAddress = addr + i;
         physical_address_t physicalAddress = TheISA::vtophys(cpu, logicalAddress);
 
@@ -555,7 +557,7 @@ uint64_t LCAccMagicIntercept(void*, ThreadContext* cpu, int32_t op, uint64_t arg
         } else {
           break;
         }
-      } //End for loop
+      }
 
       retVal = i;
     }

@@ -298,7 +298,7 @@ TD::MsgHandler(int src, const void* packet, unsigned int packetSize)
     assert(packetSize == 9 * sizeof(uint32_t));
     lastKnownCore[process] = src;
 
-    ML_LOG(GetDeviceName(), "program description received from device "
+    ML_LOG(GetDeviceName(), "command to begin program received from device "
       << src << " for userthread " << process);
 
     BitConverter bc;
@@ -531,14 +531,18 @@ void TD::ExecuteProgram(TaskReadData& trd)
   ML_LOG(GetDeviceName(), "BEGIN Program Execute for userthread "
     << trd.process);
   assert(trd.loadedPacket != NULL);
+  ML_LOG(GetDeviceName(), "parsing program description");
   PacketReader& pr = *(trd.loadedPacket);
   TDProgram* tdp = new TDProgram();
   tdp->ReadIn(pr);
+  ML_LOG(GetDeviceName(), "parsing done");
 
   if (tdp->taskGrain == 0) {
     ML_LOG(GetDeviceName(), "setting task grain to default of "
       << defaultTaskGrain);
     tdp->taskGrain = defaultTaskGrain;
+  } else {
+    ML_LOG(GetDeviceName(), "task grain : " << tdp->taskGrain);
   }
 
   requiredBufferSize[trd.process] = trd.sharedBufferSize;

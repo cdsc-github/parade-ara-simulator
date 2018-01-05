@@ -146,7 +146,6 @@ class LCAccDevice
       notifyOnComplete = false;
       this->taskID = taskID;
       computeReady = retireReady = false;
-      numberOfTasks = 8;
     }
   };
   class TaskBlock

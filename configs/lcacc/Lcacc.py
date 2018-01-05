@@ -7,11 +7,17 @@ from Ruby import send_evicts
 acc_types = [
     'Deblur_Modified',
     'Denoise',
+    'Denoise_DIMM',
+    'FFT_1D_DIMM',
+    'FluidAnimate_DIMM',
+    'Registration_DIMM',
     'Registration_Modified',
     'Segmentation',
+    'Segmentation_DIMM',
     'BlackScholes',
     'BlackScholes_DIMM',
     'StreamCluster',
+    'StreamCluster_DIMM',
     'Swaptions',
     'LPCIP_Desc',
     # 'SURF_Desc',
@@ -19,7 +25,8 @@ acc_types = [
     'Robot_Localization',
     'Robot_Localization_DIMM',
     'Disparity_Map',
-    'EKF_SLAM'
+    'EKF_SLAM',
+    'EKF_SLAM_DIMM',
 ]
 
 def get(name):

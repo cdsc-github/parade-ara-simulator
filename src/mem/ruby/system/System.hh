@@ -165,13 +165,19 @@ class RubySystem : public ClockedObject
     std::vector<AbstractController *> m_abs_cntrl_vec;
 
     std::map<std::string, std::vector<std::string>> m_acc_dict = {
-        {"Deblur_Modified", {"denoise1Mega", "blur1Mega", "deblur1Mega", "deblur2Mega"}},
-        {"Denoise", {"denoise1Mega", "denoise2Mega"}},
-        {"Registration_Modified", {"registration1Mega", "blur1Mega"}},
-        {"Segmentation", {"segmentation1Mega"}},
         {"BlackScholes", {"blackScholes"}},
         {"BlackScholes_DIMM", {"blackScholes_dimm"}},
+        {"Deblur_Modified", {"denoise1Mega", "blur1Mega", "deblur1Mega", "deblur2Mega"}},
+        {"Denoise", {"denoise1Mega", "denoise2Mega"}},
+        {"Denoise_DIMM", {"denoise1_dimm", "denoise2_dimm"}},
+        {"FFT_1D_DIMM", {"fft_dimm", "fft"}},
+        {"FluidAnimate_DIMM", {"fluidAnimate1_dimm"}},
+        {"Registration_DIMM", {"registration_dimm", "blur_dimm"}},
+        {"Registration_Modified", {"registration1Mega", "blur1Mega"}},
+        {"Segmentation", {"segmentation1Mega"}},
+        {"Segmentation_DIMM", {"segmentation_dimm"}},
         {"StreamCluster", {"streamCluster1", "streamCluster3", "streamCluster4", "streamCluster5", "streamCluster6"}},
+        {"StreamCluster_DIMM", {"streamCluster1_dimm", "streamCluster2_dimm", "streamCluster3_dimm"}},
         {"Swaptions", {"swaptions1", "swaptions2", "swaptions3", "swaptions4"}},
         {"LPCIP_Desc", {"LPCIP"}},
         {"SURF_Desc", {"SURF1Mega", "SURF2Mega", "SURF3Mega", "SURF4Mega", "SURF5Mega"}},
@@ -183,7 +189,8 @@ class RubySystem : public ClockedObject
         {"Robot_Localization", {"RobLoc"}},
         {"Robot_Localization_DIMM", {"RobLoc_dimm"}},
         {"Disparity_Map", {"DispMapCompSAD", "DispMapFindDisp", "DispMapIntegSum"}},
-        {"EKF_SLAM", {"Jacobians", "SphericalCoords"}}
+        {"EKF_SLAM", {"Jacobians", "SphericalCoords"}},
+        {"EKF_SLAM_DIMM", {"Jacobians_dimm", "SphericalCoords_dimm"}}
     };
 
   public:

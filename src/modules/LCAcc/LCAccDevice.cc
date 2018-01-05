@@ -587,7 +587,7 @@ LCAccDevice::ParseTaskSignature(PacketReader& pr)
   skipTasks = pr.Read<uint32_t>();
   numberOfTasks = pr.Read<uint32_t>();
 
-  ML_LOG(GetDeviceName(), "receiving job " << skipTasks / 8);
+  ML_LOG(GetDeviceName(), "receiving job " << skipTasks / numberOfTasks);
   ML_LOG(GetDeviceName(), "transfers per task: " << transfersPerTask);
   ML_LOG(GetDeviceName(), "computes per task: " << computesPerTask);
   ML_LOG(GetDeviceName(), "tasks in job: " << skipTasks << " - "
@@ -878,6 +878,7 @@ LCAccDevice::ParseTaskSignature(PacketReader& pr)
     // set the flag for the last task in the job
     a->notifyOnComplete = (readQueue.size() > 1) ? false : true;
     a->user = currentUser;
+    a->numberOfTasks = numberOfTasks;
     std::vector<TransferOrder>& read = readQueue.front();
     std::vector<TransferOrder>& write = writeQueue.front();
     std::vector<ComputeOrder>& compute = computeQueue.front();
