@@ -98,7 +98,7 @@ namespace LCAcc
 			assert(regs.size() == 1);
 			counter = ConvertTypes<uint32_t, int>(regs[0]);
 		}
-		inline static int GetOpCode(){return 1053;}
+		inline static int GetOpCode(){return 1003;}
 	};
 }
 
