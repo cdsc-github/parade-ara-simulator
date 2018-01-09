@@ -208,12 +208,12 @@ Touch(int thread, void* addr, uint32_t size)
             uint8_t trashVal = *(a + i);
             *(a + i) = trashVal;
         }
-        MAGIC_CMD(ret, 0xC101, thread, (a + i), i, size,0,0,0);
+        MAGIC_CMD(ret, 0xC101, thread, (a + i), i, size, 0, 0, 0);
     }
 
     // Also need to touch the last byte, previous loop may miss the last page
     // (unaligned case) because the step is 4096
     uint8_t trashVal = *(a + size - 1);
     *(a + size - 1) = trashVal;
-    MAGIC_CMD(ret, 0xC101, thread, (a + size - 1), 0, size,0,0,0);
+    MAGIC_CMD(ret, 0xC101, thread, (a + size - 1), size - 1, size, 0, 0, 0);
 }
