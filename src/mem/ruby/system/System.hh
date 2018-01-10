@@ -190,7 +190,8 @@ class RubySystem : public ClockedObject
         {"Robot_Localization_DIMM", {"RobLoc_dimm"}},
         {"Disparity_Map", {"DispMapCompSAD", "DispMapFindDisp", "DispMapIntegSum"}},
         {"EKF_SLAM", {"Jacobians", "SphericalCoords"}},
-        {"EKF_SLAM_DIMM", {"Jacobians_dimm", "SphericalCoords_dimm"}}
+        {"EKF_SLAM_DIMM", {"Jacobians_dimm", "SphericalCoords_dimm"}},
+        {"KNN", {"ManhattanDist", "MergeSort"}}
     };
 
   public:

@@ -27,6 +27,7 @@ acc_types = [
     'Disparity_Map',
     'EKF_SLAM',
     'EKF_SLAM_DIMM',
+    'KNN',
 ]
 
 def get(name):
