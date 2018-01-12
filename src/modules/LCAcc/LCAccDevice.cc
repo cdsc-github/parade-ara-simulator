@@ -501,7 +501,6 @@ LCAccDevice::MsgHandler(int src, const void* packet, unsigned int packetSize)
     bufferSize = msg[3];//unused for the time being
     assert(bufferID == -1 || bufferSize > 0);
     dma->FlushTLB();
-    std::cout << "Setting up with bufferID " << bufferID << " size " << bufferSize << std::endl;
     spm->SetBuffer(bufferID);
     dma->SetBuffer(bufferID);
     PacketReader pr(&(msg[4]), packetSize - sizeof(int32_t) * 4);
@@ -775,9 +774,9 @@ LCAccDevice::ParseTaskSignature(PacketReader& pr)
       std::cout << "Arg " << x << " base:" << baseIndex[x] << " ";
 
       for (size_t i = 0; i < size.size(); i++)
-        std::cout << "[" << size[i] << "," << stride[i] << "] ";
+        std::cout << "chunk:" << size[i] << " chunksize:" << stride[i];
 
-      std::cout << "  element size:" << cd.argElementSize[x] << std::endl;
+      std::cout << " elementsize:" << cd.argElementSize[x] << std::endl;
     }
 
     registerCount = cd.controlRegister.size();

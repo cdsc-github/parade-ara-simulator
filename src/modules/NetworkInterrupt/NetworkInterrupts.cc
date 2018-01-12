@@ -491,8 +491,9 @@ uint64_t LCAccMagicIntercept(void*, ThreadContext* cpu, int32_t op, uint64_t arg
       buffer[8] = (uint32_t)arg7;
 
       ML_LOG("magicintercept", "sending command " << buffer[0] << " to "
-          << target << " [addr=" << bc_vAddr.u64[0] << "->" << bc.u64[0]
-          << "], " << buffer[6] << " " << buffer[7] << " " << buffer[8]);
+        << target << " [0x" << std::hex << bc_vAddr.u64[0] << " -> 0x"
+        << std::hex << bc.u64[0] << "], " << buffer[6] << " " << buffer[7]
+        << " " << buffer[8]);
 
       retVal = 1;
       nih->snpi->SendMessageOnDevice(nih->deviceID, target, buffer, sizeof(buffer));
@@ -581,16 +582,15 @@ uint64_t LCAccMagicIntercept(void*, ThreadContext* cpu, int32_t op, uint64_t arg
         assert(accepter.la_args[1]);
         assert(msg.packet.size() < 100);
         assert(msg.packet.size() % 4 == 0);
-        std::cout << "[LWI_MAGIC_CHECK] @ thread " << thread << ": msg of size" << msg.packet.size() / 4 << std::endl;
+        std::cout << "[LWI_MAGIC_CHECK] @ thread " << thread << ": msg of size " << msg.packet.size() / 4 << std::endl;
 
         for (int i = 0; i < msg.packet.size() / 4; i++) {
           assert(accepter.la_args.size() > i * 4);
           uint32_t* v = (uint32_t* )&msg.packet[i * 4];
-          std::cout << i << ", " << accepter.la_args[i * 4] << ", " << accepter.pa_args[i * 4] << "," << *v << std::endl;
+          std::cout << i << ", " << accepter.la_args[i * 4] << ", " << accepter.pa_args[i * 4] << ", " << *v << std::endl;
           LCAcc::gem5Interface::WritePhysical(accepter.pa_args[i * 4], (void*)v, 4);
         }
 
-        std::cout << std::endl;
         la = accepter.la_args[0];
         assert(la);
         DPRINTF(LWI, "Interrupt raised on thread %d ", thread);

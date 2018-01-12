@@ -13,8 +13,8 @@
 
 std::map<int, std::map<logical_address_t, physical_address_t> > largeTLB;
 
-void 
-MagicHandler(void*, ThreadContext* cpu, integer_t op, int thread, 
+void
+MagicHandler(void*, ThreadContext* cpu, integer_t op, int thread,
     logical_address_t lAddr, uint64_t index, uint64_t size)
 {
   if (op == 0xC101) {
