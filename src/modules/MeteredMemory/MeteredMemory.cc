@@ -51,10 +51,7 @@ MeteredMemory::Tick()
 void
 MeteredMemory::IssueRead(uint64_t addr, size_t size, CallbackBase* cb)
 {
-  uint64_t delay = (size * clock) / bytesPerSec;
-  if (!delay)
-    delay = 1;
-
+  uint64_t delay = (size * clock - 1) / bytesPerSec + 1;
   uint64_t curTick = GetSystemTime();
 
   if (nextTransfer > curTick) {
@@ -71,10 +68,7 @@ MeteredMemory::IssueRead(uint64_t addr, size_t size, CallbackBase* cb)
 void
 MeteredMemory::IssueWrite(uint64_t addr, size_t size, CallbackBase* cb)
 {
-  uint64_t delay = (size * clock ) / bytesPerSec;
-  if (!delay)
-    delay = 1;
-
+  uint64_t delay = (size * clock - 1) / bytesPerSec + 1;
   uint64_t curTick = GetSystemTime();
 
   if (nextTransfer > curTick) {
