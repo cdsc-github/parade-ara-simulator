@@ -1,3 +1,3 @@
-echo -e "SW_KNN 0 131072" | ./benchmarks/bench.out /benchmarks/SW/
+echo -e "SW_KNN 0 65536" | ./benchmarks/bench.out /benchmarks/SW/
 m5 dumpstats
 m5 exit
