@@ -50,6 +50,8 @@ class RubySystem(ClockedObject):
         "accelerator type to be instantiated in the system");
     aim = Param.Bool(False,
         "modeling Accelerator-Interposed Memory")
+    multiaim = Param.Bool(False,
+        "modeling of each accelerator having a private aim instance")
     mem_bandwidth = Param.Int(100, "memory object bandwidth in bytes per second")
     mem_clock = Param.Int(100, "memory object clock normalized to cpu clock")
     mem_latency = Param.Int(100, "memory object latency in cpu cycles")

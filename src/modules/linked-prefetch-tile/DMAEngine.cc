@@ -379,10 +379,14 @@ DMAEngine::Configure(int node, int spm, Arg1CallbackBase<uint64_t>* onTLBMiss,
 
     // accelerator-interposed memory
     if (RubySystem::aim()) {
-      // each accelerator instance has one private memory instance
-      // memObject = g_memObject[nodeID - RubySystem::numberOfTDs() - 1];
-      // all accelerators map to one shared memory instance
-      memObject = g_memObject[0];
+      if (RubySystem::multiaim()) {
+        // each accelerator instance has one private memory instance
+        memObject = g_memObject[nodeID - RubySystem::numberOfTDs() - 1];
+      } else {
+        // all accelerators map to one shared memory instance
+        memObject = g_memObject[0];
+      }
+
       memInterface = g_memInterface;
 
       ML_LOG(GetDeviceName(), "hook to meteredmemory." << std::setfill('0')

@@ -67,6 +67,7 @@ int RubySystem::m_num_accelerators;
 int RubySystem::m_num_TDs;
 int RubySystem::m_num_acc_instances;
 bool RubySystem::m_aim;
+bool RubySystem::m_multiaim;
 int RubySystem::m_mem_bandwidth;
 int RubySystem::m_mem_clock;
 int RubySystem::m_mem_latency;
@@ -95,6 +96,7 @@ RubySystem::RubySystem(const Params *p)
     m_num_acc_instances = p->num_acc_instances;
     // accelerator-interposed memory
     m_aim = p->aim;
+    m_multiaim = p->multiaim;
     m_mem_bandwidth = p->mem_bandwidth;
     m_mem_clock = p->mem_clock;
     m_mem_latency = p->mem_latency;
@@ -447,15 +449,23 @@ RubySystem::startup()
     }
 
     if (RubySystem::aim()) {
-        // accelerator-interposed memory
+      // accelerator-interposed memory
+      if (RubySystem::multiaim()) {
+        // each accelerator has a private aim instance
         g_memObject.resize(m_num_acc_instances);
         for (i = 0; i < g_memObject.size(); i++) {
-            g_memObject[i] = CreateMeteredMemoryHandle(i);
+          g_memObject[i] = CreateMeteredMemoryHandle(i);
         }
         warn("Initialize meteredmemory object vector");
+      } else {
+        // all accelerators share one aim instance
+        g_memObject.resize(1);
+        g_memObject[0] = CreateMeteredMemoryHandle(0);
+        warn("Initialize a single meteredmemory object");
+      }
 
-        g_memInterface = CreateMemoryDeviceInterface();
-        warn("Initialize memory device interface");
+      g_memInterface = CreateMemoryDeviceInterface();
+      warn("Initialize memory device interface");
     }
 
     g_dmaDevice.resize(m_num_accelerators * m_num_acc_instances);

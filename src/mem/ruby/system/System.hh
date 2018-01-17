@@ -74,6 +74,7 @@ class RubySystem : public ClockedObject
 #ifdef SIM_NET_PORTS
     static std::vector<std::string> accTypes;
     static bool m_aim;
+    static bool m_multiaim;
     static int m_mem_bandwidth;
     static int m_mem_clock;
     static int m_mem_latency;
@@ -82,6 +83,7 @@ class RubySystem : public ClockedObject
     static int m_num_acc_instances;
     static int m_num_TDs;
     static bool aim() { return m_aim; }
+    static bool multiaim() { return m_multiaim; }
     static int memBandwidth() { return m_mem_bandwidth; }
     static int memClock() { return m_mem_clock; }
     static int memLatency() { return m_mem_latency; }
