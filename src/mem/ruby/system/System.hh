@@ -193,7 +193,8 @@ class RubySystem : public ClockedObject
         {"Disparity_Map", {"DispMapCompSAD", "DispMapFindDisp", "DispMapIntegSum"}},
         {"EKF_SLAM", {"Jacobians", "SphericalCoords"}},
         {"EKF_SLAM_DIMM", {"Jacobians_dimm", "SphericalCoords_dimm"}},
-        {"KNN", {"ManhattanDist", "MergeSort"}}
+        {"KNN", {"ManhattanDist", "MergeSort"}},
+        {"MatMul", {"MatMul"}}
     };
 
   public:

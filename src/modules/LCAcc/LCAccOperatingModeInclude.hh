@@ -50,3 +50,4 @@
 #include "RobLoc_dimm.hh"
 #include "ManhattanDist.hh"
 #include "MergeSort.hh"
+#include "MatMul.hh"

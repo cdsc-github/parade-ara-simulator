@@ -28,6 +28,7 @@ acc_types = [
     'EKF_SLAM',
     'EKF_SLAM_DIMM',
     'KNN',
+    'MatMul',
 ]
 
 def get(name):
