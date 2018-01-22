@@ -224,8 +224,8 @@ class LCAccDevice
   void HandleAccessViolation(uint64_t);
   inline std::string GetDeviceName()
   {
-    char suffix[20];
-    sprintf(suffix, ".%02d", netPort->GetNodeID());
+    char suffix[30];
+    sprintf(suffix, "(%02d).%02d", accID, netPort->GetNodeID());
     return lcaccDeviceName + suffix;
   }
   typedef MemberCallback1<LCAccDevice, ComputeElement*, &LCAccDevice::SPMReadComplete> SPMReadCompleteCB;
@@ -248,6 +248,7 @@ class LCAccDevice
   typedef Arg1MemberCallback<LCAccDevice, uint64_t, &LCAccDevice::HandleAccessViolation> HandleAccessViolationCB;
   typedef MemberCallback0<LCAccDevice, &LCAccDevice::StartTaskRead> StartTaskReadCB;
 
+  int accID;
   int mCycleTime;
   int mPipelineDepth;
   int mInitiationInterval;
@@ -280,7 +281,7 @@ public:
     pipe = mode->PipelineDepth();
     ii = mode->InitiationInterval();
   }
-  LCAccDevice();
+  LCAccDevice(int accID);
   ~LCAccDevice();
   void AddOperatingMode(const std::string& name);
   void AddNetworkInterface(NetworkInterface* port);

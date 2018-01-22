@@ -74,16 +74,15 @@ class RubySystem : public ClockedObject
 #ifdef SIM_NET_PORTS
     static std::vector<std::string> accTypes;
     static bool m_aim;
-    static bool m_multiaim;
     static int m_mem_bandwidth;
     static int m_mem_clock;
     static int m_mem_latency;
     static int m_num_simics_net_ports;
     static int m_num_accelerators;
     static int m_num_acc_instances;
+    static int m_num_pes;
     static int m_num_TDs;
     static bool aim() { return m_aim; }
-    static bool multiaim() { return m_multiaim; }
     static int memBandwidth() { return m_mem_bandwidth; }
     static int memClock() { return m_mem_clock; }
     static int memLatency() { return m_mem_latency; }
@@ -101,6 +100,7 @@ class RubySystem : public ClockedObject
     static int accIDtoL1CacheID(int accID);
     static int mapPortID(int port);
     static int numberOfAccInstances() { return m_num_acc_instances; }
+    static int numberOfPEs() { return m_num_pes; }
     Network* getNetwork() {assert(m_network != NULL); return m_network;};
 #endif
 

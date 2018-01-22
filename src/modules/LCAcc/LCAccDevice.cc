@@ -961,7 +961,7 @@ LCAccDevice::HandleAccessViolation(uint64_t)
   assert(0);
 }
 
-  void
+void
 LCAccDevice::AddOperatingMode(const std::string& name)
 {
   assert(nameToMode.find(name) != nameToMode.end());
@@ -1136,8 +1136,9 @@ LCAccDevice::HookToMemoryDevice(const std::string& name)
   memoryDeviceHookName = name;
 }
 
-LCAccDevice::LCAccDevice()
+LCAccDevice::LCAccDevice(int accID)
 {
+  this->accID = accID;
   mCycleTime = -1;
   mPipelineDepth = -1;
   mInitiationInterval = -1;

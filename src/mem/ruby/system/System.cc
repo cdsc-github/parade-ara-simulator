@@ -64,10 +64,10 @@ uint32_t RubySystem::m_memory_size_bits;
 std::vector<std::string> RubySystem::accTypes;
 int RubySystem::m_num_simics_net_ports;
 int RubySystem::m_num_accelerators;
+int RubySystem::m_num_pes;
 int RubySystem::m_num_TDs;
 int RubySystem::m_num_acc_instances;
 bool RubySystem::m_aim;
-bool RubySystem::m_multiaim;
 int RubySystem::m_mem_bandwidth;
 int RubySystem::m_mem_clock;
 int RubySystem::m_mem_latency;
@@ -94,9 +94,9 @@ RubySystem::RubySystem(const Params *p)
     m_num_simics_net_ports = p->num_simics_net_ports;
     m_num_TDs = p->num_TDs;
     m_num_acc_instances = p->num_acc_instances;
+    m_num_pes = p->num_pes;
     // accelerator-interposed memory
     m_aim = p->aim;
-    m_multiaim = p->multiaim;
     m_mem_bandwidth = p->mem_bandwidth;
     m_mem_clock = p->mem_clock;
     m_mem_latency = p->mem_latency;
@@ -340,15 +340,20 @@ RubySystem::unserialize(Checkpoint *cp, const string &section)
 }
 
 #ifdef SIM_NET_PORTS
-int RubySystem::threadIDtoDeviceID(int threadID)
+int
+RubySystem::threadIDtoDeviceID(int threadID)
 {
   return threadID + m_num_TDs;
 }
-int RubySystem::deviceIDtoThreadID(int deviceID)
+
+int
+RubySystem::deviceIDtoThreadID(int deviceID)
 {
   return deviceID - m_num_TDs;
 }
-int RubySystem::accIDtoDeviceID(int accID)
+
+int
+RubySystem::accIDtoDeviceID(int accID)
 {
   std::vector<System *>::iterator system_iterator = System::systemList.begin();
   System *m5_system = *system_iterator;
@@ -356,7 +361,9 @@ int RubySystem::accIDtoDeviceID(int accID)
   int num_thread_contexts = m5_system->numContexts();
   return accID + num_thread_contexts + m_num_TDs;
 }
-int RubySystem::deviceIDtoAccID(int deviceID)
+
+int
+RubySystem::deviceIDtoAccID(int deviceID)
 {
   std::vector<System *>::iterator system_iterator = System::systemList.begin();
   System *m5_system = *system_iterator;
@@ -364,7 +371,9 @@ int RubySystem::deviceIDtoAccID(int deviceID)
   int num_thread_contexts = m5_system->numContexts();
   return deviceID - num_thread_contexts - m_num_TDs;
 }
-int RubySystem::tdIDtoL1CacheID(int tdID)
+
+int
+RubySystem::tdIDtoL1CacheID(int tdID)
 {
   std::vector<System *>::iterator system_iterator = System::systemList.begin();
   System *m5_system = *system_iterator;
@@ -372,16 +381,21 @@ int RubySystem::tdIDtoL1CacheID(int tdID)
   int num_thread_contexts = m5_system->numContexts();
   return tdID + num_thread_contexts;
 }
-int RubySystem::accIDtoL1CacheID(int accID)
+
+int
+RubySystem::accIDtoL1CacheID(int accID)
 {
   std::vector<System *>::iterator system_iterator = System::systemList.begin();
   System *m5_system = *system_iterator;
   assert(m5_system);
   int num_thread_contexts = m5_system->numContexts();
-  return accID + num_thread_contexts + m_num_TDs;
+  int portID = accID / m_num_pes;
+  return portID + num_thread_contexts + m_num_TDs;
 }
+
 #define CENTER_ID 12
-int RubySystem::mapPortID(int port)
+int
+RubySystem::mapPortID(int port)
 {
   if(port >= CENTER_ID)
     port = (port + 1) % m_num_simics_net_ports;
@@ -443,32 +457,23 @@ RubySystem::startup()
     }
     warn("Initialize network_interrupts\n");
 
-    g_LCAccDeviceHandle.resize(m_num_accelerators * m_num_acc_instances);
+    g_LCAccDeviceHandle.resize(m_num_accelerators * m_num_acc_instances * m_num_pes);
     for(i = 0; i < g_LCAccDeviceHandle.size(); i++) {
       g_LCAccDeviceHandle[i] = LCAcc::CreateNewLCAccDeviceHandle();
     }
 
     if (RubySystem::aim()) {
       // accelerator-interposed memory
-      if (RubySystem::multiaim()) {
-        // each accelerator has a private aim instance
-        g_memObject.resize(m_num_acc_instances);
-        for (i = 0; i < g_memObject.size(); i++) {
-          g_memObject[i] = CreateMeteredMemoryHandle(i);
-        }
-        warn("Initialize meteredmemory object vector");
-      } else {
-        // all accelerators share one aim instance
-        g_memObject.resize(1);
-        g_memObject[0] = CreateMeteredMemoryHandle(0);
-        warn("Initialize a single meteredmemory object");
+      g_memObject.resize(m_num_acc_instances);
+      for (i = 0; i < g_memObject.size(); i++) {
+        g_memObject[i] = CreateMeteredMemoryHandle(i);
       }
 
       g_memInterface = CreateMemoryDeviceInterface();
       warn("Initialize memory device interface");
     }
 
-    g_dmaDevice.resize(m_num_accelerators * m_num_acc_instances);
+    g_dmaDevice.resize(m_num_accelerators * m_num_acc_instances * m_num_pes);
     for(i = 0; i < g_dmaDevice.size(); i++) {
       g_dmaDevice[i] = CreateDMAEngineHandle();
     }
@@ -477,7 +482,7 @@ RubySystem::startup()
     g_dmaInterface = CreateDMAEngineInterface();
     warn("Initialize dmaInterface\n");
 
-    g_spmObject.resize(m_num_accelerators * m_num_acc_instances);
+    g_spmObject.resize(m_num_accelerators * m_num_acc_instances * m_num_pes);
     for(i = 0; i < g_spmObject.size(); i++) {
       g_spmObject[i] = CreateNewScratchPad();
     }
@@ -521,34 +526,45 @@ RubySystem::startup()
 
     int id = 0;
     for (i = 0; i < accTypes.size(); i++) {
-        std::string bench = accTypes[i];
-        std::vector<std::string> subAccNames = m_acc_dict[bench];
-        int numSubAccs = subAccNames.size();
+      std::string bench = accTypes[i];
+      std::vector<std::string> subAccNames = m_acc_dict[bench];
+      int numSubAccs = subAccNames.size();
 
-        for (int j = 0; j < m_num_acc_instances; j++) {
-            for (int k = 0; k < numSubAccs; k++) {
-                g_LCAccInterface->SetNetPort(
-                    g_LCAccDeviceHandle[id],
-                    portID + j + i * m_num_acc_instances,
-                    RubySystem::accIDtoDeviceID(id));
+      for (int j = 0; j < m_num_acc_instances; j++) {
+        for (int k = 0; k < numSubAccs; k++) {
+          for (int l = 0; l < m_num_pes; l++) {
+            g_LCAccInterface->SetNetPort(
+              g_LCAccDeviceHandle[id],
+              portID + j + i * m_num_acc_instances * m_num_pes,
+              RubySystem::accIDtoDeviceID(id));
 
-                g_LCAccInterface->AddOperatingMode(
-                    g_LCAccDeviceHandle[id],
-                    subAccNames[k].c_str());
+            g_LCAccInterface->AddOperatingMode(
+              g_LCAccDeviceHandle[id],
+              subAccNames[k].c_str());
 
-                id++;
-            }
+            id++;
+          }
         }
+      }
     }
 
-    for(i = 0; i < m_num_accelerators * m_num_acc_instances; i++) {
-      g_LCAccInterface->SetPrefetchDistance(g_LCAccDeviceHandle[i], 0);
-      g_LCAccInterface->SetSPMConfig(g_LCAccDeviceHandle[i], 1, 2048, 2, 1, 1, 1);
-      //g_LCAccInterface->SetSPMConfig(g_LCAccDeviceHandle[i], 1, 64, 100000, 0, 100000, 0); //ideal SPM
-      g_LCAccInterface->Initialize(g_LCAccDeviceHandle[i], 0);
+    for (i = 0; i < m_num_accelerators * m_num_acc_instances; i++) {
+      for (int j = 0; j < m_num_pes; j++) {
+        g_LCAccInterface->SetPrefetchDistance(
+          g_LCAccDeviceHandle[i * m_num_pes + j], 0);
+
+        g_LCAccInterface->SetSPMConfig(
+          g_LCAccDeviceHandle[i * m_num_pes + j], 1, 2048, 2, 1, 1, 1);
+
+        // g_LCAccInterface->SetSPMConfig(
+        //   g_LCAccDeviceHandle[i], 1, 64, 100000, 0, 100000, 0
+        // ); // ideal SPM
+
+        g_LCAccInterface->Initialize(g_LCAccDeviceHandle[i * m_num_pes + j], 0);
+      }
     }
 
-    for(int i = 0; i < 30000; i++) {
+    for (i = 0; i < 30000; i++) {
       cycleCBRing.push_back(std::queue<CBContainer>());
     }
 

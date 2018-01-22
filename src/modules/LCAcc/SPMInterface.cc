@@ -74,7 +74,6 @@ SPMInterface::SPMInterface(const std::string& hostName, int cpuPort, int identif
   this->hostName = hostName;
   buffer = -1;
   id = identifier;
-  std::cout << "LCAcc:SPMInterface Using g_spmObject " << RubySystem::deviceIDtoAccID(id) << std::endl;
   spmObject = g_spmObject[RubySystem::deviceIDtoAccID(id)];
   assert(spmObject);
   spmInterface = g_spmInterface;

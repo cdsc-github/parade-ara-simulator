@@ -41,7 +41,9 @@ def get(name):
 def define_options(parser):
     parser.add_option("--num_accinstances", action="store", type="int",
                       default=1,
-                      help="number of accelerator instances in the system.")
+                      help="number of accelerator instances in the system")
+    parser.add_option("--num_pes", action="store", type="int", default=1,
+                      help="number of accelerators sharing the same port")
     parser.add_option("--num_tds", action="store", type="int", default=1,
                       help="number of task distributors")
     parser.add_option("--num_networkports", action="store", type="int", default=32,
@@ -59,8 +61,6 @@ def define_options(parser):
                       help="aim memory object clock normalized to cpu clock")
     parser.add_option("--aim_mem_latency", action="store", type="int", default=100,
                       help="aim memory object latency in cpu cycles")
-    parser.add_option("--multiaim", action="store_true",
-                      help="modeling of each accelerator having a private aim instance")
 
 def create_accelerators(options, system):
     # For now, use same clock as cpus.

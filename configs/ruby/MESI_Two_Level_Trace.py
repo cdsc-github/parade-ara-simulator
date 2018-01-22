@@ -59,13 +59,13 @@ def create_system(options, full_system, system, dma_ports, ruby_system):
         fatal("This script requires the MESI_Two_Level_Trace protocol to be built.")
 
     ruby_system.aim = options.aim
-    ruby_system.multiaim = options.multiaim
     ruby_system.mem_bandwidth = options.aim_mem_bandwidth
     ruby_system.mem_clock = options.aim_mem_clock
     ruby_system.mem_latency = options.aim_mem_latency
     ruby_system.num_simics_net_ports = options.num_networkports
     ruby_system.num_TDs = options.num_tds
     ruby_system.num_acc_instances = options.num_accinstances
+    ruby_system.num_pes = options.num_pes
 
     acc_type_list = options.acc_types.replace(',', ' ').split()
     type_names = [Lcacc.get(acc) for acc in acc_type_list]

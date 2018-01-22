@@ -11,7 +11,7 @@ void LCAccManager::SetTiming(int deviceHandle, int CycleTime, int PipelineDepth,
 void LCAccManager::RegisterDevice(int deviceHandle)
 {
   assert(deviceSet.find(deviceHandle) == deviceSet.end());
-  deviceSet[deviceHandle] = new LCAccDevice();
+  deviceSet[deviceHandle] = new LCAccDevice(deviceHandle);
 }
 void LCAccManager::UnregisterDevice(int deviceHandle)
 {
@@ -26,7 +26,6 @@ void LCAccManager::AddOperatingMode(int deviceHandle, const std::string& type)
 }
 void LCAccManager::AddNetworkPort(int deviceHandle, int port, int device)
 {
-  std::cout << "Establishing network port " << port << " device " << device << std::endl;
   assert(deviceSet.find(deviceHandle) != deviceSet.end());
   assert(netSet.find(device) == netSet.end());
   //TODO: somehow the port and device meaning in NetworkInterface has been reversed.

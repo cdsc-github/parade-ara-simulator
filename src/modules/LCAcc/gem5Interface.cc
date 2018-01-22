@@ -58,7 +58,6 @@ void Interface_SetNetPortHandler(LCAccDeviceHandle* handle, int port, int device
   assert(handle);
   handle->deviceID = device;
   snpi->BindDeviceToPort(port, device);
-  warn("bind accelerator device %d to port %d\n", device, port);
   handle->netHandle = snpi->RegisterRecvHandlerOnDevice(device, Interface_ProcessMessageHandler, handle);
   gem5Interface::manager.AddNetworkPort(handle->handleID, port, device);
 }
@@ -205,7 +204,6 @@ void gem5Interface::RegisterLCAcc(int id, int node, std::vector<int> opmodes, ui
 
   if (tdObject) {
     foundTD = true;
-    std::cout << "Registering lcacc " << id << " with TD" << std::endl;
     TaskDistributorInterface* td = g_TDInterface;
 
     if (threadID != 0) {
