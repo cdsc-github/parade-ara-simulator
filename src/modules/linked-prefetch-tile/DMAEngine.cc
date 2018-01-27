@@ -379,7 +379,7 @@ DMAEngine::Configure(int node, int spm, Arg1CallbackBase<uint64_t>* onTLBMiss,
 
     // accelerator-interposed memory
     if (RubySystem::aim()) {
-      int portID = RubySystem::accIDtoL1CacheID(AccID);
+      int portID = RubySystem::deviceIDtoAccID(nodeID);
       memObject = g_memObject[portID];
       memInterface = g_memInterface;
 
