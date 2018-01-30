@@ -67,7 +67,7 @@ Let’s still use the BlackScholes example for demonstration.
 
 1.	Checkpoint:
 	* `./run.checkpoint.sh`
-	* `cp -r x86-out/cpt.5176168078500 parade-test/ckpt-1core/`	--- backup the checkpoint
+	* `cp -r x86-out/cpt.5176168078500 parade-test/ckpt-1core/cpt.5176168078500`	--- backup the checkpoint
 
 2.	Warmup:
 	* Edit `run.dedicated.ara.begin.sh`, comment all benchmarks except BlackScholes
@@ -75,7 +75,7 @@ Let’s still use the BlackScholes example for demonstration.
 	* `./backup.sh TDLCA begin`	--- backup the simulation results
 
 3.	ROI simulation:
-	* Edit `run.dedicated.ara.ooo.sh`, comment all benchmarks except BlackScholes, note that there are three places to comment: `BENCHS`, `NUM_ACCELERATORS`, and `WARMUP`
+	* Edit `run.dedicated.ara.ooo.sh`, comment all benchmarks except BlackScholes, note that there are two places to comment: `BENCHS` and `WARMUP`
 	* `vi parade-TDLCA-begin/TDLCA_BlackScholes/stats.txt`, get the number of `sim_insts` and update it to the `WARMUP` in `run.dedicated.ara.ooo.sh`
 	* `./run.dedicated.ara.ooo.sh`
 	* `./backup.sh TDLCA ooo`
