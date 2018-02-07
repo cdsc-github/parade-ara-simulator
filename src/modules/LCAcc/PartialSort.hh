@@ -41,18 +41,22 @@ namespace LCAcc
 			#define K 100
 			
 			int i;
-			float carry;
+			float carry[K];
 			float temp;
 			
-			carry = dists;
-			
 			for (i = 0; i < K; i++) {
-			  if (carry < topK[i]) {
+			  if (carry[i] < topK[i]) {
 			    temp = topK[i];
-			    topK[i] = carry;
-			    carry = temp;
+			    topK[i] = carry[i];
+			    carry[i] = temp;
 			  }
 			}
+			
+			for (i = 1; i < K; i++) {
+			  carry[i] = carry[i - 1];
+			}
+			
+			carry[0] = dists;
 			#undef SPMAddressOf
 
 		}
