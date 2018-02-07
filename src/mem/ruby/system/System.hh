@@ -82,7 +82,9 @@ class RubySystem : public ClockedObject
     static int m_num_acc_instances;
     static int m_num_pes;
     static int m_num_TDs;
+    static int m_device_delay;
     static bool aim() { return m_aim; }
+    static int getDeviceDelay() { return m_device_delay; }
     static int memBandwidth() { return m_mem_bandwidth; }
     static int memClock() { return m_mem_clock; }
     static int memLatency() { return m_mem_latency; }
@@ -193,7 +195,7 @@ class RubySystem : public ClockedObject
         {"Disparity_Map", {"DispMapCompSAD", "DispMapFindDisp", "DispMapIntegSum"}},
         {"EKF_SLAM", {"Jacobians", "SphericalCoords"}},
         {"EKF_SLAM_DIMM", {"Jacobians_dimm", "SphericalCoords_dimm"}},
-        {"KNN", {"ManhattanDist", "MergeSort"}},
+        {"KNN", {"ManhattanDist", "PartialSort"}},
         {"MatMul", {"MatMul"}}
     };
 

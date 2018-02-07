@@ -84,6 +84,7 @@ class TD
   std::map<unsigned int, std::set<int> > cfuUseFilter; //key process id, value set of legal CFUs to use.
   std::vector<uint32_t> ExtractMemoryManifest(const TransferDescription& td, uint32_t task);
   int cfusPerIsland;
+  int deviceDelay;  // the communication delay between the host and device
   //added for FPGA work
   class FpgaRecipe
   {
@@ -121,6 +122,8 @@ class TD
   void AllocateBufferComplete(bool success, int bufferSize, int bufferID, std::vector<CFUIdentifier> selected, unsigned int process);
   void TryNewAllocation();
   void AllocateMore();
+  void NotifyHost(uint32_t userProcess);
+
   inline std::string GetDeviceName()
   {
     char s[20];
@@ -137,6 +140,7 @@ class TD
   typedef MemberCallback0<TD, &TD::ReadProgramDone> ReadProgramDoneCB;
   typedef Arg1MemberCallback<TD, uint64_t, &TD::HandleTLBMiss> HandleTLBMissCB;
   typedef Arg1MemberCallback<TD, uint64_t, &TD::HandleAccessViolation> HandleAccessViolationCB;
+  typedef MemberCallback1<TD, uint32_t, &TD::NotifyHost> NotifyHostCB;
 public:
   static std::vector<std::string> GetSelectionAlgs();
   static PatternSelector* GetPatternSelector(const std::string& name);

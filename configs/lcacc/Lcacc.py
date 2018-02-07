@@ -61,6 +61,8 @@ def define_options(parser):
                       help="aim memory object clock normalized to cpu clock")
     parser.add_option("--aim_mem_latency", action="store", type="int", default=100,
                       help="aim memory object latency in cpu cycles")
+    parser.add_option("--device_delay", action="store", type="int", default=0,
+                      help="the communication latency between the host and device")
 
 def create_accelerators(options, system):
     # For now, use same clock as cpus.

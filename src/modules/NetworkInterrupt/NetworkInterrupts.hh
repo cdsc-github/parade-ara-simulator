@@ -103,7 +103,9 @@ public:
   }
 };
 
-uint64_t LCAccMagicIntercept(void*, ThreadContext* cpu, int32_t op, uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4, uint64_t arg5, uint64_t arg6, uint64_t arg7);
+uint64_t LCAccMagicIntercept(void*, ThreadContext* cpu, int32_t op,
+    uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4,
+    uint64_t arg5, uint64_t arg6, uint64_t arg7);
 NetworkInterruptHandle* createNetworkInterruptHandle(int portID, int deviceID, int procID);
 void HandleEvent(void* arg);
 

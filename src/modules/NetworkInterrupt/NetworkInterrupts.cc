@@ -463,7 +463,6 @@ uint64_t LCAccMagicIntercept(void*, ThreadContext* cpu, int32_t op, uint64_t arg
       bc_vAddr.u64[0] = (uint64_t)arg4;
       buffer[2] = bc_vAddr.u32[0];
       buffer[3] = bc_vAddr.u32[1];
-      std::cout << "Sending LCAcc Command Addr at " << bc_vAddr.u64[0] << " to " << target << " from " << nih->deviceID << std::endl;
       BitConverter bc;
 
       if (bc_vAddr.u64[0]) {

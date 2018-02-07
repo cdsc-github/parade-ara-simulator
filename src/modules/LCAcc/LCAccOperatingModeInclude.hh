@@ -51,3 +51,4 @@
 #include "ManhattanDist.hh"
 #include "MergeSort.hh"
 #include "MatMul.hh"
+#include "PartialSort.hh"

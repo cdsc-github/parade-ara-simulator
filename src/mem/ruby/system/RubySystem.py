@@ -54,6 +54,8 @@ class RubySystem(ClockedObject):
     mem_bandwidth = Param.Int(100, "memory object bandwidth in bytes per second")
     mem_clock = Param.Int(100, "memory object clock normalized to cpu clock")
     mem_latency = Param.Int(100, "memory object latency in cpu cycles")
+    device_delay = Param.Int(0,
+        "the communication latency between the host and device")
 
     # Profiler related configuration variables
     hot_lines = Param.Bool(False, "")

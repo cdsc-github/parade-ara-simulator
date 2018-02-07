@@ -16,6 +16,7 @@
 #include "base/misc.hh"
 #include "arch/isa_traits.hh"
 #include "config/the_isa.hh"
+#include "mem/ruby/system/System.hh"
 
 #define NO_SPM_ID -1
 #define PAGE_SIZE (TheISA::PageBytes)
@@ -325,7 +326,8 @@ TD::MsgHandler(int src, const void* packet, unsigned int packetSize)
     }
 
     pendingTaskReads.push(readData);
-    StartProgramRead();
+    TaskDistributor::gem5Interface::RegisterCallback(
+      StartProgramReadCB::Create(this), deviceDelay);
   }
   break;
 
@@ -374,16 +376,14 @@ TD::MsgHandler(int src, const void* packet, unsigned int packetSize)
     }
 
     if (allDone) {
-      uint32_t endMsg[2];
-      endMsg[0] = LCACC_CMD_TASK_COMPLETED;
-      endMsg[1] = userProcess;
-
       assert(lastKnownCore.find(userProcess) != lastKnownCore.end());
       assert(requiredBufferSize.find(userProcess) != requiredBufferSize.end());
 
       ML_LOG(GetDeviceName(), "END Program Execute for userthread "
         << userProcess);
-      netPort->SendMessage(lastKnownCore[userProcess], endMsg, sizeof(endMsg));
+
+      TaskDistributor::gem5Interface::RegisterCallback(
+        NotifyHostCB::Create(this, userProcess), deviceDelay);
 
       assert(programSet.find(userProcess) != programSet.end());
       delete programSet[userProcess];
@@ -525,6 +525,16 @@ TD::MsgHandler(int src, const void* packet, unsigned int packetSize)
     assert(0);
   }
 }
+
+void TD::NotifyHost(uint32_t userProcess)
+{
+  uint32_t endMsg[2];
+  endMsg[0] = LCACC_CMD_TASK_COMPLETED;
+  endMsg[1] = userProcess;
+
+  netPort->SendMessage(lastKnownCore[userProcess], endMsg, sizeof(endMsg));
+}
+
 void TD::ExecuteProgram(TaskReadData& trd)
 {
   assert(programSet.find(trd.process) == programSet.end());
@@ -1127,4 +1137,5 @@ TD::TD()
   fpgaAreaRemaining = 0;
   fpgaDeviceIDCounter = 15000;
   addingFpgaAccelerators = false;
+  deviceDelay = RubySystem::getDeviceDelay();
 }

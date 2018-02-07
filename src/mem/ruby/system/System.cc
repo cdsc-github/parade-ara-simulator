@@ -71,6 +71,7 @@ bool RubySystem::m_aim;
 int RubySystem::m_mem_bandwidth;
 int RubySystem::m_mem_clock;
 int RubySystem::m_mem_latency;
+int RubySystem::m_device_delay;
 #endif
 
 RubySystem::RubySystem(const Params *p)
@@ -100,6 +101,7 @@ RubySystem::RubySystem(const Params *p)
     m_mem_bandwidth = p->mem_bandwidth;
     m_mem_clock = p->mem_clock;
     m_mem_latency = p->mem_latency;
+    m_device_delay = p->device_delay;
 #endif
 
     m_warmup_enabled = false;
