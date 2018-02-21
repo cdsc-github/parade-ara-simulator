@@ -12,6 +12,12 @@ typedef struct
 
 typedef struct MemoryDeviceInterface_t
 {
+  void (*SetLatency)(MeteredMemoryHandle* memObject, int latency);
+
+  void (*SetBW)(MeteredMemoryHandle* memObject, int bytesPerSec);
+
+  void (*SetClock)(MeteredMemoryHandle* memObject, int clock);
+
   bool (*IsReadReady)(MeteredMemoryHandle* memObject, uint64_t addr,
     size_t size);
 

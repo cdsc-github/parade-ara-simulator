@@ -30,6 +30,12 @@ class MeteredMemory
 public:
   MeteredMemory(int portID);
 
+  void SetLatency(int latency);
+
+  void SetBW(int bytesPerSec);
+
+  void SetClock(int clock);
+
   void Tick();
 
   void IssueRead(uint64_t addr, size_t size, CallbackBase* cb);

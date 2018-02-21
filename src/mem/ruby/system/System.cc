@@ -72,6 +72,7 @@ int RubySystem::m_mem_bandwidth;
 int RubySystem::m_mem_clock;
 int RubySystem::m_mem_latency;
 int RubySystem::m_device_delay;
+bool RubySystem::m_comphier;
 #endif
 
 RubySystem::RubySystem(const Params *p)
@@ -88,6 +89,8 @@ RubySystem::RubySystem(const Params *p)
     assert(isPowerOf2(m_block_size_bytes));
     m_block_size_bits = floorLog2(m_block_size_bytes);
     m_memory_size_bits = p->memory_size_bits;
+
+    m_comphier = false;
 
 #ifdef SIM_NET_PORTS
     parseAccTypes(p->acc_types);
@@ -123,6 +126,8 @@ RubySystem::RubySystem(const Params *p)
 void
 RubySystem::parseAccTypes(std::string acc_types)
 {
+    m_comphier = (acc_types == "CBIR_comphier");
+
     std::string delimiter = ",";
     size_t pos = 0;
     std::string token;
@@ -526,25 +531,90 @@ RubySystem::startup()
     }
     warn("Initialize TDInterface\n");
 
-    int id = 0;
-    for (i = 0; i < accTypes.size(); i++) {
-      std::string bench = accTypes[i];
-      std::vector<std::string> subAccNames = m_acc_dict[bench];
-      int numSubAccs = subAccNames.size();
+    if (m_comphier) {
+      int id = 0;
 
-      for (int j = 0; j < m_num_acc_instances; j++) {
-        for (int k = 0; k < numSubAccs; k++) {
-          for (int l = 0; l < m_num_pes; l++) {
-            g_LCAccInterface->SetNetPort(
-              g_LCAccDeviceHandle[id],
-              portID + j + i * m_num_acc_instances * m_num_pes,
-              RubySystem::accIDtoDeviceID(id));
+      // indexing accelerators
+      for (i = 0; i < m_num_pes; i++) {
+        g_LCAccInterface->SetNetPort(g_LCAccDeviceHandle[id],
+          portID, RubySystem::accIDtoDeviceID(id));
+        g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[id],
+          "MatMul");
+        id++;
+      }
 
-            g_LCAccInterface->AddOperatingMode(
-              g_LCAccDeviceHandle[id],
-              subAccNames[k].c_str());
+      // distance computation accelerators
+      for (i = 0; i < m_num_pes; i++) {
+        g_LCAccInterface->SetNetPort(g_LCAccDeviceHandle[id],
+          portID + 1, RubySystem::accIDtoDeviceID(id));
+        g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[id],
+          "ManhattanDist");
+        id++;
 
-            id++;
+        g_LCAccInterface->SetNetPort(g_LCAccDeviceHandle[id],
+          portID + 1, RubySystem::accIDtoDeviceID(id));
+        g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[id],
+          "PartialSort");
+        id++;
+      }
+
+      // feature extraction accelerators
+      for (i = 0; i < m_num_pes; i++) {
+        g_LCAccInterface->SetNetPort(g_LCAccDeviceHandle[id],
+          portID + 2, RubySystem::accIDtoDeviceID(id));
+        g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[id],
+          "MatMul400");
+        id++;
+
+        g_LCAccInterface->SetNetPort(g_LCAccDeviceHandle[id],
+          portID + 2, RubySystem::accIDtoDeviceID(id));
+        g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[id],
+          "Relu");
+        id++;
+
+        g_LCAccInterface->SetNetPort(g_LCAccDeviceHandle[id],
+          portID + 2, RubySystem::accIDtoDeviceID(id));
+        g_LCAccInterface->AddOperatingMode(g_LCAccDeviceHandle[id],
+          "Pool");
+        id++;
+      }
+
+      g_memObject.resize(2);
+      for (i = 0; i < g_memObject.size(); i++) {
+        g_memObject[i] = CreateMeteredMemoryHandle(i);
+      }
+      g_memInterface = CreateMemoryDeviceInterface();
+
+      g_memInterface->SetLatency(g_memObject[0], 200);
+      g_memInterface->SetBW(g_memObject[0], 10000);
+      g_memInterface->SetClock(g_memObject[0], 4000);
+
+      g_memInterface->SetLatency(g_memObject[1], 20000);
+      g_memInterface->SetBW(g_memObject[1], 8500 * m_num_pes);
+      g_memInterface->SetClock(g_memObject[1], 4000);
+
+      warn("Initialize memory device interface");
+    } else {
+      int id = 0;
+      for (i = 0; i < accTypes.size(); i++) {
+        std::string bench = accTypes[i];
+        std::vector<std::string> subAccNames = m_acc_dict[bench];
+        int numSubAccs = subAccNames.size();
+
+        for (int j = 0; j < m_num_acc_instances; j++) {
+          for (int k = 0; k < numSubAccs; k++) {
+            for (int l = 0; l < m_num_pes; l++) {
+              g_LCAccInterface->SetNetPort(
+                g_LCAccDeviceHandle[id],
+                portID + j + i * m_num_acc_instances,
+                RubySystem::accIDtoDeviceID(id));
+
+              g_LCAccInterface->AddOperatingMode(
+                g_LCAccDeviceHandle[id],
+                subAccNames[k].c_str());
+
+              id++;
+            }
           }
         }
       }

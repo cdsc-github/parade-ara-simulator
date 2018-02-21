@@ -29,6 +29,8 @@ acc_types = [
     'EKF_SLAM_DIMM',
     'KNN',
     'MatMul',
+    'CBIR',
+    'CBIR_comphier',
 ]
 
 def get(name):

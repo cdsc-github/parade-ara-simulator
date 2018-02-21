@@ -163,6 +163,7 @@ class RubySystem : public ClockedObject
     static uint32_t m_block_size_bytes;
     static uint32_t m_block_size_bits;
     static uint32_t m_memory_size_bits;
+    static bool m_comphier;
     SimpleMemory *m_phys_mem;
 
     Network* m_network;
@@ -196,7 +197,9 @@ class RubySystem : public ClockedObject
         {"EKF_SLAM", {"Jacobians", "SphericalCoords"}},
         {"EKF_SLAM_DIMM", {"Jacobians_dimm", "SphericalCoords_dimm"}},
         {"KNN", {"ManhattanDist", "PartialSort"}},
-        {"MatMul", {"MatMul"}}
+        {"MatMul", {"MatMul"}},
+        {"CBIR", {"MatMul400", "Relu", "Pool", "MatMul", "ManhattanDist", "PartialSort"}},
+        {"CBIR_comphier", {"MatMul400", "Relu", "Pool", "MatMul", "ManhattanDist", "PartialSort"}}
     };
 
   public:

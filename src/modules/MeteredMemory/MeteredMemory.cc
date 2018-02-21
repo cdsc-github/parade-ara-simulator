@@ -28,6 +28,21 @@ MeteredMemory::MeteredMemory(int portID)
   nextTransfer = 0;
 }
 
+void MeteredMemory::SetLatency(int latency)
+{
+  this->latency = latency;
+}
+
+void MeteredMemory::SetBW(int bytesPerSec)
+{
+  this->bytesPerSec = bytesPerSec;
+}
+
+void MeteredMemory::SetClock(int clock)
+{
+  this->clock = clock;
+}
+
 void
 MeteredMemory::Tick()
 {

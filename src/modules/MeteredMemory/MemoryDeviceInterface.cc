@@ -2,6 +2,12 @@
 #include "modules/MsgLogger/MsgLogger.hh"
 #include "MemoryDeviceInterface.hh"
 
+void SetLatency(MeteredMemoryHandle* memObject, int latency);
+
+void SetBW(MeteredMemoryHandle* memObject, int bytesPerSec);
+
+void SetClock(MeteredMemoryHandle* memObject, int clock);
+
 bool IsReadReady(MeteredMemoryHandle* memObject, uint64_t addr, size_t size);
 
 bool IsWriteReady(MeteredMemoryHandle* memObject, uint64_t addr, size_t size);
@@ -13,6 +19,30 @@ void IssueWrite(MeteredMemoryHandle* memObject, uint64_t addr, size_t size,
   const void* dataBlock, CallbackBase* cb);
 
 void IssueReadIntercept(Arg1CallbackBase<const void*>* cb);
+
+void
+SetLatency(MeteredMemoryHandle* memObject, int latency)
+{
+  MeteredMemoryHandle* handle = (MeteredMemoryHandle*)memObject;
+  assert(handle);
+  handle->mem->SetLatency(latency);
+}
+
+void
+SetBW(MeteredMemoryHandle* memObject, int bytesPerSec)
+{
+  MeteredMemoryHandle* handle = (MeteredMemoryHandle*)memObject;
+  assert(handle);
+  handle->mem->SetBW(bytesPerSec);
+}
+
+void
+SetClock(MeteredMemoryHandle* memObject, int clock)
+{
+  MeteredMemoryHandle* handle = (MeteredMemoryHandle*)memObject;
+  assert(handle);
+  handle->mem->SetClock(clock);
+}
 
 bool
 IsReadReady(MeteredMemoryHandle* memObject, uint64_t addr, size_t size)
@@ -91,6 +121,9 @@ CreateMemoryDeviceInterface()
 {
   MemoryDeviceInterface* memInterface = new MemoryDeviceInterface;
 
+  memInterface->SetLatency = SetLatency;
+  memInterface->SetBW = SetBW;
+  memInterface->SetClock = SetClock;
   memInterface->IsReadReady = IsReadReady;
   memInterface->IsWriteReady = IsWriteReady;
   memInterface->IssueRead = IssueRead;

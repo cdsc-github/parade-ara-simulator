@@ -52,3 +52,6 @@
 #include "MergeSort.hh"
 #include "MatMul.hh"
 #include "PartialSort.hh"
+#include "Relu.hh"
+#include "Pool.hh"
+#include "MatMul400.hh"
