@@ -774,9 +774,9 @@ LCAccDevice::ParseTaskSignature(PacketReader& pr)
       std::cout << "Arg " << x << " base:" << baseIndex[x] << " ";
 
       for (size_t i = 0; i < size.size(); i++)
-        std::cout << "chunk:" << size[i] << " chunksize:" << stride[i];
+        std::cout << "chunk:" << size[i] << " chunksize:" << stride[i] << " ";
 
-      std::cout << " elementsize:" << cd.argElementSize[x] << std::endl;
+      std::cout << "elementsize:" << cd.argElementSize[x] << std::endl;
     }
 
     registerCount = cd.controlRegister.size();

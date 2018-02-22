@@ -377,19 +377,16 @@ DMAEngine::Configure(int node, int spm, Arg1CallbackBase<uint64_t>* onTLBMiss,
   } else {
     this->spm = g_spmObject[AccID];
 
-    // accelerator-interposed memory
-    if (RubySystem::aim()) {
-      int portID = RubySystem::deviceIDtoAccID(nodeID);
+    int portID = RubySystem::deviceIDtoAccID(nodeID);
 
-      if (portID < g_memObject.size()) {
-        memObject = g_memObject[portID];
-        memInterface = g_memInterface;
+    if (portID < g_memObject.size()) {
+      memObject = g_memObject[portID];
+      memInterface = g_memInterface;
 
-        ML_LOG(GetDeviceName(), "hook to meteredmemory." << std::setfill('0')
-          << std::setw(2) << portID);
-      } else {
-        ML_LOG(GetDeviceName(), "hook to ruby");
-      }
+      ML_LOG(GetDeviceName(), "hook to meteredmemory." << std::setfill('0')
+        << std::setw(2) << portID);
+    } else {
+      ML_LOG(GetDeviceName(), "hook to ruby");
     }
   }
 

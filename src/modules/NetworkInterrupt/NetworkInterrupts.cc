@@ -327,7 +327,7 @@ uint64_t LCAccMagicIntercept(void*, ThreadContext* cpu, int32_t op, uint64_t arg
   } else if (op == 0xC101) {
     // Touch (TLBHack)
     // ML_LOG("magicintercept", "writing 0x" << std::hex << arg2);
-    // MagicHandler(NULL, cpu, op, (int)arg1, arg2, arg3, arg4);
+    MagicHandler(NULL, cpu, op, (int)arg1, arg2, arg3, arg4);
     return retVal;
   }
 
