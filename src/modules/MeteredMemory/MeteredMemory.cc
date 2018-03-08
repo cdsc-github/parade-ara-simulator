@@ -36,6 +36,7 @@ void MeteredMemory::SetLatency(int latency)
 void MeteredMemory::SetBW(int bytesPerSec)
 {
   this->bytesPerSec = bytesPerSec;
+  ML_LOG(GetDeviceName(), "bandwidth set to " << bytesPerSec << " MB/s");
 }
 
 void MeteredMemory::SetClock(int clock)

@@ -56,6 +56,10 @@ class RubySystem(ClockedObject):
     mem_latency = Param.Int(100, "memory object latency in cpu cycles")
     device_delay = Param.Int(0,
         "the communication latency between the host and device")
+    dram_bw = Param.Int(10000, "")
+    ssd_bw = Param.Int(8500, "")
+    qpi_bw = Param.Int(20000, "")
+    duplicate = Param.Bool(False, "")
 
     # Profiler related configuration variables
     hot_lines = Param.Bool(False, "")

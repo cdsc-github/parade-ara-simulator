@@ -65,6 +65,13 @@ def define_options(parser):
                       help="aim memory object latency in cpu cycles")
     parser.add_option("--device_delay", action="store", type="int", default=0,
                       help="the communication latency between the host and device")
+    parser.add_option("--dram_bw", action="store", type="int", default=10000,
+                      help="")
+    parser.add_option("--ssd_bw", action="store", type="int", default=8500,
+                      help="")
+    parser.add_option("--qpi_bw", action="store", type="int", default=20000,
+                      help="")
+    parser.add_option("--duplicate", action="store_true", help="")
 
 def create_accelerators(options, system):
     # For now, use same clock as cpus.

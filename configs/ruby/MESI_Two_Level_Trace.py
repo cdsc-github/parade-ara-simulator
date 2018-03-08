@@ -67,6 +67,10 @@ def create_system(options, full_system, system, dma_ports, ruby_system):
     ruby_system.num_acc_instances = options.num_accinstances
     ruby_system.num_pes = options.num_pes
     ruby_system.device_delay = options.device_delay
+    ruby_system.dram_bw = options.dram_bw
+    ruby_system.ssd_bw = options.ssd_bw
+    ruby_system.qpi_bw = options.qpi_bw
+    ruby_system.duplicate = options.duplicate
 
     acc_type_list = options.acc_types.replace(',', ' ').split()
     type_names = [Lcacc.get(acc) for acc in acc_type_list]

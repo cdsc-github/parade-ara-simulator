@@ -83,6 +83,10 @@ class RubySystem : public ClockedObject
     static int m_num_pes;
     static int m_num_TDs;
     static int m_device_delay;
+    static int m_dram_bw;
+    static int m_ssd_bw;
+    static int m_qpi_bw;
+    static bool m_dup;
     static bool aim() { return m_aim; }
     static int getDeviceDelay() { return m_device_delay; }
     static int memBandwidth() { return m_mem_bandwidth; }

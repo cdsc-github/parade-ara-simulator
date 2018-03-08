@@ -1,5 +1,5 @@
-#ifndef LCACC_MODE_MATMUL_H
-#define LCACC_MODE_MATMUL_H
+#ifndef LCACC_MODE_MATMUL400_H
+#define LCACC_MODE_MATMUL400_H
 
 #include "LCAccOperatingMode.hh"
 #include "SPMInterface.hh"
@@ -7,13 +7,13 @@
 
 namespace LCAcc
 {
-	class OperatingMode_MatMul : public LCAccOperatingMode
+	class OperatingMode_MatMul400 : public LCAccOperatingMode
 	{
 		int vectorLength;
 		int currentIndex;
 		float currentAccumulation;
 	public:
-		inline OperatingMode_MatMul(){}
+		inline OperatingMode_MatMul400(){}
 		inline virtual void GetSPMReadIndexSet(int iteration, int maxIteration, int taskID, const std::vector<uint64_t>& argAddrVec, const std::vector<bool>& argActive, std::vector<uint64_t>& outputArgs)
 		{
 			assert(0 < argAddrVec.size());
@@ -66,7 +66,6 @@ namespace LCAcc
 			
 			if(currentIndex == vectorLength)
 			{
-			  output = currentAccumulation;
 				currentAccumulation = 0.0f;
 				currentIndex = 0;
 			}
@@ -76,11 +75,11 @@ namespace LCAcc
 		}
 		inline virtual void BeginComputation(){}
 		inline virtual void EndComputation(){}
-		inline virtual int CycleTime(){return 10;}
+		inline virtual int CycleTime(){return 5;}
 		inline virtual int InitiationInterval(){return 1;}
 		inline virtual int PipelineDepth(){return 512;}
 		inline virtual bool CallAllAtEnd(){return false;}
-		inline static std::string GetModeName(){return "MatMul";}
+		inline static std::string GetModeName(){return "MatMul400";}
 		inline virtual int ArgumentCount(){return 3;}
 		inline virtual void SetRegisterValues(const std::vector<uint64_t>& regs)
 		{
@@ -89,7 +88,7 @@ namespace LCAcc
 			currentIndex = ConvertTypes<uint64_t, int>(regs[1]);
 			currentAccumulation = ConvertTypes<uint64_t, float>(regs[2]);
 		}
-		inline static int GetOpCode(){return 107;}
+		inline static int GetOpCode(){return 108;}
 	};
 }
 

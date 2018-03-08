@@ -73,6 +73,10 @@ int RubySystem::m_mem_clock;
 int RubySystem::m_mem_latency;
 int RubySystem::m_device_delay;
 bool RubySystem::m_comphier;
+int RubySystem::m_dram_bw;
+int RubySystem::m_qpi_bw;
+int RubySystem::m_ssd_bw;
+bool RubySystem::m_dup;
 #endif
 
 RubySystem::RubySystem(const Params *p)
@@ -105,6 +109,12 @@ RubySystem::RubySystem(const Params *p)
     m_mem_clock = p->mem_clock;
     m_mem_latency = p->mem_latency;
     m_device_delay = p->device_delay;
+
+    m_dram_bw = p->dram_bw;
+    m_ssd_bw = p->ssd_bw;
+    m_qpi_bw = p->qpi_bw;
+    m_dup = p->duplicate;
+
 #endif
 
     m_warmup_enabled = false;
@@ -126,7 +136,7 @@ RubySystem::RubySystem(const Params *p)
 void
 RubySystem::parseAccTypes(std::string acc_types)
 {
-    m_comphier = (acc_types == "CBIR_comphier");
+    m_comphier = (acc_types == "CBIR_comphier" || acc_types == "CBIR");
 
     std::string delimiter = ",";
     size_t pos = 0;
@@ -579,19 +589,24 @@ RubySystem::startup()
         id++;
       }
 
-      g_memObject.resize(2);
+      g_memObject.resize(3);
       for (i = 0; i < g_memObject.size(); i++) {
         g_memObject[i] = CreateMeteredMemoryHandle(i);
       }
       g_memInterface = CreateMemoryDeviceInterface();
 
       g_memInterface->SetLatency(g_memObject[0], 200);
-      g_memInterface->SetBW(g_memObject[0], 10000);
-      g_memInterface->SetClock(g_memObject[0], 4000);
+      g_memInterface->SetBW(g_memObject[0], m_dram_bw);
+      g_memInterface->SetClock(g_memObject[0], 2000);
 
       g_memInterface->SetLatency(g_memObject[1], 20000);
-      g_memInterface->SetBW(g_memObject[1], 8500 * m_num_pes);
-      g_memInterface->SetClock(g_memObject[1], 4000);
+      if (m_dup) g_memInterface->SetBW(g_memObject[1], m_ssd_bw * m_num_pes);
+      else       g_memInterface->SetBW(g_memObject[1], m_ssd_bw);
+      g_memInterface->SetClock(g_memObject[1], 2000);
+
+      g_memInterface->SetLatency(g_memObject[2], 40);
+      g_memInterface->SetBW(g_memObject[2], m_qpi_bw);
+      g_memInterface->SetClock(g_memObject[2], 1000);
 
       warn("Initialize memory device interface");
     } else {

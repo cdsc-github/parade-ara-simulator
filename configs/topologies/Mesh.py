@@ -45,9 +45,6 @@ class Mesh(SimpleTopology):
         num_routers = options.num_networkports
         num_rows = options.mesh_rows
 
-        # Assume using 4*8 Mesh
-        assert(num_routers == 32)
-        assert(num_rows == 4)
         # There must be an evenly divisible number of cntrls to routers
         # Also, obviously the number or rows must be <= the number of routers
         cntrls_per_router, remainder = divmod(len(nodes), num_routers)
@@ -79,14 +76,17 @@ class Mesh(SimpleTopology):
         for (i, n) in enumerate(network_nodes):
             cntrl_level, router_id = divmod(i, num_routers)
             assert(cntrl_level < cntrls_per_router)
+            # ext_links.append(ExtLink(link_id=link_count, ext_node=n,
+            #                         int_node=routers[core_pos[router_id]]))
             ext_links.append(ExtLink(link_id=link_count, ext_node=n,
-                                    int_node=routers[core_pos[router_id]]))
+                                     int_node=routers[router_id]))
             link_count += 1
 
         # These should be DMA nodes and Directory nodes
         # Connect the DMA nodes to router 0.
         # Distribute the Directory nodes, assume we are using 4 memory contorllers
-        dir_pos = [2, 5, 18, 21]
+        # dir_pos = [2, 5, 18, 21]
+        dir_pos = [0, 1, 2, 3]
         for (i, node) in enumerate(remainder_nodes):
             assert(node.type == 'DMA_Controller' or node.type == 'Directory_Controller')
             assert(i < remainder)
