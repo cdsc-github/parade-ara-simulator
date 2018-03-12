@@ -97,6 +97,7 @@ LCAccDevice::FinishedActionRead(Action* a, size_t index)
 
   if (a->readsInFlight == 0) {
     EmitActionCompute(a);
+    StartTask();
   }
 }
 
@@ -184,8 +185,14 @@ LCAccDevice::IssueComputeElement(ComputeElement* ce)
   uint64_t ii = (mInitiationInterval <= 0) ?
     ce->host->mode->InitiationInterval() : mInitiationInterval;
 
-  nextComputeAvailable =
-    gem5Interface::GetSystemTime() + startOffset + ii * cycleTime;
+  uint64_t numElem = ce->maxCompute;
+
+  // nextComputeAvailable =
+  //   gem5Interface::GetSystemTime() + startOffset + ii * cycleTime;
+
+  nextComputeAvailable = gem5Interface::GetSystemTime()
+    + startOffset + (numElem - 1) * ii * cycleTime;
+
   gem5Interface::RegisterCallback(
     PerformComputeElementCB::Create(this, ce),
     startOffset + depth * cycleTime);
@@ -391,7 +398,7 @@ void LCAccDevice::RetireAction(Action* a)
 
     if (curAc->notifyOnComplete) {
       // the last task in the job
-      ML_LOG(GetDeviceName(), "Finish job " << a->taskID / a->numberOfTasks);
+      ML_LOG(GetDeviceName(), "END processing job " << a->taskID / a->numberOfTasks);
 
       uint32_t msg[2];
       msg[0] = LCACC_CMD_TASK_COMPLETED;
@@ -412,7 +419,7 @@ void LCAccDevice::RetireAction(Action* a)
 void
 LCAccDevice::StartTask()
 {
-  while (awaitingRetireActionSet.size() < spmWindowCount && !pendingActionSet.empty()) {
+  if (awaitingRetireActionSet.size() < spmWindowCount && !pendingActionSet.empty()) {
     Action* a = pendingActionSet.front();
     pendingActionSet.pop();
     assert(a->compute != NULL || a->readSet.size() > 0 || a->writeSet.size() > 0);
@@ -780,7 +787,7 @@ LCAccDevice::ParseTaskSignature(PacketReader& pr)
     }
 
     registerCount = cd.controlRegister.size();
-    std::cout << "Register count:" << registerCount << " ";
+    std::cout << "Register count: " << registerCount << " ";
 
     for (unsigned int x = 0; x < registerCount; x++) {
       controlRegisterValue.push_back(cd.controlRegister[x]);
@@ -800,6 +807,7 @@ LCAccDevice::ParseTaskSignature(PacketReader& pr)
     }
 
     assert(computeSize > 0);
+    std::cout << "Compute count: " << computeSize << std::endl;
 
     for (size_t x = 0; x < controlRegisterValue.size(); x++) {
       registers.push_back(controlRegisterValue[x]);
@@ -917,7 +925,7 @@ LCAccDevice::ParseTaskSignature(PacketReader& pr)
   if (!pendingTasksToRead.empty()) {
     StartTaskRead();
   } else {
-    ML_LOG(GetDeviceName(), "starting job " << skipTasks / numberOfTasks);
+    ML_LOG(GetDeviceName(), "BEGIN processing job " << skipTasks / numberOfTasks);
     StartTask();
   }
 }

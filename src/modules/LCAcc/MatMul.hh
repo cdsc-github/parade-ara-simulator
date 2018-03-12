@@ -76,9 +76,9 @@ namespace LCAcc
 		}
 		inline virtual void BeginComputation(){}
 		inline virtual void EndComputation(){}
-		inline virtual int CycleTime(){return 10;}
+		inline virtual int CycleTime(){return 8;}
 		inline virtual int InitiationInterval(){return 1;}
-		inline virtual int PipelineDepth(){return 512;}
+		inline virtual int PipelineDepth(){return 8;}
 		inline virtual bool CallAllAtEnd(){return false;}
 		inline static std::string GetModeName(){return "MatMul";}
 		inline virtual int ArgumentCount(){return 3;}
