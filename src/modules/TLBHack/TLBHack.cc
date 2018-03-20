@@ -48,9 +48,9 @@ LookupHandler(int thread, logical_address_t addr)
 {
   logical_address_t pageAddr = Round(addr, SYSTEM_PAGE);
   assert(PageKnownHandler(thread, pageAddr));
-  ML_LOG("tlbhack", "servicing TLB miss for userthread "
-      << thread << ": 0x" << std::hex << addr << " -> 0x" << std::hex
-      << largeTLB[thread][pageAddr] + (addr - pageAddr));
+  // ML_LOG("tlbhack", "servicing TLB miss for userthread "
+  //     << thread << ": 0x" << std::hex << addr << " -> 0x" << std::hex
+  //     << largeTLB[thread][pageAddr] + (addr - pageAddr));
 
   return largeTLB[thread][pageAddr] + (addr - pageAddr);
 }
@@ -61,7 +61,7 @@ AddEntryHandler(int thread, logical_address_t lAddr, physical_address_t pAddr)
   lAddr = Round(lAddr, SYSTEM_PAGE);
   assert(largeTLB[thread].find(lAddr) == largeTLB[thread].end());
   pAddr = Round(pAddr, SYSTEM_PAGE);
-  ML_LOG("tlbhack", "storing 0x" << std::hex << lAddr << " -> 0x"
-      << pAddr << " for userthread " << thread);
+  // ML_LOG("tlbhack", "storing 0x" << std::hex << lAddr << " -> 0x"
+  //     << pAddr << " for userthread " << thread);
   largeTLB[thread][lAddr] = pAddr;
 }

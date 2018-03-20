@@ -44,6 +44,10 @@ DMAController::OnAddressTranslate(uint64_t logicalAddr)
     return tlbMap[pageAddr] + pageOffset;
   }
 
+  if (g_TLBHack_interface && g_TLBHack_interface->PageKnown(1, pageAddr)) {
+    return g_TLBHack_interface->Lookup(1, pageAddr) + pageOffset;
+  }
+
   return 0;
 }
 

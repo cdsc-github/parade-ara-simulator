@@ -191,11 +191,11 @@ LCAccDevice::IssueComputeElement(ComputeElement* ce)
   //   gem5Interface::GetSystemTime() + startOffset + ii * cycleTime;
 
   nextComputeAvailable = gem5Interface::GetSystemTime()
-    + startOffset + (numElem - 1) * ii * cycleTime;
+    + startOffset + ii * cycleTime;
 
   gem5Interface::RegisterCallback(
     PerformComputeElementCB::Create(this, ce),
-    startOffset + depth * cycleTime);
+    startOffset + ii * cycleTime + depth * cycleTime);
 
   if (ce->host->computesToEmit == ce->host->computeCount) {
     gem5Interface::RegisterCallback(
@@ -526,7 +526,7 @@ LCAccDevice::MsgHandler(int src, const void* packet, unsigned int packetSize)
     bc.s32[0] = msg[4];
     bc.s32[1] = msg[5];
     uint64_t pAddr = bc.u64[0];
-    ML_LOG(GetDeviceName(), "END TLB miss 0x" << std::hex << vAddr);
+    // ML_LOG(GetDeviceName(), "END TLB miss 0x" << std::hex << vAddr);
 
     dma->AddTLBEntry(vAddr, pAddr);
   }
@@ -958,7 +958,7 @@ LCAccDevice::HandleTLBMiss(uint64_t addr)
   msg[2] = bc.u32[0];
   msg[3] = bc.u32[1];
 
-  ML_LOG(GetDeviceName(), "BEGIN TLB miss 0x" << std::hex << addr);
+  // ML_LOG(GetDeviceName(), "BEGIN TLB miss 0x" << std::hex << addr);
   netPort->SendMessage(currentUserProc, msg, sizeof(msg));
 }
 
