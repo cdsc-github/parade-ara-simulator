@@ -29,17 +29,15 @@ ScheduleCB(int delay, CallbackBase* cb)
 }
 
 void
-WriteMemory(uint64_t memAddr, uint64_t val, size_t size)
+WriteMemory(uint64_t memAddr, uint8_t* data, size_t size)
 {
-  assert(size <= sizeof(uint64_t));
-  MemoryInterface::Instance()->functionalWrite(memAddr, (uint8_t*) &val, size);
+  // assert(size <= sizeof(uint64_t));
+  MemoryInterface::Instance()->functionalWrite(memAddr, data, size);
 }
 
-uint64_t
-ReadMemory(uint64_t memAddr, size_t size)
+void
+ReadMemory(uint64_t memAddr, uint8_t* data, size_t size)
 {
-  assert(size <= sizeof(uint64_t));
-  uint64_t d;
-  MemoryInterface::Instance()->functionalRead(memAddr, (uint8_t*) &d, size);
-  return d;
+  // assert(size <= sizeof(uint64_t));
+  MemoryInterface::Instance()->functionalRead(memAddr, data, size);
 }

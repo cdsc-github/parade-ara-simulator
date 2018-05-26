@@ -71,6 +71,7 @@ def create_system(options, full_system, system, dma_ports, ruby_system):
     ruby_system.ssd_bw = options.ssd_bw
     ruby_system.qpi_bw = options.qpi_bw
     ruby_system.duplicate = options.duplicate
+    ruby_system.dma_issue_width=options.dma_issue_width
 
     acc_type_list = options.acc_types.replace(',', ' ').split()
     type_names = [Lcacc.get(acc) for acc in acc_type_list]

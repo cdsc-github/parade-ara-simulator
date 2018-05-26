@@ -58,12 +58,11 @@ class TransferSetDesc
   TransferEndPointDescription end;
   size_t transferSize;
   CallbackBase* onFinish;
-  uint32_t pendingAccesses;
-  bool finished;
+  uint32_t pendingSize;
   uint64_t timeStamp;
   int buffer;
-  void DecrementPending();
-  typedef MemberCallback0<TransferSetDesc, &TransferSetDesc::DecrementPending> DecrementPendingCB;
+  void DecrementPending(size_t finishSize);
+  typedef MemberCallback1<TransferSetDesc, size_t, &TransferSetDesc::DecrementPending> DecrementPendingCB;
 public:
   int priority;
 
@@ -76,8 +75,6 @@ public:
   bool MoreTransfers() const;
 
   TransferData* NextTransfer();
-
-  bool IsFinished() const;
 
   bool operator < (const TransferSetDesc& x) const;
 };
@@ -92,6 +89,8 @@ class DMAEngine
       return *x < *y;
     }
   };
+  uint32_t inflight;
+  uint32_t issueWidth;
   uint64_t lastEmit;
   MeteredMemoryHandle* memObject;
   MemoryDeviceInterface* memInterface;

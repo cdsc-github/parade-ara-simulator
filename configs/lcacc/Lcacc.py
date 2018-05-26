@@ -72,6 +72,8 @@ def define_options(parser):
     parser.add_option("--qpi_bw", action="store", type="int", default=20000,
                       help="")
     parser.add_option("--duplicate", action="store_true", help="")
+    parser.add_option("--dma_issue_width", action="store", type="int", default=64,
+                      help="lcacc dma issue width")
 
 def create_accelerators(options, system):
     # For now, use same clock as cpus.

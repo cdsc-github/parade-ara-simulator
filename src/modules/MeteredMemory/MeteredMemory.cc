@@ -31,6 +31,7 @@ MeteredMemory::MeteredMemory(int portID)
 void MeteredMemory::SetLatency(int latency)
 {
   this->latency = latency;
+  ML_LOG(GetDeviceName(), "latency set to " << latency << "cycles");
 }
 
 void MeteredMemory::SetBW(int bytesPerSec)

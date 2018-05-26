@@ -60,6 +60,7 @@ class RubySystem(ClockedObject):
     ssd_bw = Param.Int(8500, "")
     qpi_bw = Param.Int(20000, "")
     duplicate = Param.Bool(False, "")
+    dma_issue_width = Param.UInt32(64, "LCAcc DMA issue width")
 
     # Profiler related configuration variables
     hot_lines = Param.Bool(False, "")

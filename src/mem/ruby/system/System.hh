@@ -115,6 +115,7 @@ class RubySystem : public ClockedObject
     static uint32_t getBlockSizeBytes() { return m_block_size_bytes; }
     static uint32_t getBlockSizeBits() { return m_block_size_bits; }
     static uint32_t getMemorySizeBits() { return m_memory_size_bits; }
+    static uint32_t getDMAIssueWidth() { return m_dma_issue_width; }
 
     SimpleMemory *getPhysMem() { return m_phys_mem; }
 
@@ -167,6 +168,7 @@ class RubySystem : public ClockedObject
     static uint32_t m_block_size_bytes;
     static uint32_t m_block_size_bits;
     static uint32_t m_memory_size_bits;
+    static uint32_t m_dma_issue_width;
     static bool m_comphier;
     SimpleMemory *m_phys_mem;
 

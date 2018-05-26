@@ -42,14 +42,13 @@ TransferData::TransferData(int srcSpmID, uint64_t srcLAddr, int dstSpmID,
 }
 
 void
-TransferSetDesc::DecrementPending()
+TransferSetDesc::DecrementPending(size_t finishSize)
 {
-  assert(pendingAccesses > 0);
-  pendingAccesses--;
-  if(pendingAccesses == 0)
-  {
+  pendingSize -= finishSize;
+  if (!MoreTransfers() && pendingSize == 0) {
     ScheduleCB(0, onFinish);
-    finished = true;
+    // suicide
+    delete this;
   }
 }
 
@@ -71,9 +70,8 @@ TransferSetDesc::TransferSetDesc(int spmSrc, uint64_t baseSrc,
   this->buffer = buffer;
   index = 0;
   priority = prio;
-  finished = false;
   timeStamp = when;
-  pendingAccesses = start.addrGen.TotalSize();
+  pendingSize = 0;
 }
 
 bool
@@ -85,17 +83,36 @@ TransferSetDesc::MoreTransfers() const
 TransferData* TransferSetDesc::NextTransfer()
 {
   int i = index;
-  index++;
-  uint64_t srcAddr = start.addrGen.GetAddr(i);
-  uint64_t dstAddr = end.addrGen.GetAddr(i);
-  return new TransferData(start.spm, srcAddr, end.spm, dstAddr, transferSize,
-    priority, timeStamp, buffer, DecrementPendingCB::Create(this));
-}
+  size_t aggSize = transferSize;
 
-bool
-TransferSetDesc::IsFinished() const
-{
-  return finished;
+  while (start.addrGen.TotalSize() > i + 1) {
+    uint64_t currAddr;
+    uint64_t nextAddr;
+    if (start.spm == NO_SPM_ID) {
+      // is read
+      currAddr = start.addrGen.GetAddr(i);
+      nextAddr = start.addrGen.GetAddr(i + 1);
+    } else {
+      // is write
+      currAddr = end.addrGen.GetAddr(i);
+      nextAddr = end.addrGen.GetAddr(i + 1);
+    }
+    if (nextAddr == currAddr + transferSize && nextAddr % BLOCK_SIZE != 0) {
+      // contiguous address within one cacheline
+      aggSize += transferSize;
+      i++;
+    } else {
+      break;
+    }
+  }
+
+  uint64_t srcAddr = start.addrGen.GetAddr(index);
+  uint64_t dstAddr = end.addrGen.GetAddr(index);
+  index = i + 1;
+  pendingSize += aggSize;
+
+  return new TransferData(start.spm, srcAddr, end.spm, dstAddr, aggSize,
+    priority, timeStamp, buffer, DecrementPendingCB::Create(this, aggSize));
 }
 
 bool
@@ -223,17 +240,20 @@ void
 DMAEngine::WriteBlock(uint64_t spmAddr, uint64_t pMemAddr, uint64_t lMemAddr,
   size_t size)
 {
-  uint64_t d;
-  spmInterface->read(spm, spmAddr, &d, size);
-  WriteMemory(pMemAddr, d, size);
+  uint8_t* data = new uint8_t [size];
+  spmInterface->read(spm, spmAddr, data, size);
+  WriteMemory(pMemAddr, data, size);
+  delete [] data;
 }
 
 void
 DMAEngine::ReadBlock(uint64_t pMemAddr, uint64_t lMemAddr, uint64_t spmAddr,
   size_t size)
 {
-  uint64_t d = ReadMemory(pMemAddr, size);
-  spmInterface->write(spm, spmAddr, &d, size);
+  uint8_t* data = new uint8_t [size];
+  ReadMemory(pMemAddr, data, size);
+  spmInterface->write(spm, spmAddr, data, size);
+  delete [] data;
 }
 
 void
@@ -351,6 +371,8 @@ DMAEngine::DMAEngine()
   translateAddress = NULL;
   onError = NULL;
   lastEmit = 0;
+  inflight = 0;
+  issueWidth = RubySystem::getDMAIssueWidth();
 }
 
 DMAEngine::~DMAEngine()
@@ -436,6 +458,11 @@ DMAEngine::Restart()
 bool
 DMAEngine::EnqueueTransfer(TransferData* td)
 {
+  if (inflight >= issueWidth) {
+    waitingTransfers.push(td);
+    return false;
+  }
+
   bool isRead = (td->dstSpmID == spmID);
   uint64_t lAddr = isRead ? td->srcLAddr : td->dstLAddr;
   uint64_t lPageAddr = AddrRound(lAddr, PAGE_SIZE);
@@ -491,10 +518,6 @@ DMAEngine::EnqueueTransfer(TransferData* td)
 
   if (!isReady) {
     waitingTransfers.push(td);
-    if (lastEmit != GetSystemTime()) {
-      // nothing was emitted this cycle
-      ScheduleCB(1, TryTransfersCB::Create(this));
-    }
     return false;  // block the chain
   }
   lastEmit = GetSystemTime();
@@ -505,6 +528,10 @@ DMAEngine::EnqueueTransfer(TransferData* td)
               (CallbackBase*)WriteBlockCB::Create(
                 this, td->srcLAddr, pAddr, lAddr, td->elementSize)),
     td->onFinish);
+
+  inflight++;
+  // ML_LOG(GetDeviceName(), "issued 0x" << std::hex << lAddr << std::dec
+  //   << " size: " << td->elementSize << " inflight: " << inflight);
 
   if (td->buffer == -1) {
     // this is the no buffer case
@@ -527,30 +554,30 @@ DMAEngine::EnqueueTransfer(TransferData* td)
 void
 DMAEngine::TryTransfers()
 {
-  while (true) {
-    if ((waitingTransferSets.empty() && !waitingTransfers.empty()) ||
-        (!waitingTransfers.empty() && !waitingTransferSets.empty() &&
-        waitingTransfers.top()->priority >= waitingTransferSets.top()->priority))
-    {
-      TransferData* td = waitingTransfers.top();
-      waitingTransfers.pop();
-      if (!EnqueueTransfer(td)) {
-        return;
-      }
-    } else if(!waitingTransferSets.empty()) {
-      TransferSetDesc* tsd = waitingTransferSets.top();
-      assert(tsd->MoreTransfers());
-      TransferData* d = tsd->NextTransfer();
-      if (!tsd->MoreTransfers()) {
-        waitingTransferSets.pop();
-      }
-      bool success = EnqueueTransfer(d);
-      if (!success) {
-        return;
-      }
-    } else {
-      return;
+  bool success = false;
+
+  if ((waitingTransferSets.empty() && !waitingTransfers.empty()) ||
+      (!waitingTransfers.empty() && !waitingTransferSets.empty() &&
+      waitingTransfers.top()->priority >= waitingTransferSets.top()->priority))
+  {
+    TransferData* td = waitingTransfers.top();
+    waitingTransfers.pop();
+    success = EnqueueTransfer(td);
+  } else if(!waitingTransferSets.empty()) {
+    TransferSetDesc* tsd = waitingTransferSets.top();
+    assert(tsd->MoreTransfers());
+    TransferData* d = tsd->NextTransfer();
+    if (!tsd->MoreTransfers()) {
+      waitingTransferSets.pop();
     }
+    success = EnqueueTransfer(d);
+  } else {
+    return;
+  }
+
+  if (success) {
+    ScheduleCB(1, TryTransfersCB::Create(this));
+    // TryTransfers();
   }
 }
 
@@ -559,6 +586,12 @@ DMAEngine::OnMemoryResponse(uint64_t addr, uint64_t calledTime)
 {
   assert(emitTime.find(addr) != emitTime.end());
   emitTime.erase(addr);
+
+  assert(inflight);
+  inflight--;
+  // ML_LOG(GetDeviceName(), "received 0x" << std::hex << addr << std::dec
+  //   << " inflight: " << inflight);
+
   if (pendingReads.find(addr) != pendingReads.end()) {
     ScheduleCB(0, pendingReads[addr]);
     pendingReads.erase(addr);
@@ -568,7 +601,8 @@ DMAEngine::OnMemoryResponse(uint64_t addr, uint64_t calledTime)
     ScheduleCB(0, pendingWrites[addr]);
     pendingWrites.erase(addr);
   }
-  ScheduleCB(0, TryTransfersCB::Create(this));
+  ScheduleCB(1, TryTransfersCB::Create(this));
+  // TryTransfers();
 }
 
 void

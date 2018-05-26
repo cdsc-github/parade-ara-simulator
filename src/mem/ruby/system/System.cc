@@ -60,6 +60,7 @@ bool RubySystem::m_randomization;
 uint32_t RubySystem::m_block_size_bytes;
 uint32_t RubySystem::m_block_size_bits;
 uint32_t RubySystem::m_memory_size_bits;
+uint32_t RubySystem::m_dma_issue_width;
 #ifdef SIM_NET_PORTS
 std::vector<std::string> RubySystem::accTypes;
 int RubySystem::m_num_simics_net_ports;
@@ -95,6 +96,8 @@ RubySystem::RubySystem(const Params *p)
     m_memory_size_bits = p->memory_size_bits;
 
     m_comphier = false;
+
+    m_dma_issue_width = p->dma_issue_width;
 
 #ifdef SIM_NET_PORTS
     parseAccTypes(p->acc_types);
