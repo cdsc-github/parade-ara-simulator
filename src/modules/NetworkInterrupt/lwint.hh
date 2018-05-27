@@ -4,23 +4,21 @@
 #define MAX_LWI_ARG_SIZE 64
 #include "../../mem/ruby/common/TypeDefines.hh"
 #include <stdint.h>
-typedef struct lwi_table
-{
-        unsigned int lwi_en;
-        physical_address_t args_address;
-	logical_address_t la_args;
+typedef struct lwi_table {
+  unsigned int lwi_en;
+  physical_address_t args_address;
+  logical_address_t la_args;
 } lwi_table_t;
 
-typedef struct lwInt_ifc
-{
-	void (*raiseLightWeightInt)(int thread, void* args, int argSize, int interrupting_lcacc);
-	int (*isReady)(int thread);//call first
+typedef struct lwInt_ifc {
+  void (*raiseLightWeightInt)(int thread, void* args, int argSize, int interrupting_lcacc);
+  int (*isReady)(int thread);//call first
 } lwInt_ifc_t;
 
 extern "C"
 {
-        void raiseLightWeightInt(int thread, void* args, int argSize, int interrupting_lcacc);
-        int isReady(int thread);
+  void raiseLightWeightInt(int thread, void* args, int argSize, int interrupting_lcacc);
+  int isReady(int thread);
 }
-#endif 
+#endif
 

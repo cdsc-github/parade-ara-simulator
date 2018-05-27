@@ -1,4 +1,5 @@
-##Introduction
+## Introduction
+
 PARADE is a cycle-accurate full-system simulation platform for accelerator-rich architectural design and exploration. It extends the widely used gem5 simulator with high-level synthesis (HLS) support.
 
 If you use PARADE in your research, please cite our ICCAD 15 paper:
@@ -7,11 +8,11 @@ If you use PARADE in your research, please cite our ICCAD 15 paper:
 
 A pdf version of this manual is also available in `doc/parade_manual.pdf`.
 
-##Download PARADE
+## Download PARADE
 
 	git clone https://github.com/cdsc-github/parade-ara-simulator.git
 
-##Setup Requirements
+## Setup Requirements
 
 1. Currently PARADE has been tested on two 64-bit platforms:
 
@@ -31,7 +32,7 @@ A pdf version of this manual is also available in `doc/parade_manual.pdf`.
 	* Our automatic accelerator and application generators are written in C#
 	* Some post-processing tools are also written in C#
 
-##Build PARADE
+## Build PARADE
 
 Let’s assume you are in the home directory (`$PARADE_HOME`) of the checked out PARADE code.
 
@@ -46,7 +47,7 @@ Let’s assume you are in the home directory (`$PARADE_HOME`) of the checked out
 	* `./build.gem5.sh`
 	* `cp build/X86/gem5.opt parade-test/gem5-ara.opt`
 
-##Build Benchmarks
+## Build Benchmarks
 
 Before you start, please download the disk image and Linux binaries from: http://vast.cs.ucla.edu/software/parade-ara-simulator. Decompress it and move the folders to `$PARADE_HOME`, and finally `export M5_PATH=$PARADE_HOME`. We have prebuilt all the benchmarks used in the ICCAD 15 paper.
 
@@ -56,7 +57,7 @@ If you want to build the benchmarks by your own:
 * copy the compiled binary to the corresponding benchmark directory of the mounted image
 * `umount` the disk image
 
-##Run Benchmarks on PARADE
+## Run Benchmarks on PARADE
 
 We use the well-known three-stage simulation methodology to reduce the simulation time:
 * Stage 1, checkpoint the OS booting using atomic mode.
@@ -89,7 +90,7 @@ Let’s still use the BlackScholes example for demonstration.
 	* For ARA, we add `–-lcacc`, and users can specify how many accelerators are used with the flag `--accelerators=1`
 	* All other configurations are the same as the original gem5, please check our ISCA 15 tutorial and the gem5 website
 
-##Interpret Simulation Results
+## Interpret Simulation Results
 
 1.	Overall performance:
 	* `./get.stats.sh TDLCA ooo` for ARA
@@ -106,7 +107,7 @@ Let’s still use the BlackScholes example for demonstration.
 	* For DRAM, it’s integrated with gem5, in stats.txt (you don’t have to do anything)
 	* Finally, get all results together: `./get.energy.stats.sh TDLCA ooo`
 
-##Further Reading
+## Further Reading
 
 For high-level overview of PARADE, please read our ICCAD 15 paper and ISCA 15 tutorial slides: http://accelerator.eecs.harvard.edu/isca15tutorial/slides/isca2015-tutorial-parade.pdf
 
@@ -114,7 +115,7 @@ Our ISCA 15 tutorial also introduces how to add users’ own accelerator and app
 
 Now you are ready to go. Hack the code and have fun!
 
-##Some Claims
+## Some Claims
 
 We would like to thank the open source gem5 community and all Center for Domain-Specific Computing (CDSC) members at UCLA who contribute to PARADE.
 

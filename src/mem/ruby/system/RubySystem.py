@@ -43,11 +43,24 @@ class RubySystem(ClockedObject):
         "number of bits that a memory address requires");
     num_simics_net_ports = Param.Int(32, "total number of network ports");
     num_acc_instances = Param.Int(1, "number of accelerator instances");
+    num_pes = Param.Int(1, "number of accelerators sharing the same port");
     num_TDs = Param.Int(1, "total number of taskdistributors");
     visual_trace = Param.String("parade-test/visual.txt",
         "file name for visualization trace");
     acc_types = Param.String("BlackScholes",
         "accelerator type to be instantiated in the system");
+    aim = Param.Bool(False,
+        "modeling Accelerator-Interposed Memory")
+    mem_bandwidth = Param.Int(100, "memory object bandwidth in bytes per second")
+    mem_clock = Param.Int(100, "memory object clock normalized to cpu clock")
+    mem_latency = Param.Int(100, "memory object latency in cpu cycles")
+    device_delay = Param.Int(0,
+        "the communication latency between the host and device")
+    dram_bw = Param.Int(10000, "")
+    ssd_bw = Param.Int(8500, "")
+    qpi_bw = Param.Int(20000, "")
+    duplicate = Param.Bool(False, "")
+    dma_issue_width = Param.UInt32(64, "LCAcc DMA issue width")
 
     # Profiler related configuration variables
     hot_lines = Param.Bool(False, "")

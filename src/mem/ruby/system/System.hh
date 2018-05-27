@@ -73,10 +73,25 @@ class RubySystem : public ClockedObject
     // config accessors
 #ifdef SIM_NET_PORTS
     static std::vector<std::string> accTypes;
+    static bool m_aim;
+    static int m_mem_bandwidth;
+    static int m_mem_clock;
+    static int m_mem_latency;
     static int m_num_simics_net_ports;
     static int m_num_accelerators;
     static int m_num_acc_instances;
+    static int m_num_pes;
     static int m_num_TDs;
+    static int m_device_delay;
+    static int m_dram_bw;
+    static int m_ssd_bw;
+    static int m_qpi_bw;
+    static bool m_dup;
+    static bool aim() { return m_aim; }
+    static int getDeviceDelay() { return m_device_delay; }
+    static int memBandwidth() { return m_mem_bandwidth; }
+    static int memClock() { return m_mem_clock; }
+    static int memLatency() { return m_mem_latency; }
     static int numberOfAccelerators() { return m_num_accelerators; }
     static int numberOfgem5NetworkPortPerChip() { return m_num_simics_net_ports; }
     static int numberOfgem5NetworkPortPerChip(NodeID&) {return numberOfgem5NetworkPortPerChip(); }
@@ -91,6 +106,7 @@ class RubySystem : public ClockedObject
     static int accIDtoL1CacheID(int accID);
     static int mapPortID(int port);
     static int numberOfAccInstances() { return m_num_acc_instances; }
+    static int numberOfPEs() { return m_num_pes; }
     Network* getNetwork() {assert(m_network != NULL); return m_network;};
 #endif
 
@@ -99,6 +115,7 @@ class RubySystem : public ClockedObject
     static uint32_t getBlockSizeBytes() { return m_block_size_bytes; }
     static uint32_t getBlockSizeBits() { return m_block_size_bits; }
     static uint32_t getMemorySizeBits() { return m_memory_size_bits; }
+    static uint32_t getDMAIssueWidth() { return m_dma_issue_width; }
 
     SimpleMemory *getPhysMem() { return m_phys_mem; }
 
@@ -151,29 +168,44 @@ class RubySystem : public ClockedObject
     static uint32_t m_block_size_bytes;
     static uint32_t m_block_size_bits;
     static uint32_t m_memory_size_bits;
+    static uint32_t m_dma_issue_width;
+    static bool m_comphier;
     SimpleMemory *m_phys_mem;
 
     Network* m_network;
     std::vector<AbstractController *> m_abs_cntrl_vec;
 
     std::map<std::string, std::vector<std::string>> m_acc_dict = {
+        {"BlackScholes", {"blackScholes"}},
+        {"BlackScholes_DIMM", {"blackScholes_dimm"}},
         {"Deblur_Modified", {"denoise1Mega", "blur1Mega", "deblur1Mega", "deblur2Mega"}},
         {"Denoise", {"denoise1Mega", "denoise2Mega"}},
+        {"Denoise_DIMM", {"denoise1_dimm", "denoise2_dimm", "denoise1", "denoise2"}},
+        {"FFT_1D_DIMM", {"fft_dimm", "fft"}},
+        {"FluidAnimate_DIMM", {"fluidAnimate1_dimm", "fluidAnimate1"}},
+        {"Registration_DIMM", {"registration_dimm", "blur_dimm", "registration"}},
         {"Registration_Modified", {"registration1Mega", "blur1Mega"}},
         {"Segmentation", {"segmentation1Mega"}},
-        {"BlackScholes", {"blackScholes"}},
+        {"Segmentation_DIMM", {"segmentation_dimm", "segmentation"}},
         {"StreamCluster", {"streamCluster1", "streamCluster3", "streamCluster4", "streamCluster5", "streamCluster6"}},
+        {"StreamCluster_DIMM", {"streamCluster1_dimm", "streamCluster2_dimm", "streamCluster3_dimm"}},
         {"Swaptions", {"swaptions1", "swaptions2", "swaptions3", "swaptions4"}},
         {"LPCIP_Desc", {"LPCIP"}},
         {"SURF_Desc", {"SURF1Mega", "SURF2Mega", "SURF3Mega", "SURF4Mega", "SURF5Mega"}},
-        {"Texture_Synthesis", {"TexSynth1", 
-                               "TexSynth2", "TexSynth2", "TexSynth2", "TexSynth2", "TexSynth2", "TexSynth2", "TexSynth2", "TexSynth2", "TexSynth2", 
-                               "TexSynth3", "TexSynth3", "TexSynth3", "TexSynth3", 
-                               "TexSynth4", "TexSynth4", "TexSynth4", "TexSynth4", 
+        {"Texture_Synthesis", {"TexSynth1",
+                               "TexSynth2", "TexSynth2", "TexSynth2", "TexSynth2", "TexSynth2", "TexSynth2", "TexSynth2", "TexSynth2", "TexSynth2",
+                               "TexSynth3", "TexSynth3", "TexSynth3", "TexSynth3",
+                               "TexSynth4", "TexSynth4", "TexSynth4", "TexSynth4",
                                "TexSynth5"}},
         {"Robot_Localization", {"RobLoc"}},
+        {"Robot_Localization_DIMM", {"RobLoc_dimm"}},
         {"Disparity_Map", {"DispMapCompSAD", "DispMapFindDisp", "DispMapIntegSum"}},
-        {"EKF_SLAM", {"Jacobians", "SphericalCoords"}}
+        {"EKF_SLAM", {"Jacobians", "SphericalCoords"}},
+        {"EKF_SLAM_DIMM", {"Jacobians_dimm", "SphericalCoords_dimm"}},
+        {"KNN", {"ManhattanDist", "PartialSort"}},
+        {"MatMul", {"MatMul"}},
+        {"CBIR", {"MatMul400", "Relu", "Pool", "MatMul", "ManhattanDist", "PartialSort"}},
+        {"CBIR_comphier", {"MatMul400", "Relu", "Pool", "MatMul", "ManhattanDist", "PartialSort"}}
     };
 
   public:

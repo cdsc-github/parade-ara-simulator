@@ -48,13 +48,13 @@
 #include <algorithm>
 #include <fstream>
 
-//1. Dedicated-ARA version
+// 1. Dedicated-ARA version
 #define SIM_DEDICATED_ARA
 
 #define SIM_NET_PORTS
 #ifdef SIM_NET_PORTS
 #include "modules/LCAcc/gem5Interface.hh"
-#endif 
+#endif
 
 #include "base/stl_helpers.hh"
 #include "base/str.hh"
@@ -455,7 +455,7 @@ Profiler::addAddressTraceSample(const RubyRequest& msg, NodeID id)
 
 #ifdef SIM_VISUAL_TRACE
 std::string int_to_string(int n);
-std::string int_to_string(int n) 
+std::string int_to_string(int n)
 {
   stringstream ss;
   ss << n;

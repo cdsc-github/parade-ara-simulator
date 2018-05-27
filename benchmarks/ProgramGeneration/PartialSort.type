@@ -1,0 +1,35 @@
+MODULE PartialSort
+OPCODE 249
+POWER 1.0
+AREA 1.0
+DEPTH 100
+CYCLE 10
+II 1
+
+ARGUMENT INPUT float dists
+
+REGISTER float#100 topK
+
+BODY
+
+#define K 100
+
+int i;
+float carry[K];
+float temp;
+
+for (i = 0; i < K; i++) {
+  if (carry[i] < topK[i]) {
+    temp = topK[i];
+    topK[i] = carry[i];
+    carry[i] = temp;
+  }
+}
+
+for (i = 1; i < K; i++) {
+  carry[i] = carry[i - 1];
+}
+
+carry[0] = dists;
+
+END

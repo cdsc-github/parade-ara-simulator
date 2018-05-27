@@ -1,0 +1,3 @@
+echo -e "SW_CBIR 0 8192" | ./benchmarks/bench.out /benchmarks/SW/
+m5 dumpstats
+m5 exit

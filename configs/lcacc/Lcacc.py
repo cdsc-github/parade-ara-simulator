@@ -7,17 +7,30 @@ from Ruby import send_evicts
 acc_types = [
     'Deblur_Modified',
     'Denoise',
+    'Denoise_DIMM',
+    'FFT_1D_DIMM',
+    'FluidAnimate_DIMM',
+    'Registration_DIMM',
     'Registration_Modified',
     'Segmentation',
+    'Segmentation_DIMM',
     'BlackScholes',
+    'BlackScholes_DIMM',
     'StreamCluster',
+    'StreamCluster_DIMM',
     'Swaptions',
     'LPCIP_Desc',
     # 'SURF_Desc',
     'Texture_Synthesis',
     'Robot_Localization',
+    'Robot_Localization_DIMM',
     'Disparity_Map',
-    'EKF_SLAM'
+    'EKF_SLAM',
+    'EKF_SLAM_DIMM',
+    'KNN',
+    'MatMul',
+    'CBIR',
+    'CBIR_comphier',
 ]
 
 def get(name):
@@ -30,7 +43,9 @@ def get(name):
 def define_options(parser):
     parser.add_option("--num_accinstances", action="store", type="int",
                       default=1,
-                      help="number of accelerator instances in the system.")
+                      help="number of accelerator instances in the system")
+    parser.add_option("--num_pes", action="store", type="int", default=1,
+                      help="number of accelerators sharing the same port")
     parser.add_option("--num_tds", action="store", type="int", default=1,
                       help="number of task distributors")
     parser.add_option("--num_networkports", action="store", type="int", default=32,
@@ -40,6 +55,25 @@ def define_options(parser):
     parser.add_option("--acc_types", metavar="ACC[,ACC]", action="store",
                       type="string", default="BlackScholes",
                       help="accelerator types to be instantiated in the system")
+    parser.add_option("--aim", action="store_true",
+                      help="modeling accelerator-interposed memory")
+    parser.add_option("--aim_mem_bandwidth", action="store", type="int", default=100,
+                      help="aim memory object bandwidth in bytes per second")
+    parser.add_option("--aim_mem_clock", action="store", type="int", default=100,
+                      help="aim memory object clock normalized to cpu clock")
+    parser.add_option("--aim_mem_latency", action="store", type="int", default=100,
+                      help="aim memory object latency in cpu cycles")
+    parser.add_option("--device_delay", action="store", type="int", default=0,
+                      help="the communication latency between the host and device")
+    parser.add_option("--dram_bw", action="store", type="int", default=10000,
+                      help="")
+    parser.add_option("--ssd_bw", action="store", type="int", default=8500,
+                      help="")
+    parser.add_option("--qpi_bw", action="store", type="int", default=20000,
+                      help="")
+    parser.add_option("--duplicate", action="store_true", help="")
+    parser.add_option("--dma_issue_width", action="store", type="int", default=64,
+                      help="lcacc dma issue width")
 
 def create_accelerators(options, system):
     # For now, use same clock as cpus.

@@ -1,0 +1,29 @@
+VARIABLE STREAM IN float in [Fout, FoutR * 2, FoutC * 2]
+
+VARIABLE STREAM OUT float out [Fout, FoutR, FoutC]
+
+VARIABLE int Fout
+VARIABLE int FoutR
+VARIABLE int FoutC
+
+VARIABLE int chunkR
+VARIABLE int chunkC
+
+TASK [0..Fout:1, 0..FoutR * 2:chunkR * 2, 0..FoutC * 2:chunkC * 2]
+SPM_WINDOWS 3
+
+DECLARE Pool p
+
+CREATE_SPM p float spm_in [1, chunkR * 2, chunkC * 2]
+CREATE_SPM p float spm_out [1, chunkR, chunkC]
+
+in[0..Fout, 0..FoutR * 2, 0..FoutC * 2] => p.spm_in[0..1, 0..chunkR * 2, 0..chunkC * 2]
+p.spm_out[0..1, 0..chunkR, 0..chunkC] => out[0..Fout,  0..FoutR, 0..FoutC]
+
+p.spm_in[0..1, 0..chunkR * 2 - 1:2, 0..chunkC * 2 - 1:2] => p.in1
+p.spm_in[0..1, 0..chunkR * 2 - 1:2, 1..chunkC * 2:2] => p.in2
+p.spm_in[0..1, 1..chunkR * 2:2, 0..chunkC * 2 - 1:2] => p.in3
+p.spm_in[0..1, 1..chunkR * 2:2, 1..chunkC * 2:2] => p.in4
+
+p.Pout => p.spm_out[0..1, 0..chunkR, 0..chunkC]
+

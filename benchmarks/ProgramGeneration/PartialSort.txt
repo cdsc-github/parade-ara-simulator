@@ -1,0 +1,16 @@
+VARIABLE STREAM IN float in_dists [total_size]
+
+VARIABLE float#100 res
+VARIABLE int total_size
+VARIABLE int chunk
+
+TASK [0..total_size:chunk]
+SPM_WINDOWS 2
+
+DECLARE PartialSort ps [topK = res]
+
+CREATE_SPM ps float spm_dists [chunk]
+
+in_dists[0..totalSize] => ps.spm_dists[0..chunk]
+ps.spm_dists[0..chunk] => ps.dists
+

@@ -1,0 +1,32 @@
+MODULE MatMul
+OPCODE 107
+POWER 1.0
+AREA 1.0
+DEPTH 8
+II 1
+CYCLE 8
+
+ARGUMENT INPUT float input1
+ARGUMENT INPUT float input2
+
+ARGUMENT OUTPUT float output
+
+REGISTER int vectorLength
+REGISTER int currentIndex
+REGISTER float currentAccumulation
+
+BODY
+
+
+currentAccumulation += input1 * input2;
+currentIndex++;
+
+if(currentIndex == vectorLength)
+{
+  output = currentAccumulation;
+	currentAccumulation = 0.0f;
+	currentIndex = 0;
+}
+
+
+END

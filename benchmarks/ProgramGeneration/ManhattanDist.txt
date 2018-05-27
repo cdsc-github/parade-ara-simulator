@@ -1,0 +1,22 @@
+VARIABLE STREAM IN float#96 inReference [totalSize]
+
+VARIABLE STREAM OUT float outDist [totalSize]
+
+VARIABLE float#96 inQuery
+VARIABLE int totalSize
+VARIABLE int chunk
+
+TASK [0..totalSize:chunk]
+SPM_WINDOWS 3
+
+DECLARE ManhattanDist m [query = inQuery]
+
+CREATE_SPM m float#96 spmReference [chunk]
+CREATE_SPM m float spmDist [chunk]
+
+inReference[0..totalSize] => m.spmReference[0..chunk]
+m.spmDist[0..chunk] => outDist[0..totalSize]
+
+m.spmReference[0..chunk] => m.reference
+m.dist => m.spmDist[0..chunk]
+

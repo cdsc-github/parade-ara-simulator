@@ -10,6 +10,6 @@
 
 void RubyExecuteCB(void* arg);
 void ScheduleCB(int delay, CallbackBase* cb);
-void WriteMemory(uint64_t memAddr, uint64_t val, size_t size);
-uint64_t ReadMemory(uint64_t memAddr, size_t size);
+void WriteMemory(uint64_t memAddr, uint8_t* data, size_t size);
+void ReadMemory(uint64_t memAddr, uint8_t* data, size_t size);
 #endif

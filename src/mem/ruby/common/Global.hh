@@ -47,16 +47,16 @@ extern Cycles g_ruby_start;
 
 #define SIM_NET_PORTS
 #ifdef SIM_NET_PORTS
-#include "../../../modules/NetworkInterrupt/lwint.hh"
-#include "../../../modules/NetworkInterrupt/NetworkInterrupts.hh"
 #include "../system/gem5NetworkPortInterface.hh"
-#include "../../../modules/TLBHack/TLBHack.hh"
-#include "../../../modules/Common/MemoryDeviceInterface.hh"
-#include "../../../modules/linked-prefetch-tile/DMAEngine.hh"
-#include "../../../modules/linked-prefetch-tile/prefetcher-tile.hh"
-#include "../../../modules/scratch-pad/scratch-pad.hh"
-#include "../../../modules/LCAcc/gem5Interface.hh"
-#include "../../../modules/TaskDistributor/Interface.hh"
+#include "modules/NetworkInterrupt/lwint.hh"
+#include "modules/NetworkInterrupt/NetworkInterrupts.hh"
+#include "modules/TLBHack/TLBHack.hh"
+#include "modules/MeteredMemory/MemoryDeviceInterface.hh"
+#include "modules/linked-prefetch-tile/DMAEngine.hh"
+#include "modules/linked-prefetch-tile/prefetcher-tile.hh"
+#include "modules/scratch-pad/scratch-pad.hh"
+#include "modules/LCAcc/gem5Interface.hh"
+#include "modules/TaskDistributor/Interface.hh"
 #include "modules/LCAcc/Interface.hh"
 extern lwInt_ifc_t* g_lwInt_interface;
 extern gem5NetworkPortInterface* g_networkPort_interface;
@@ -65,7 +65,7 @@ extern std::vector<NetworkInterrupts*> g_network_interrupts;
 extern TLBHackInterface* g_TLBHack_interface;
 extern std::vector<TDHandle*> g_TDHandle;
 extern TaskDistributorInterface* g_TDInterface;
-extern MeteredMemory_Interface::gem5Interface* g_memObject;
+extern std::vector<MeteredMemoryHandle*> g_memObject;
 extern MemoryDeviceInterface* g_memInterface;
 extern std::vector<DMAEngineHandle*> g_dmaDevice;
 extern std::vector<DMAEngineHandle*> g_TdDmaDevice;

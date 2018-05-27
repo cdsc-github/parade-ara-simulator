@@ -1,0 +1,27 @@
+MODULE Pool
+OPCODE 250
+POWER 1.0
+AREA 1.0
+DEPTH 4
+II 1
+CYCLE 5
+
+ARGUMENT INPUT float in1
+ARGUMENT INPUT float in2
+ARGUMENT INPUT float in3
+ARGUMENT INPUT float in4
+
+ARGUMENT OUTPUT float Pout
+
+BODY
+
+if (in1 > Pout)
+  Pout = in1;
+if (in2 > Pout)
+  Pout = in2;
+if (in3 > Pout)
+  Pout = in3;
+if (in4 > Pout)
+  Pout = in4;
+
+END
