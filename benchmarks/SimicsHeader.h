@@ -49,6 +49,8 @@ void LCAcc_Free(uint32_t threadID, int lcaccID);
 void BarrierTick(int t, int id);
 void StartSim(uint64_t workid, uint64_t threadid);
 void EndSim(uint64_t workid, uint64_t threadid);
+void DumpStats();
+void ResetStats();
 void ExitSim(); // Stops the simulation, calling m5_exit
 void KillSimulation(); //Same as StartSim() followed by StopSim()
 void BarrierWait(int t, int id);

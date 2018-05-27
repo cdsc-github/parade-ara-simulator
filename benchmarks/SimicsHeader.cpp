@@ -161,6 +161,18 @@ EndSim(uint64_t workid, uint64_t threadid)
 }
 
 void
+ResetStats()
+{
+    m5_reset_stats(0, 0);
+}
+
+void
+DumpStats()
+{
+    m5_dump_stats(0, 0);
+}
+
+void
 ExitSim()
 {
     m5_exit(0);

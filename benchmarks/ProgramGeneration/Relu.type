@@ -1,0 +1,18 @@
+MODULE Relu
+OPCODE 246
+POWER 1.0
+AREA 1.0
+DEPTH 1
+II 1
+CYCLE 5
+
+ARGUMENT INPUT float Pin
+
+ARGUMENT OUTPUT float Pout
+
+BODY
+
+if (Pin < 0.0)
+  Pout = 0.0;
+
+END

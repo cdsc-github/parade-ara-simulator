@@ -1,0 +1,22 @@
+VARIABLE STREAM IN float Pin [fsize]
+
+VARIABLE STREAM OUT float Pout [fsize]
+
+VARIABLE int fsize
+VARIABLE int chunk
+
+TASK [0..fsize : chunk]
+
+SPM_WINDOWS 3
+
+DECLARE Relu rl
+
+CREATE_SPM rl float spm_in [chunk]
+CREATE_SPM rl float spm_out [chunk]
+
+Pin[0..fsize] => rl.spm_in[0..chunk]
+rl.spm_out[0..chunk] => Pout[0..fsize]
+
+rl.spm_in[0..chunk] => rl.Pin
+rl.Pout => rl.spm_out[0..chunk]
+

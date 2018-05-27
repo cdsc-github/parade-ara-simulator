@@ -1,0 +1,30 @@
+VARIABLE STREAM IN float in1 [sizeN : sizeof(float) * sizeM, sizeP : 0, sizeM : sizeof(float)]
+VARIABLE STREAM IN float in2 [sizeN : 0, sizeP : sizeof(float), sizeM : sizeof(float) * sizeP]
+
+VARIABLE STREAM OUT float out [sizeN : sizeof(float) * sizeP, sizeP : sizeof(float), sizeM : 0]
+
+VARIABLE int sizeN
+VARIABLE int sizeM
+VARIABLE int sizeP
+
+TASK [0..sizeN : 1, 0..sizeP : 1, 0..sizeM : sizeM]
+
+SPM_WINDOWS 2
+
+DECLARE MatMul mm [vectorLength = sizeM, currentIndex = 0, currentAccumulation = 0.0f]
+
+ASSERT sizeN > 0
+ASSERT sizeM > 0
+ASSERT sizeP > 0
+
+CREATE_SPM mm float in1 [1, 1, sizeM]
+CREATE_SPM mm float in2 [1, 1, sizeM]
+CREATE_SPM mm float out [1, 1, 1]
+
+in1[0..sizeN, 0..sizeP, 0..sizeM] => mm.in1[0..1, 0..1, 0..sizeM]
+in2[0..sizeN, 0..sizeP, 0..sizeM] => mm.in2[0..1, 0..1, 0..sizeM]
+mm.out[0..1, 0..1, 0..1] => out[0..sizeN, 0..sizeP, 0..sizeM]
+
+mm.in1[0..1, 0..1, 0..sizeM] => mm.input1
+mm.in2[0..1, 0..1, 0..sizeM] => mm.input2
+mm.output => mm.out[0..1, 0..1, 0..1]

@@ -47,6 +47,7 @@ int main(int varCount, char** vars)
     BarrierTick(proc, 0);
     BarrierWait(proc, 0);
     std::cout << vars[0] << ": initializing" << std::endl;
+    ResetStats();
     node->Initialize(thread, proc);
     BarrierTick(proc, 1);
     BarrierWait(proc, 1);
