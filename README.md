@@ -49,7 +49,7 @@ Let’s assume you are in the home directory (`$PARADE_HOME`) of the checked out
 
 ## Build Benchmarks
 
-Before you start, please download the disk image and Linux binaries from: http://vast.cs.ucla.edu/software/parade-ara-simulator. Decompress it and move the folders to `$PARADE_HOME`, and finally `export M5_PATH=$PARADE_HOME`. We have prebuilt all the benchmarks used in the ICCAD 15 paper.
+Before you start, please download the disk image and Linux binaries from: http://www.sfu.ca/~zhenman/software.html#parade. Decompress it and move the folders to `$PARADE_HOME`, and finally `export M5_PATH=$PARADE_HOME`. We have prebuilt all the benchmarks used in the ICCAD 15 paper.
 
 If you want to build the benchmarks by your own:
 * `cd benchmarks; make`	--- note it needs an older GCC version, e.g., GCC-4.1.2
@@ -127,7 +127,7 @@ Center for Domain-Specific Computing, UCLA
 
 Email: zhenman@cs.ucla.edu
 
-Website: https://sites.google.com/site/fangzhenman/
+Website: http://www.sfu.ca/~zhenman/
 
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/cdsc-github/parade-ara-simulator/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 
